@@ -31,3 +31,9 @@ Execution failed for task ':app:transformDexArchiveWithDexMergerForDebug'.
 > java.io.IOException: Unable to delete directory C:\Users\user\Documents\3rdYear\CPEN321\CPEN321\frontend\android\app\build\intermediates\transforms\dexMerger\debug.
 ```
 navigate to frontend/android/app/build, delete contents of build directory and try running again
+
+# Backend
+```
+ssh renteradmin@renterassurance.westus.cloudapp.azure.com
+Pass: Renterassurance!
+```
