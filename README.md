@@ -10,6 +10,20 @@ https://facebook.github.io/react-native/docs/getting-started (Follow the react n
 
 npm dependancies run:
 
+for react-navigation
+```
+npm install react-navigation
+npm install react-native-gesture-handler
+```
+
+for react navigation material bottom tabs
+```
+npm install react-navigation-material-bottom-tabs react-native-paper
+npm install react-native-vector-icons
+```
+
+for some reason need to use md icons from oblador.github.io/react-native-vector-icons/
+
 for react-native maps api
 ```
 npm install react-native-maps --save-exact
