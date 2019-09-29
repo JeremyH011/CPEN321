@@ -22,7 +22,7 @@ npm install react-navigation-material-bottom-tabs react-native-paper
 npm install react-native-vector-icons
 ```
 
-for some reason need to use md icons from oblador.github.io/react-native-vector-icons/
+for some reason need to use md icons from https://oblador.github.io/react-native-vector-icons/
 
 for react-native maps api
 ```
