@@ -14,6 +14,9 @@ import {
   View,
   Text,
   StatusBar,
+  Modal,
+  TextInput,
+  TouchableOpacity
 } from 'react-native';
 
 import {
@@ -23,6 +26,7 @@ import {
 import Geolocation from '@react-native-community/geolocation';
 import FetchLocation from '../components/FetchLocation';
 import UsersMap from '../components/UsersMap'
+import AddListing from '../components/AddListing';
 import tabBarIcon from '../components/tabBarIcon';
 
 export default class HomeScreenMap extends React.Component {
@@ -31,7 +35,12 @@ export default class HomeScreenMap extends React.Component {
   };
 
   state = {
-    userLocation: null
+    userLocation: null,
+    modalVisible: false
+  }
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
   }
 
   getUserLocationHandler = () => {
@@ -47,6 +56,10 @@ export default class HomeScreenMap extends React.Component {
     }, err => console.log(err));
   }
 
+  addListingHandler = () => {
+    this.setModalVisible(true);
+  }
+
   render () {
     return (
           <ScrollView
@@ -55,6 +68,23 @@ export default class HomeScreenMap extends React.Component {
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation}/>
+              <AddListing onAddListing={this.addListingHandler}/>
+              <Modal
+                animationType="slide"
+                transparent={false}
+                visible={this.state.modalVisible}
+                onRequestClose={() => { this.setModalVisible(false); } }>
+                <View style={styles.modal}>
+                    <TextInput style={styles.modalTextInput} placeholder="Name"/>
+                    <TextInput style={styles.modalTextInput} placeholder="Address"/>
+                    <TouchableOpacity style={styles.modalButton}>
+                        <Text>Add Listing</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
+                        <Text>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
+              </Modal>
             </View>
           </ScrollView>
     );
@@ -98,4 +128,22 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     textAlign: 'right',
   },
+  modal: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTextInput: {
+    height: 40,
+    width: 300,
+    borderWidth: 1,
+    margin: 10,
+    padding: 10,
+  },
+  modalButton: {
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    margin: 10,
+    padding: 10,
+  }
 });
