@@ -36,6 +36,12 @@ npm install @react-native-community/geolocation --save
 react-native link @react-native-community/geolocation
 ```
 
+for google autocomplete apis (NOT SURE WHICH ONE TO USE YET SO DO BOTH):
+```
+npm install react-native-google-places-autocomplete
+npm install react-native-google-autocomplete
+```
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.
