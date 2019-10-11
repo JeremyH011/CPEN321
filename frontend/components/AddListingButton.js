@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import { FAB } from 'react-native-paper';
 
-const addListing = props => (
+const addListingButton = props => (
   <FAB
     style={styles.fab}
     small
@@ -20,4 +20,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default addListing;
+export default addListingButton;
