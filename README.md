@@ -42,6 +42,13 @@ npm install react-native-google-places-autocomplete
 npm install react-native-google-autocomplete
 ```
 
+for entering fields
+```
+npm install react-native-material-dropdown
+npm install --save react-native-text-input-mask
+react-native link react-native-text-input-mask
+```
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.
