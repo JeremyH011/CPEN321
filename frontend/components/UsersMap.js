@@ -2,7 +2,7 @@ import React from 'react'
 import {View, StyleSheet } from 'react-native';
 import MapView from 'react-native-maps';
 
-const usersMap = props => {
+const UsersMap = props => {
     let userLocationMarker = null;
 
     if(props.userLocation)
@@ -38,4 +38,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default usersMap;
+export default UsersMap;

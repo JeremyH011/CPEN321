@@ -8,12 +8,9 @@
 
 import React, {Fragment} from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
-  Text,
-  StatusBar,
 } from 'react-native';
 
 import {
@@ -23,7 +20,9 @@ import {
 import Geolocation from '@react-native-community/geolocation';
 import FetchLocation from '../components/FetchLocation';
 import UsersMap from '../components/UsersMap'
+import AddListingButton from '../components/AddListingButton';
 import tabBarIcon from '../components/tabBarIcon';
+import AddListingPage from '../components/AddListingPage';
 
 export default class HomeScreenMap extends React.Component {
   static navigationOptions = {
@@ -47,6 +46,10 @@ export default class HomeScreenMap extends React.Component {
     }, err => console.log(err));
   }
 
+  addListingHandler = () => {
+    this.refs.addListingPopup.setModalVisible(true);
+  }
+
   render () {
     return (
           <ScrollView
@@ -55,6 +58,8 @@ export default class HomeScreenMap extends React.Component {
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation}/>
+              <AddListingButton onAddListing={this.addListingHandler}/>
+              <AddListingPage ref='addListingPopup'/>
             </View>
           </ScrollView>
     );
@@ -97,5 +102,5 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingRight: 12,
     textAlign: 'right',
-  },
+  }
 });

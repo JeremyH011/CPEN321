@@ -11,10 +11,10 @@ import { createAppContainer } from 'react-navigation'
 import { View } from 'react-native';
 import BottomTabNavigator from './navigators/BottomTabNavigator';
 
-const App = createAppContainer(BottomTabNavigator); 
+const App = createAppContainer(BottomTabNavigator);
 
 export default () => (
-  <View style = {{ flex: 1, marginTop: 20}}>
+  <View style = {{ flex: 1}}>
     <App />
   </View>
 );
