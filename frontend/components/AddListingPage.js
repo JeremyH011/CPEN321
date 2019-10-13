@@ -14,6 +14,10 @@ import { Dropdown } from 'react-native-material-dropdown';
 import TextInputMask from 'react-native-text-input-mask';
 
 export default class AddListingPage extends React.Component {
+    // @todo: change this so that fields related to listing are 
+    //        their own obj inside state, rather than remain as 
+    //        members of state. refer to userLocation inside 
+    //        HomeScreenMap.js
     state = {
         modalVisible: false,
         scrollViewVisible: false,
@@ -103,7 +107,6 @@ export default class AddListingPage extends React.Component {
                     <GoogleAutoComplete apiKey={API_KEY} debounce={500} minLength={4} components={"country:ca"}>
                         {({ handleTextChange, locationResults, fetchDetails, isSearching, clearSearchs }) => (
                             <React.Fragment>
-                            {console.log('location results', locationResults)}
                             {this.setState()}
                                 <TextInput ref='addressTextInput'
                                     value={this.state.addressField}
