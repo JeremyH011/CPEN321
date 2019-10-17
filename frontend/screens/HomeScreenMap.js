@@ -23,6 +23,8 @@ import UsersMap from '../components/UsersMap'
 import AddListingButton from '../components/AddListingButton';
 import tabBarIcon from '../components/tabBarIcon';
 import AddListingPage from '../components/AddListingPage';
+import Listing from '../classes/Listing';
+import { DB_URL } from '../key';
 
 export default class HomeScreenMap extends React.Component {
   static navigationOptions = {
@@ -30,7 +32,8 @@ export default class HomeScreenMap extends React.Component {
   };
 
   state = {
-    userLocation: null
+    userLocation: null,
+    listingLocations: [],
   }
 
   getUserLocationHandler = () => {
@@ -50,6 +53,34 @@ export default class HomeScreenMap extends React.Component {
     this.refs.addListingPopup.setModalVisible(true);
   }
 
+  componentDidMount(){
+    this.getListings();
+  }
+
+  centerMap = (lat,long) => {
+    this.setState({
+      userLocation: {
+        latitude: lat,
+        longitude: long,
+        latitudeDelta: 0.0622,
+        longitudeDelta: 0.0421,
+      }
+    });
+  }
+
+  getListings = () => {
+    return fetch(DB_URL+'get_listings/')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+            listingLocations: responseJson.map((listingJson) => new Listing(listingJson))
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+
   render () {
     return (
           <ScrollView
@@ -57,9 +88,9 @@ export default class HomeScreenMap extends React.Component {
             style={styles.scrollView}>
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
-              <UsersMap userLocation={this.state.userLocation}/>
+              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
-              <AddListingPage ref='addListingPopup'/>
+              <AddListingPage ref='addListingPopup' centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </ScrollView>
     );
