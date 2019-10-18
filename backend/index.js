@@ -14,8 +14,23 @@ app.get('/', (req,res) => {
 	res.send("Hello World")
 });
 
-app.get('/get_listings', (req, res) => {
-	db.collection("listings").find().toArray((err,result) => {
+app.get('/get_listings', jsonParser, (req, res) => {
+	console.log("GETTING LISTING WITH QUERY: ");
+	console.log(req.body);
+	db.collection("listings").find(req.body).toArray((err,result) => {
+		console.log("SENT: ")
+		console.log(result);
+		res.send(result);
+	});
+});
+
+app.get('/get_listing_by_id', jsonParser, (req, res) => {
+	console.log(req.body);
+
+	var mongo = require('mongodb');
+	var o_id = new mongo.ObjectID(req.body._id);
+	
+        db.collection("listings").find(o_id).toArray((err,result) => {
 		res.send(result);
 	});
 });
