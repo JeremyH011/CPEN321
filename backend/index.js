@@ -2,10 +2,18 @@ const express = require('express');
 const app = express();
 const mongoclient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
+const Pusher = require('pusher');
 
 //app.use(express.json);
+var constants = require("./touch");
 
 var jsonParser = bodyParser.json();
+var channels_client = new Pusher({
+     appId: constants.CONST_APP_ID,
+     key: constants.CONST_KEY,
+     secret: constants.CONST_SECRET,
+     cluster: constants.CONST_CLUSTER
+});
 
 mongoclient.connect("mongodb://0.0.0.0:27017",(err,client)=> {db = client.db('redb')});
 
@@ -24,15 +32,8 @@ app.post('/create_listing', jsonParser, (req,res)=>{
 	console.log("Create listing\n");
 	console.log(req.body);
 	db.collection("listings").insertOne(req.body, (err, result) => {
-        let Pusher = require('pusher');
-        let channels_client = new Pusher({
-                    appId: process.env.PUSHER_APP_ID,
-                    key: process.env.PUSHER_APP_KEY,
-                    secret: process.env.PUSHER_APP_SECRET,
-                    cluster: process.env.PUSHER_APP_CLUSTER
-        });
 
-        pusher.trigger('rent-easy-channel', 'listing-added', {"message": "hello world"}, req.headers['x-socket-id']);
+        channels_client.trigger('rent-easy-channel', 'listing-added', {"message" : "New listing was just added"}, req.headers['x-socket-id']);
 		res.send("Saved");
 	});
 });
