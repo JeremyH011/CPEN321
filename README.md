@@ -49,6 +49,13 @@ npm install --save react-native-text-input-mask
 react-native link react-native-text-input-mask
 ```
 
+for push notification
+```
+npm install pusher-js
+npm install --save @react-native-community/netinfo
+react-native link @react-native-community/netinfo
+```
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.
@@ -60,6 +67,18 @@ Execution failed for task ':app:transformDexArchiveWithDexMergerForDebug'.
 navigate to frontend/android/app/build, delete contents of build directory and try running again
 
 # Backend
+install for push notification
+```
+npm install pusher
+```
+
+to run mongo and server
+'''
+sudo service mongod start
+CPEN321/backend/node index.js
+'''
+
+
 ```
 ssh renteradmin@renterassurance.westus.cloudapp.azure.com
 Pass: Renterassurance!

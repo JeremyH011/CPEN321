@@ -24,6 +24,15 @@ app.post('/create_listing', jsonParser, (req,res)=>{
 	console.log("Create listing\n");
 	console.log(req.body);
 	db.collection("listings").insertOne(req.body, (err, result) => {
+        let Pusher = require('pusher');
+        let channels_client = new Pusher({
+                    appId: process.env.PUSHER_APP_ID,
+                    key: process.env.PUSHER_APP_KEY,
+                    secret: process.env.PUSHER_APP_SECRET,
+                    cluster: process.env.PUSHER_APP_CLUSTER
+        });
+
+        pusher.trigger('rent-easy-channel', 'listing-added', {"message": "hello world"}, req.headers['x-socket-id']);
 		res.send("Saved");
 	});
 });
@@ -33,4 +42,3 @@ var server = app.listen(1337, ()=> {
 	var port = server.address().port
 	console.log("Server running at http://%s:%d", host, port)
 });
-

@@ -107,6 +107,7 @@ export default class AddListingPage extends React.Component {
                     <GoogleAutoComplete apiKey={API_KEY} debounce={500} minLength={4} components={"country:ca"}>
                         {({ handleTextChange, locationResults, fetchDetails, isSearching, clearSearchs }) => (
                             <React.Fragment>
+                                {console.log(locationResults)}
                             {this.setState()}
                                 <TextInput ref='addressTextInput'
                                     value={this.state.addressField}
