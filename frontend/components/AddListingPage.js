@@ -12,6 +12,7 @@ import { GoogleAutoComplete } from 'react-native-google-autocomplete';
 import LocationItem from './LocationItem';
 import { Dropdown } from 'react-native-material-dropdown';
 import TextInputMask from 'react-native-text-input-mask';
+import Listing from '../classes/Listing';
 
 export default class AddListingPage extends React.Component {
     // @todo: change this so that fields related to listing are
@@ -50,7 +51,16 @@ export default class AddListingPage extends React.Component {
 
     handleAddingNewListing() {
       this.createListingInDB();
-      this.props.refresh();
+      this.props.addLocalMarker(new Listing(
+        {"title" : this.state.title,
+         "latitude" : this.state.latitude,
+         "longitude" : this.state.longitude,
+         "address" : this.state.address,
+         "price" : this.state.price,
+         "numBeds" : this.state.bed,
+         "numBaths" : this.state.bath,
+         "maps_url" : this.state.maps_url}
+      ));
       this.props.centerMap(this.state.latitude, this.state.longitude);
       this.setModalVisible(false);
     }
