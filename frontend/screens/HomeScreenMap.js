@@ -89,7 +89,7 @@ export default class HomeScreenMap extends React.Component {
             style={styles.scrollView}>
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
-              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations}/>
+              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
               <AddListingPage ref='addListingPopup' centerMap={this.centerMap} refresh={this.getListings}/>
             </View>

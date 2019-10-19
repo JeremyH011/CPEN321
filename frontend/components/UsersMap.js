@@ -17,6 +17,7 @@ export default class UserMap extends PureComponent {
   }
 
   handleCloseModal = () => {
+    this.props.centerMap(this.state.selectedListing.latitude, this.state.selectedListing.longitude);
     this.setState({selectedListingModalVisible: false});
   }
 
