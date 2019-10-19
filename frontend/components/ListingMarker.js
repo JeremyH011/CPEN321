@@ -8,7 +8,7 @@ class ListingMarker extends PureComponent {
           <MapView.Marker
               coordinate={{latitude: this.props.listing.latitude,
               longitude: this.props.listing.longitude}}
-              title={this.props.listing.title}
+              title={this.props.listing.title + ", $" + this.props.listing.price}
               onPress={()=>this.props.showInfo(this.props.listing)}
            />
         );
