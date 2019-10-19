@@ -55,7 +55,15 @@ export default class HomeScreenMap extends React.Component {
 
   componentDidMount(){
     this.getListings();
-    this.getUserLocationHandler();
+  }
+
+  addLocalMarker = (listing) => {
+    this.setState({
+      listingLocations: [
+        ...this.state.listingLocations,
+        listing
+      ]
+  })
   }
 
   centerMap = (lat,long) => {
@@ -91,7 +99,7 @@ export default class HomeScreenMap extends React.Component {
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
-              <AddListingPage ref='addListingPopup' centerMap={this.centerMap} refresh={this.getListings}/>
+              <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </ScrollView>
     );
