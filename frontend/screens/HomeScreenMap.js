@@ -55,6 +55,7 @@ export default class HomeScreenMap extends React.Component {
 
   componentDidMount(){
     this.getListings();
+    this.getUserLocationHandler();
   }
 
   centerMap = (lat,long) => {
