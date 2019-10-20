@@ -12,20 +12,14 @@ export default class UserMap extends PureComponent {
       openListingPage: false,
   }
 
-  handleMarkerSelect = listing => {
-    if (this.state.openListingPage)
-    {
-      this.setState({selectedListing:listing,
-                     selectedListingModalVisible: true,
-                     openListingPage: false});
+  handleMarkerSelect = (listing, displayModal) => {
+    if (this.state.selectedListing) {
+      this.state.selectedListing.tapped = false;
     }
-    else
-    {
-      this.setState({selectedListing:listing, 
-                     selectedListingModalVisible: false,
-                     openListingPage: true});  
-      this.props.centerMap(listing.latitude, listing.longitude);
-    }
+
+    this.setState({selectedListing:listing,
+                   selectedListingModalVisible: displayModal});
+                   this.props.centerMap(listing.latitude, listing.longitude);
   }
 
   handleCloseModal = () => {
