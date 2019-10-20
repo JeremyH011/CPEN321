@@ -29,7 +29,7 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 
 	var mongo = require('mongodb');
 	var o_id = new mongo.ObjectID(req.body._id);
-	
+
         db.collection("listings").find(o_id).toArray((err,result) => {
 		res.send(result);
 	});
@@ -43,9 +43,27 @@ app.post('/create_listing', jsonParser, (req,res)=>{
 	});
 });
 
+app.post('/create_user', jsonParser, (req,res)=>{
+	console.log("Create User\n");
+	console.log(req.body);
+	db.collection("users").insertOne(req.body, (err, result) => {
+		res.send("Saved");
+	});
+});
+
+app.get('/get_users', jsonParser, (req, res) => {
+	console.log("GETTING USERS WITH QUERY: ");
+	console.log(req.query);
+	var start = req.query.user_name.charAt(0);
+	start = `^${start}`;
+	db.collection("users").find("user_name": {$regex: new RegExp(start, "i")}).toArray((err,result) => {
+		console.log(result);
+		res.send(result);
+	});
+});
+
 var server = app.listen(1337, ()=> {
 	var host = server.address().address
 	var port = server.address().port
 	console.log("Server running at http://%s:%d", host, port)
 });
-
