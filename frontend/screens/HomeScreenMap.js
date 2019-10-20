@@ -35,6 +35,8 @@ export default class HomeScreenMap extends React.Component {
 
   state = {
     userLocation: null,
+    user_name: "test_user",
+    user_email: "temp_email@gmail.com",
     listingLocations: [],
   }
 
@@ -56,7 +58,7 @@ export default class HomeScreenMap extends React.Component {
   }
 
   getRecommendedHandler = () => {
-    //this.refs.getRecommendedPopup.getListings();
+    this.refs.getRecommendedPopup.getRecommendedUsers({"user_name":this.state.user_name});
     this.refs.getRecommendedPopup.setModalVisible(true);
   }
 

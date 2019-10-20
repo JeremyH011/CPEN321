@@ -8,7 +8,7 @@ import {
   ScrollView} from 'react-native';
 
 import { API_KEY, DB_URL } from '../key';
-import Listing from '../classes/Listing';
+import User from '../classes/User';
 
 export default class Recommended extends React.Component {
 
@@ -22,18 +22,19 @@ export default class Recommended extends React.Component {
       this.setState({modalVisible: visible});
     }
 
-    getListings = () => {
-      return fetch(DB_URL+'get_listings/')
-        .then((response) => response.json())
-        .then((responseJson) => {
-          this.setState({
-              recommended: responseJson.map((listingJson) => new Listing(listingJson))
+    getRecommendedUsers(body){
+      fetch(DB_URL+`get_users?user_name=${body.user_name}`, {
+          method: "GET",
+        }).then((response) => response.json())
+          .then((responseJson) => {
+            this.setState({
+              recommended: responseJson.map((listingJson) => new User(listingJson))
+            });
+          })
+          .catch((error) => {
+            console.error(error);
           });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      }
+    }
 
     render() {
         return (
