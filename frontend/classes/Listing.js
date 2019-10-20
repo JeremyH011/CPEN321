@@ -8,5 +8,7 @@ export default class Listing {
     this.numBeds = json["numBeds"];
     this.numBaths= json["numBaths"];
     this.mapsUrl = json["maps_url"];
+
+    this.tapped = false;
   }
 }
