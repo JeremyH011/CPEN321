@@ -15,7 +15,7 @@ export default class Recommended extends React.Component {
     state = {
         modalVisible: false,
         scrollViewVisible: false,
-        recommended: ["Item1", "Item2", "Item3"]
+        recommended: []
     }
 
     setModalVisible(visible) {
@@ -30,6 +30,7 @@ export default class Recommended extends React.Component {
             this.setState({
               recommended: responseJson.map((listingJson) => new User(listingJson))
             });
+            console.log(this.state.recommended);
           })
           .catch((error) => {
             console.error(error);
@@ -48,8 +49,11 @@ export default class Recommended extends React.Component {
             <View style={styles.modal}>
               <ScrollView style={styles.scrollView}>
                 {
-                  this.state.recommended.map((item,key)=>(
-                    <Text key={key}> { item } </Text>
+                  this.state.recommended.map((item)=>(
+                    <Text style={styles.boxItem} key={item.user_email}>
+                      Name: {item.user_name}{"\n"}
+                      Email: {item.user_email}
+                    </Text>
                   ))
                 }
               </ScrollView>
@@ -78,8 +82,6 @@ const styles = StyleSheet.create({
     },
     scrollView: {
       margin:'5%',
-      flex:1,
-      flexDirection: 'row',
     },
     modalButton: {
       alignItems: 'center',
@@ -102,5 +104,9 @@ const styles = StyleSheet.create({
     text: {
       color:'rgba(0,0,0,0.5)',
       fontSize:15
+    },
+    boxItem:{
+      fontSize:20,
+      margin: '5%'
     }
 });

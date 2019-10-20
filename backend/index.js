@@ -30,7 +30,7 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 	var mongo = require('mongodb');
 	var o_id = new mongo.ObjectID(req.body._id);
 
-        db.collection("listings").find(o_id).toArray((err,result) => {
+		db.collection("listings").find(o_id).toArray((err,result) => {
 		res.send(result);
 	});
 });
