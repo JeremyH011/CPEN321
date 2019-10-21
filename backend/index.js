@@ -85,7 +85,7 @@ app.get('/get_users', jsonParser, (req, res) => {
 		start = req.query.user_name.charAt(0);
 		start = `^${start}`;
 	}
-	db.collection("users").find({"user_name": {$regex: new RegExp(start, "i")}}).toArray((err,result) => {
+	db.collection("users").find({"name": {$regex: new RegExp(start, "i")}}).toArray((err,result) => {
 		console.log(result);
 		res.send(result);
 	});
