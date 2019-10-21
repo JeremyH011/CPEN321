@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@react-native-community/geolocation": "^2.0.2",
+    "@react-native-community/netinfo": "^4.4.0",
+    "pusher-js": "^5.0.2",
     "react": "16.8.6",
     "react-native": "0.60.5",
     "react-native-gesture-handler": "^1.4.1",

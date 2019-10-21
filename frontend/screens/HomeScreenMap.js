@@ -23,6 +23,7 @@ import UsersMap from '../components/UsersMap'
 import AddListingButton from '../components/AddListingButton';
 import tabBarIcon from '../components/tabBarIcon';
 import AddListingPage from '../components/AddListingPage';
+import Pusher from 'pusher-js/react-native';
 import Listing from '../classes/Listing';
 import { DB_URL } from '../key';
 
@@ -91,6 +92,16 @@ export default class HomeScreenMap extends React.Component {
     }
 
   render () {
+    var pusher = new Pusher('628bdcec89ea2b33e336', {
+      cluster: 'us3',
+      forceTLS: true
+    });
+    
+    var channel = pusher.subscribe('rent-easy-channel');
+    channel.bind('listing-added', function(data) {
+      alert(JSON.stringify(data));
+    });
+
     return (
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"
