@@ -1,7 +1,19 @@
 import React from 'react';
-import { View, Text, } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { onSignOut } from "../auth";
 
 import tabBarIcon from '../components/tabBarIcon';
+
+const styles = StyleSheet.create( {
+  bigBlue: {
+    color: 'blue',
+    fontWeight: 'bold',
+    fontSize: 30,
+  },
+  red: {
+    color: 'red'
+  },
+});
 
 export default class Profile extends React.Component {
     static navigationOptions = {
@@ -11,7 +23,11 @@ export default class Profile extends React.Component {
     render() {
         return (
             <View>
-                <Text>Profile</Text>
+                <Text style={styles.red}>Profile</Text>
+
+                <TouchableOpacity onPress={() => onSignOut().then(() => this.props.navigation.navigate("SignedOut")).catch(() => alert("An error has occurred"))}>
+                  <Text>Sign Out</Text>
+                </TouchableOpacity>
             </View>
         );
     }
