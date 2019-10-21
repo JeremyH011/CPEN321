@@ -20,7 +20,7 @@ export default class Login extends React.Component {
 
 
     checkAccountInDB = () => {
-        return fetch(DB_URL+'get_user_account/', {
+        return fetch(DB_URL+'login/', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
