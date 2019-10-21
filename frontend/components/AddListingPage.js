@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, 
+import {View,
     StyleSheet,
     Text,
     Modal,
@@ -12,11 +12,12 @@ import { GoogleAutoComplete } from 'react-native-google-autocomplete';
 import LocationItem from './LocationItem';
 import { Dropdown } from 'react-native-material-dropdown';
 import TextInputMask from 'react-native-text-input-mask';
+import Listing from '../classes/Listing';
 
 export default class AddListingPage extends React.Component {
-    // @todo: change this so that fields related to listing are 
-    //        their own obj inside state, rather than remain as 
-    //        members of state. refer to userLocation inside 
+    // @todo: change this so that fields related to listing are
+    //        their own obj inside state, rather than remain as
+    //        members of state. refer to userLocation inside
     //        HomeScreenMap.js
     state = {
         modalVisible: false,
@@ -32,7 +33,7 @@ export default class AddListingPage extends React.Component {
     }
 
     setNewListingAddress = addressObject => {
-        this.setState({addressField: addressObject.formatted_address, 
+        this.setState({addressField: addressObject.formatted_address,
                         latitude: addressObject.lat,
                         longitude: addressObject.lng,
                         maps_url: addressObject.maps_url,
@@ -48,7 +49,23 @@ export default class AddListingPage extends React.Component {
         this.setState({addressField: address, scrollViewVisible: true});
     }
 
-    createListingInDB = () => {
+    handleAddingNewListing() {
+      this.createListingInDB();
+      this.props.addLocalMarker(new Listing(
+        {"title" : this.state.title,
+         "latitude" : this.state.latitude,
+         "longitude" : this.state.longitude,
+         "address" : this.state.address,
+         "price" : this.state.price,
+         "numBeds" : this.state.bed,
+         "numBaths" : this.state.bath,
+         "maps_url" : this.state.maps_url}
+      ));
+      this.props.centerMap(this.state.latitude, this.state.longitude);
+      this.setModalVisible(false);
+    }
+
+    createListingInDB(){
         fetch(DB_URL+'create_listing/', {
             method: 'POST',
             headers: {
@@ -57,7 +74,6 @@ export default class AddListingPage extends React.Component {
             },
             body: JSON.stringify({
                 title: this.state.title,
-                pricePerMonth: this.state.price,
                 address: this.state.addressField,
                 latitude: this.state.latitude,
                 longitude: this.state.longitude,
@@ -77,8 +93,8 @@ export default class AddListingPage extends React.Component {
             visible={this.state.modalVisible}
             onRequestClose={() => { this.setModalVisible(false); } }>
                 <View style={styles.modal}>
-                    <TextInput 
-                        style={styles.modalTextInput} 
+                    <TextInput
+                        style={styles.modalTextInput}
                         placeholder="Title"
                         onChangeText={(text) => this.setState({title: text})}/>
                     <View style={styles.row}>
@@ -97,9 +113,9 @@ export default class AddListingPage extends React.Component {
                             />
                         </View>
                         <View>
-                            <TextInputMask 
-                                style={styles.priceTextInput} 
-                                placeholder="$/month" 
+                            <TextInputMask
+                                style={styles.priceTextInput}
+                                placeholder="$/month"
                                 mask={"$[99990]"}
                                 onChangeText={(text) => this.setState({price: parseInt(text.split('$')[1])})}/>
                         </View>
@@ -110,13 +126,13 @@ export default class AddListingPage extends React.Component {
                             {this.setState()}
                                 <TextInput ref='addressTextInput'
                                     value={this.state.addressField}
-                                    style={styles.modalTextInput} 
+                                    style={styles.modalTextInput}
                                     placeholder="Address"
                                     onChangeText={(text) => this.handleAddressChange(text, handleTextChange)}/>
-                                {isSearching && <ActivityIndicator/>}                                        
-                                
+                                {isSearching && <ActivityIndicator/>}
+
                                 { this.state.scrollViewVisible == true &&
-                                <ScrollView 
+                                <ScrollView
                                     style={styles.scrollView}>
                                     {locationResults.map(element => (
                                         <LocationItem
@@ -133,7 +149,7 @@ export default class AddListingPage extends React.Component {
                         )}
                     </GoogleAutoComplete>
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.modalButton} onPress={this.createListingInDB}>
+                    <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
                         <Text>Add Listing</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
