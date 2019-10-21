@@ -42,8 +42,8 @@ export default class Recommended extends React.Component {
           <Modal
           animationType="slide"
           visible={this.state.modalVisible}
+          onRequestClose={() => { this.setModalVisible(false);}}
           >
-            onRequestClose={() => { this.setModalVisible(false); } }>
             <View style={styles.title}>
               <Text style={styles.textTitle}>RECOMMENDED</Text>
             </View>
@@ -51,9 +51,9 @@ export default class Recommended extends React.Component {
               <ScrollView style={styles.scrollView}>
                 {
                   this.state.recommended.map((item)=>(
-                    <Text style={styles.boxItem} key={item.user_email}>
-                      Name: {item.user_name}{"\n"}
-                      Email: {item.user_email}
+                    <Text style={styles.boxItem} key={item.email}>
+                      Name: {item.name}{"\n"}
+                      Email: {item.email}
                     </Text>
                   ))
                 }
