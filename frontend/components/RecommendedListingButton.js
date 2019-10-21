@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     margin: 16,
-    right: 50,
+    right: '22.5%',
     bottom: 20,
     maxHeight: 50,
     fontSize: 8,

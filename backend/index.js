@@ -43,14 +43,6 @@ app.post('/create_listing', jsonParser, (req,res)=>{
 	});
 });
 
-app.post('/create_user', jsonParser, (req,res)=>{
-	console.log("Create User\n");
-	console.log(req.body);
-	db.collection("users").insertOne(req.body, (err, result) => {
-		res.send("Saved");
-	});
-});
-
 app.get('/get_users', jsonParser, (req, res) => {
 	console.log("GETTING USERS WITH QUERY: ");
 	console.log(req.query);
