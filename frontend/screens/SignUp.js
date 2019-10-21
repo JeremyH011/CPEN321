@@ -1,44 +1,38 @@
-import React from 'react'
+import React, { Component } from 'react'
 import {View,
   StyleSheet,
   Text,
-  Modal,
+  ScrollView,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   ActivityIndicator } from 'react-native';
   import { API_KEY, DB_URL } from '../key';
   import { Dropdown } from 'react-native-material-dropdown';
-  import TextInputMask from 'react-native-text-input-mask';
-  import { onSignIn } from "../auth";
+  import { onSignIn } from "../components/auth";
 
-  export default class SignUp extends React.Component {
-    // @todo: change this so that fields related to listing are
-    //        their own obj inside state, rather than remain as
-    //        members of state. refer to userLocation inside
-    //        HomeScreenMap.js
-    state = {
-      scrollViewVisible: true,
-      nameField: '',
-      ageField: 0,
-      jobField: '',
-      emailField: '',
-      passwordField: '',
+  export default class SignUp extends Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+          scrollViewVisible: true,
+          nameField: '',
+          ageField: 0,
+          jobField: '',
+          emailField: '',
+          passwordField: '',
+          passwordConfirm: ''
+        };
     }
 
-    handleEmailChange(email, handleTextChange) {
-      handleTextChange(email);
-      this.setState({emailField: email});
-    }
+    checkPasswords() {
+      if(this.state.passwordField == this.state.passwordConfirm) {
 
-    handlePasswordChange(password, handleTextChange) {
-      handleTextChange(password);
-      this.setState({passwordField: password});
-    }
+      }
 
+    }
 
     createAccountInDB = () => {
-      fetch(DB_URL+'creat_account/', {
+      return fetch(DB_URL+'create_account/', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -51,59 +45,89 @@ import {View,
           email: this.state.emailField,
           password: this.state.passwordField,
         }),
+      })
+      .then((response) => {
+        if (response.status == 201) {
+          onSignIn().then(() => this.props.navigation.navigate("SignedIn")).catch(() => alert("AsyncStorage error"));
+        } else if (response.status == 401){
+          alert("Invalid credentials");
+        } else {
+          alert("Server error. Try again later!");
+        }
       });
-
-      onSignIn().then(() => this.props.navigation.navigate("SignedIn")).catch(() => alert("couldn't sign up"));
     }
 
     render() {
       return (
 
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          onRequestClose={() => this.props.navigation.navigate("Login") }>
-          <View style={styles.modal}>
-            <TextInputMask
-              style={styles.modalTextInput}
-              placeholder="Name"
-              mask={"[Enter your first and last name here...]"}
-              onChangeText={(text) => this.setState({nameField: text})}/>
-            <View style={styles.dropdown}>
-              <Dropdown
-                label='Age'
-                data={Age}
-                onChangeText={(text) => this.setState({ageField: parseInt(text)})}/>
-            </View>
-          <TextInputMask
-            style={styles.modalTextInput}
-            placeholder="Job"
-            mask={"[Enter your current occupation...]"}
-            onChangeText={(text) => this.setState({jobField: text})}/>
-          <TextInputMask
-            style={styles.modalTextInput}
-            placeholder="Email"
-            mask={"[Enter a email here...]"}
-            onChangeText={(text) => this.setState({emailField : text})}/>
-          <TextInputMask
-            style={styles.modalTextInput}
-            placeholder="Password"
-            mask={"[Choose a password...]"}
-            onChangeText={(text) => this.setState({passwordField: text})}/>
+        <ScrollView
+          visible={this.state.scrollViewVisible}>
+          <View style={styles.scrollView}>
 
-        </View>
+              <Text>Name</Text>
+              <TextInput
+                style={styles.modalTextInput}
+                placeholder="Enter your first and last name"
+                editable={true}
+                autoCapitalize={'words'}
+                blurOnSubmit={false}
+                returnKeyType={'next'}
+                onChangeText={(name) => this.setState({nameField: name})}
+                />
+              <Text>Age</Text>
+              <View style={styles.row}>
+                <View style={styles.dropdown}>
+                  <Dropdown
+                    label='Age'
+                    data={Age}
+                    onChangeText={(age) => this.setState({ageField: parseInt(age)})}/>
+                </View>
+              </View>
+              <Text>Job</Text>
+              <TextInput
+                style={styles.modalTextInput}
+                placeholder="Enter your current occupation..."
+                returnKeyType={'done'}
+                blurOnSubmit={false}
+                onChangeText={(job) => this.setState({jobField: job})}
+                />
+              <Text>Email</Text>
+              <TextInput
+                style={styles.modalTextInput}
+                placeholder="Email address..."
+                returnKeyType={'done'}
+                autoCapitalize={'none'}
+                blurOnSubmit={false}
+                onChangeText={(email) => this.setState({emailField: email})}
+                 />
+              <Text>Password</Text>
+              <TextInput secureTextEntry
+                style={styles.modalTextInput}
+                placeholder="Enter a password"
+                returnKeyType={'done'}
+                autoCapitalize={'none'}
+                blurOnSubmit={false}
+                onChangeText={(password) => this.setState({passwordField: password})}
+                 />
+              <Text>Confirm Password</Text>
+              <TextInput secureTextEntry
+                style={styles.modalTextInput}
+                placeholder="Confirm Password..."
+                returnKeyType={'done'}
+                autoCapitalize={'none'}
+                blurOnSubmit={false}
+                onChangeText={(confirm) => this.setState({passwordConfirm: confirm})}
+                onEndEditing={() => this.checkPasswords()} />
 
-        <View style={styles.column}>
           <TouchableOpacity style={styles.modalButton} onPress={this.createAccountInDB}>
             <Text>Sign Up</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.modalButton} onPress={() => this.props.navigation.navigate("Login") }>
-            <Text>Go Back to Login</Text>
+            <Text>I Already Have An Account</Text>
           </TouchableOpacity>
         </View>
 
-      </Modal>
+      </ScrollView>
 
 
       );
@@ -131,26 +155,17 @@ import {View,
     },
     scrollView: {
       flex: 1,
-      height: 250,
-      width: 300,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
-    priceTextInput: {
-      marginTop: 30,
-      height: 40,
-      borderWidth: 1,
-      margin: 10,
-      padding: 10,
-    },
-    column: {
-      flexDirection: 'column',
-      height: 200,
+    row: {
+      flexDirection: 'row',
+      width: 100,
       alignItems: 'center',
       justifyContent: 'center',
     },
     dropdown: {
       flex: 1,
-      margin: 10,
-      padding: 10,
     }
   });
 

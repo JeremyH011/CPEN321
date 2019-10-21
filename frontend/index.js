@@ -4,37 +4,40 @@
 
 import React from "react";
 import {name as appName} from './app.json';
-import { createRootNavigator } from "./router";
-import { isSignedIn } from "./auth";
+import { createRootNavigator } from "./components/router";
+import { isSignedIn } from "./components/auth";
 import { AppRegistry } from "react-native";
 import { createAppContainer } from "react-navigation";
 
 
 export default class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-  /*createLayoutNav = () => {
-    if (this.state.checkedSignIn) {
-      return null;
-    } else {
-      Layout = createRootNavigator(this.state.signedIn);
-      return createAppContainer(Layout);
-    }
-  }*/
+    this.state = {
+    signedIn: false,
+    checkedSignIn: false
+  };
+}
 
- //const AppContainer = createAppContainer(this.createLayoutNav);
+  componentDidMount() {
+    isSignedIn()
+    .then(res => this.setState({signedIn: res, checkedSignIn: true}))
+    .catch(err => alert("An error occurred"));
+  }
 
     render() {
-    /*  isSignedIn()
-           .then(res => signedIn = res)
-           .catch(err => alert("An error occurred"));*/
-    return <AppContainer />;
+
+      if(!this.state.checkedSignIn) {
+        return null;
+      }
+
+      const Layout = createRootNavigator(this.state.signedIn);
+      const AppContainer = createAppContainer(Layout);
+      return <AppContainer />
+
   }
 }
 
-const signedIn = false;
 
-const Layout = createRootNavigator(signedIn);
-
-
-const AppContainer = createAppContainer(Layout);
 AppRegistry.registerComponent(appName, () => App);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { onSignOut } from "../auth";
+import { onSignOut } from "../components/auth";
 
 import tabBarIcon from '../components/tabBarIcon';
 

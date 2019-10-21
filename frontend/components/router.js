@@ -7,9 +7,9 @@ import {
 import  { createStackNavigator }  from "react-navigation-stack";
 import { createSwitchNavigator } from "react-navigation";
 
-import SignUp from "./screens/SignUp";
-import LoginPage from "./screens/Login";
-import BottomTabNavigator from "./navigators/BottomTabNavigator";
+import SignUp from "../screens/SignUp";
+import Login from "../screens/Login";
+import BottomTabNavigator from "../navigators/BottomTabNavigator";
 
 const headerStyle = {
   marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
@@ -24,7 +24,7 @@ export const SignedOut = createStackNavigator({
     }
   },
   Login: {
-    screen: LoginPage,
+    screen: Login,
     navigationOptions: {
       title: "Login",
       headerStyle
