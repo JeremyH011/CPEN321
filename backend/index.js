@@ -88,6 +88,21 @@ app.post('/create_listing', jsonParser, (req,res)=>{
 	});
 });
 
+app.get('/get_users', jsonParser, (req, res) => {
+	console.log("GETTING USERS WITH QUERY: ");
+	console.log(req.query);
+
+	var start = {};
+	if(req.query.user_name){
+		start = req.query.user_name.charAt(0);
+		start = `^${start}`;
+	}
+	db.collection("users").find({"name": {$regex: new RegExp(start, "i")}}).toArray((err,result) => {
+		console.log(result);
+		res.send(result);
+	});
+});
+
 var server = app.listen(1337, ()=> {
 	var host = server.address().address
 	var port = server.address().port
