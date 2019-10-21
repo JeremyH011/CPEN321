@@ -49,6 +49,12 @@ npm install --save react-native-text-input-mask
 react-native link react-native-text-input-mask
 ```
 
+for push notifications
+```
+npm install --save react-native-firebase
+react-native link react-native-firebase
+```
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.
