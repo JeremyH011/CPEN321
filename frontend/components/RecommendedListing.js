@@ -23,7 +23,7 @@ export default class Recommended extends React.Component {
     }
 
     getRecommendedUsers(body){
-      fetch(DB_URL+`get_users?user_name=${body.user_name}`, {
+      fetch(DB_URL+`get_users?name=${body.name}`, {
           method: "GET",
         }).then((response) => response.json())
           .then((responseJson) => {
@@ -50,9 +50,9 @@ export default class Recommended extends React.Component {
               <ScrollView style={styles.scrollView}>
                 {
                   this.state.recommended.map((item)=>(
-                    <Text style={styles.boxItem} key={item.user_email}>
-                      Name: {item.user_name}{"\n"}
-                      Email: {item.user_email}
+                    <Text style={styles.boxItem} key={item.email}>
+                      Name: {item.name}{"\n"}
+                      Email: {item.email}
                     </Text>
                   ))
                 }

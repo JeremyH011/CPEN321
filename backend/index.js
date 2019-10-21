@@ -43,7 +43,7 @@ app.post('/create_listing', jsonParser, (req,res)=>{
 	});
 });
 
-app.post('/create_user', jsonParser, (req,res)=>{
+app.post('/create_account', jsonParser, (req,res)=>{
 	console.log("Create User\n");
 	console.log(req.body);
 	db.collection("users").insertOne(req.body, (err, result) => {
@@ -56,11 +56,22 @@ app.get('/get_users', jsonParser, (req, res) => {
 	console.log(req.query);
 
 	var start = {};
-	if(req.query.user_name){
-		start = req.query.user_name.charAt(0);
+	if(req.query.name){
+		start = req.query.name.charAt(0);
 		start = `^${start}`;
 	}
-	db.collection("users").find({"user_name": {$regex: new RegExp(start, "i")}}).toArray((err,result) => {
+	db.collection("users").find({"name": {$regex: new RegExp(start, "i")}}).toArray((err,result) => {
+		console.log(result);
+		res.send(result);
+	});
+});
+
+app.get('/get_user_account', jsonParser, (req, res) => {
+	console.log("GETTING USERS WITH QUERY: ");
+	console.log(req.query);
+
+	db.collection("users").find({"email": req.query.email, "password": req.query.password})
+	.toArray((err,result) => {
 		console.log(result);
 		res.send(result);
 	});

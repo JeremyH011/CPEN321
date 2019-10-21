@@ -38,7 +38,7 @@ import {View,
 
 
     createAccountInDB = () => {
-      fetch(DB_URL+'creat_account/', {
+      fetch(DB_URL+'create_account/', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
