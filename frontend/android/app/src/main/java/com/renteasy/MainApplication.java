@@ -18,6 +18,9 @@ import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
+import android.app.Application;
+import android.util.Log;
+
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
