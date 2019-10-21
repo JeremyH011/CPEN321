@@ -21,6 +21,8 @@ import Geolocation from '@react-native-community/geolocation';
 import FetchLocation from '../components/FetchLocation';
 import UsersMap from '../components/UsersMap'
 import AddListingButton from '../components/AddListingButton';
+import RecommendedListingButton from '../components/RecommendedListingButton';
+import RecommendedListing from '../components/RecommendedListing';
 import tabBarIcon from '../components/tabBarIcon';
 import AddListingPage from '../components/AddListingPage';
 import Listing from '../classes/Listing';
@@ -33,6 +35,8 @@ export default class HomeScreenMap extends React.Component {
 
   state = {
     userLocation: null,
+    name: "test_user",
+    email: "temp_email@gmail.com",
     listingLocations: [],
   }
 
@@ -51,6 +55,11 @@ export default class HomeScreenMap extends React.Component {
 
   addListingHandler = () => {
     this.refs.addListingPopup.setModalVisible(true);
+  }
+
+  getRecommendedHandler = () => {
+    this.refs.getRecommendedPopup.getRecommendedUsers({"name":this.state.name});
+    this.refs.getRecommendedPopup.setModalVisible(true);
   }
 
   componentDidMount(){
@@ -98,7 +107,9 @@ export default class HomeScreenMap extends React.Component {
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
+              <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
+              <RecommendedListing ref='getRecommendedPopup'/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </ScrollView>
