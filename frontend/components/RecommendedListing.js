@@ -42,7 +42,7 @@ export default class Recommended extends React.Component {
           <Modal
           animationType="slide"
           visible={this.state.modalVisible}
-          >
+          onRequestClose={() => { this.setModalVisible(false); } }>
             <View style={styles.title}>
               <Text style={styles.textTitle}>RECOMMENDED</Text>
             </View>
