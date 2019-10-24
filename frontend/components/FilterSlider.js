@@ -34,6 +34,12 @@ class FilterSlider extends PureComponent {
                             this.state.sliderRange[0],
                             this.state.sliderRange[1],
                         ]}
+                        selectedStyle={{
+                            backgroundColor: '#8A2BE2',
+                        }}
+                        trackStyle={{
+                            backgroundColor: '#EE82EE',
+                        }}
                         sliderLength={this.props.length}
                         onValuesChange={this.sliderChange}
                         min={this.props.minRangeVal} //

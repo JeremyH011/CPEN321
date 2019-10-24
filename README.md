@@ -66,6 +66,13 @@ Execution failed for task ':app:transformDexArchiveWithDexMergerForDebug'.
 navigate to frontend/android/app/build, delete contents of build directory and try running again
 
 # Backend
+
+to run mongo and server 
+``` 
+sudo service mongod start 
+CPEN321/backend/node index.js 
+'''
+
 ```
 ssh renteradmin@renterassurance.westus.cloudapp.azure.com
 Pass: Renterassurance!

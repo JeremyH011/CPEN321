@@ -4,7 +4,7 @@ import {View,
     Text,
     Modal,
     TextInput,
-    TouchableOpacity,
+    Button,
     ScrollView,
     ActivityIndicator,} from 'react-native';
 import { API_KEY, DB_URL } from '../key';
@@ -146,15 +146,9 @@ export default class SearchFilterPage extends React.Component {
                             </React.Fragment>
                         )}
                     </GoogleAutoComplete>
-                    <View style={styles.row}>
-                        <TouchableOpacity style={styles.modalButton} onPress={() => { }}>
-                            <Text>Add Listing</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
-                            <Text>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
+                <Button title='Search' color='#BA55D3' style={styles.modalButton} onPress={() => { }}/>
+                <Button title='Cancel' color='#8A2BE2' style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }/>
             </Modal>
         );
     }
@@ -183,6 +177,7 @@ const styles = StyleSheet.create({
     },
     title: {
       flex: 1,
+      zIndex: 1,
       alignItems: 'center',
       justifyContent: 'center',
       maxHeight: 35,
@@ -196,12 +191,6 @@ const styles = StyleSheet.create({
       flex: 1,
       height: 250,
       width: 300,
-    },
-    row: {
-        flexDirection: 'row',
-        width: 300,
-        alignItems: 'center',
-        justifyContent: 'center',
     },
     sliderRow: {
         flexDirection: 'row',
