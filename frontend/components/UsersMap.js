@@ -9,7 +9,6 @@ export default class UserMap extends PureComponent {
   state = {
       selectedListing: null,
       selectedListingModalVisible: false,
-      openListingPage: false,
   }
 
   handleMarkerSelect = (listing, displayModal) => {

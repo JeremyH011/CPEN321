@@ -25,6 +25,8 @@ import tabBarIcon from '../components/tabBarIcon';
 import AddListingPage from '../components/AddListingPage';
 import Listing from '../classes/Listing';
 import { DB_URL } from '../key';
+import SearchFilterButton from '../components/SearchFilterButton';
+import SearchFilterPage from '../components/SearchFilterPage';
 
 export default class HomeScreenMap extends React.Component {
   static navigationOptions = {
@@ -47,6 +49,10 @@ export default class HomeScreenMap extends React.Component {
         }
       });
     }, err => console.log(err));
+  }
+
+  searchFilterClickedHandler = () => {
+    this.refs.searchFilterPopup.setModalVisible(true);
   }
 
   addListingHandler = () => {
@@ -98,6 +104,8 @@ export default class HomeScreenMap extends React.Component {
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
+              <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
+              <SearchFilterPage ref='searchFilterPopup'/>
               <AddListingButton onAddListing={this.addListingHandler}/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
