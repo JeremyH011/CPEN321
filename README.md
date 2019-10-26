@@ -55,6 +55,12 @@ npm install --save react-native-firebase
 react-native link react-native-firebase
 ```
 
+for slider
+```
+npm install --save @ptomasroos/react-native-multi-slider
+react-native link @ptomasroos/react-native-multi-slider
+```
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.
@@ -66,6 +72,19 @@ Execution failed for task ':app:transformDexArchiveWithDexMergerForDebug'.
 navigate to frontend/android/app/build, delete contents of build directory and try running again
 
 # Backend
+
+to run mongo and server
+```
+sudo service mongod start
+CPEN321/backend/node index.js
+```
+
+for geolocation handling
+```
+https://www.npmjs.com/package/geolib
+npm install geolib
+```
+
 ```
 ssh renteradmin@renterassurance.westus.cloudapp.azure.com
 Pass: Renterassurance!

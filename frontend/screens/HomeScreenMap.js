@@ -28,6 +28,8 @@ import Listing from '../classes/Listing';
 import { DB_URL } from '../key';
 import { AsyncStorage } from 'react-native';
 import firebase from 'react-native-firebase';
+import SearchFilterButton from '../components/SearchFilterButton';
+import SearchFilterPage from '../components/SearchFilterPage';
 
 export default class HomeScreenMap extends React.Component {
   static navigationOptions = {
@@ -50,6 +52,10 @@ export default class HomeScreenMap extends React.Component {
         }
       });
     }, err => console.log(err));
+  }
+
+  searchFilterClickedHandler = () => {
+    this.refs.searchFilterPopup.setModalVisible(true);
   }
 
   addListingHandler = () => {
@@ -166,13 +172,28 @@ Alert.alert(
     });
   }
 
+  centerMapWithDelta = (lat, long, latDelta, longDelta) => {
+    this.setState({
+      userLocation: {
+        latitude: lat,
+        longitude: long,
+        latitudeDelta: latDelta,
+        longitudeDelta: longDelta,
+      }
+    });
+  }
+
+  populateListingLocations = (listingsJson) => {
+    this.setState({
+      listingLocations: listingsJson.map((listingJson) => new Listing(listingJson))
+    });
+  }
+
   getListings = () => {
     return fetch(DB_URL+'get_listings/')
       .then((response) => response.json())
       .then((responseJson) => {
-        this.setState({
-            listingLocations: responseJson.map((listingJson) => new Listing(listingJson))
-          });
+        this.populateListingLocations(responseJson);
       })
       .catch((error) => {
         console.error(error);
@@ -187,6 +208,8 @@ Alert.alert(
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
+              <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
+              <SearchFilterPage ref='searchFilterPopup' centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
