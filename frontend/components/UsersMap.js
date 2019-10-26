@@ -9,7 +9,6 @@ export default class UserMap extends PureComponent {
   state = {
       selectedListing: null,
       selectedListingModalVisible: false,
-      openListingPage: false,
   }
 
   handleMarkerSelect = (listing, displayModal) => {
@@ -32,8 +31,8 @@ export default class UserMap extends PureComponent {
         <View style={styles.mapContainer}>
             <MapView
             initialRegion={{
-                latitude: 37.78825,
-                longitude: -122.4324,
+                latitude: 49.2827,
+                longitude: -123.1207,
                 latitudeDelta: 0.0622,
                 longitudeDelta: 0.0421,
             }}
