@@ -1,12 +1,25 @@
 const express = require('express');
-const app = express();
 const mongoclient = require('mongodb').MongoClient;
+const multer = require('multer')
 const bodyParser = require('body-parser');
 const geolib = require('geolib');
 
+const app = express();
 var jsonParser = bodyParser.json();
+app.use(bodyParser.json())
 
 mongoclient.connect("mongodb://0.0.0.0:27017",(err,client)=> {db = client.db('redb')});
+
+const Storage = multer.diskStorage({
+  destination(req, file, callback) {
+    callback(null, './images')
+  },
+  filename(req, file, callback) {
+    callback(null, `${file.fieldname}_${Date.now()}_${file.originalname}`)
+  },
+});
+
+const upload = multer({ storage: Storage });
 
 app.post('/signup', jsonParser, (req,res) => {
 	console.log(req.body);
@@ -69,8 +82,9 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 	});
 });
 
-app.post('/create_listing', jsonParser, (req,res)=>{
+app.post('/create_listing', upload.array('photo',5), (req,res)=>{
 	console.log("Create listing\n");
+	console.log(req.files);
 	console.log(req.body);
 	db.collection("listings").insertOne(req.body, (err, result) => {
 		res.send("Saved");
@@ -89,7 +103,7 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
 	console.log("Save Search History\n");
 	console.log(req.body);
 	db.collection("searchHistory").insertOne(req.body, (err, result) => {
-        
+
         if(err)
         {
             res.sendStatus(400);
@@ -108,14 +122,14 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
                 else{
                     // using this geolib library: https://www.npmjs.com/package/geolib
                     // only get listings within desired field if poi range is given
-                    
+
                     var locationFiltered = [];
                     var hasLocationFilter = doesReqHaveLocationFilter(req);
-                    if (hasLocationFilter == true) 
+                    if (hasLocationFilter == true)
                     {
                         locationFiltered = filterForLocations(result, req);
                     }
-                    
+
                     if (locationFiltered.length == 0 && hasLocationFilter == true)
                     {
                         // return default deltas and centered at passed in address since no results found
@@ -137,12 +151,12 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
                         var bounds = geolib.getBounds(arrayOfLatLong);
                         var center = geolib.getCenterOfBounds(arrayOfLatLong);
                         res.send({latitude: center.latitude, longitude: center.longitude,
-                                  latitudeDelta: bounds.maxLat - bounds.minLat + VIEWPORT_BUFFER, longitudeDelta: bounds.maxLng - bounds.minLng + VIEWPORT_BUFFER, 
+                                  latitudeDelta: bounds.maxLat - bounds.minLat + VIEWPORT_BUFFER, longitudeDelta: bounds.maxLng - bounds.minLng + VIEWPORT_BUFFER,
                                   numResults: locationFiltered.length});
                     }
                 }
             });
-        } 
+        }
 	});
 });
 
@@ -164,7 +178,7 @@ app.post('/get_listings_by_filter', jsonParser, (req, res) => {
                     // only get listings within desired field if poi range is given
                     var locationFiltered = [];
                     var hasLocationFilter = doesReqHaveLocationFilter(req);
-                    if (hasLocationFilter == true) 
+                    if (hasLocationFilter == true)
                     {
                         locationFiltered = filterForLocations(result, req);
                     }
@@ -172,7 +186,7 @@ app.post('/get_listings_by_filter', jsonParser, (req, res) => {
                     {
                         locationFiltered = result;
                     }
-                    
+
                     res.send(locationFiltered);
                 }
         });

@@ -6,13 +6,15 @@ import {View,
     TextInput,
     TouchableOpacity,
     ScrollView,
-    ActivityIndicator } from 'react-native';
+    ActivityIndicator,
+    Image} from 'react-native';
 import { API_KEY, DB_URL } from '../key';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
 import LocationItem from './LocationItem';
 import { Dropdown } from 'react-native-material-dropdown';
 import TextInputMask from 'react-native-text-input-mask';
 import Listing from '../classes/Listing';
+import ImagePicker from 'react-native-image-picker';
 
 export default class AddListingPage extends React.Component {
     // @todo: change this so that fields related to listing are
@@ -30,6 +32,7 @@ export default class AddListingPage extends React.Component {
         bed: 0,
         bath: 0,
         maps_url: '',
+        photos: [],
     }
 
     setNewListingAddress = addressObject => {
@@ -39,6 +42,38 @@ export default class AddListingPage extends React.Component {
                         maps_url: addressObject.maps_url,
                         scrollViewVisible: false});
     }
+
+    handleChoosePhoto(){
+      const options = {
+        noData: true,
+      }
+      ImagePicker.launchImageLibrary(options, response => {
+        if (response.uri) {
+          var temp_array = this.state.photos;
+          temp_array.push(response);
+          this.setState({ photos: temp_array})
+        }
+      })
+    }
+
+    createFormData(body){
+      let data = new FormData();
+
+      this.state.photos.forEach((photo, i) => {
+        data.append("photo", {
+          name: photo.fileName,
+          type: photo.type,
+          uri:
+            Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
+        });
+      });
+
+      Object.keys(body).forEach(key => {
+        data.append(key, body[key]);
+      });
+
+      return data;
+    };
 
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
@@ -66,26 +101,28 @@ export default class AddListingPage extends React.Component {
     }
 
     createListingInDB(){
+        let body = JSON.stringify({
+            title: this.state.title,
+            address: this.state.addressField,
+            latitude: this.state.latitude,
+            longitude: this.state.longitude,
+            price: this.state.price,
+            numBeds: this.state.bed,
+            numBaths: this.state.bath,
+            maps_url: this.state.maps_url,
+        });
         fetch(DB_URL+'create_listing/', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                title: this.state.title,
-                address: this.state.addressField,
-                latitude: this.state.latitude,
-                longitude: this.state.longitude,
-                price: this.state.price,
-                numBeds: this.state.bed,
-                numBaths: this.state.bath,
-                maps_url: this.state.maps_url,
-            }),
+            body: createFormData(body),
         });
     }
 
     render() {
+        const {photo} = this.state.photos[this.state.photos.length-1];
         return (
             <Modal
             animationType="slide"
@@ -148,13 +185,22 @@ export default class AddListingPage extends React.Component {
                             </React.Fragment>
                         )}
                     </GoogleAutoComplete>
-                <View style={styles.row}>
-                    <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
-                        <Text>Add Listing</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
-                        <Text>Cancel</Text>
-                    </TouchableOpacity>
+                  <View style={styles.row}>
+                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
+                          <Text>Add Listing</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
+                          <Text>Cancel</Text>
+                      </TouchableOpacity>
+                  </View>
+                  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                  {photo && (
+                    <Image
+                      source={{ uri: photo.uri }}
+                      style={{ width: 300, height: 300 }}
+                    />
+                  )}
+                  <Button title="Choose Photo" onPress={this.handleChoosePhoto} />
                 </View>
                 </View>
             </Modal>
