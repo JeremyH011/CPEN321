@@ -88,8 +88,8 @@ export default class HomeScreenMap extends React.Component {
       userLocation: {
         latitude: lat,
         longitude: long,
-        latitudeDelta: latDelta == null ? 0.0622 : latDelta,
-        longitudeDelta: longDelta == null ? 0.0421 : longDelta,
+        latitudeDelta: latDelta,
+        longitudeDelta: longDelta,
       }
     });
   }

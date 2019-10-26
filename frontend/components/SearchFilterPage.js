@@ -18,49 +18,62 @@ export default class SearchFilterPage extends React.Component {
         bedRange: [0,5],
         bathRange: [0,5],
         priceRange: [0,5000],
-        poiRange: [0,5],
+        poiRange: [0,20],
         addressField: '',
         latitude: null,
         longitude: null,
         scrollViewVisible: true,
     }
 
+    resetState = () => {
+        this.setState({
+            bedRange: [0,5],
+            bathRange: [0,5],
+            priceRange: [0,5000],
+            poiRange: [0,20],
+            addressField: '',
+            latitude: null,
+            longitude: null,
+        });
+    }
+
     handleSearch() {
         this.saveSearchHistory();
-        this.getListingsByFilter();
         this.setModalVisible(false);
       }
 
-      saveSearchHistory = () => {
-            return fetch(DB_URL+'save_search_history/', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    bedMin: this.state.bedRange[0],
-                    bedMax: this.state.bedRange[1],
-                    bathMin: this.state.bathRange[0],
-                    bathMax: this.state.bathRange[1],
-                    priceMin: this.state.priceRange[0],
-                    priceMax: this.state.priceRange[1],
-                    poiRangeMin: this.state.poiRange[0],
-                    poiRangeMax: this.state.poiRange[1],
-                    address: this.state.addressField,
-                    latitude: this.state.latitude,
-                    longitude: this.state.longitude,
-                }),
-            })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                this.props.centerMapWithDelta(responseJson.latitude, responseJson.longitude, 
-                                              responseJson.latitudeDelta, responseJson.longitudeDelta);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        }
+    saveSearchHistory = () => {
+        return fetch(DB_URL+'save_search_history/', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bedMin: this.state.bedRange[0],
+                bedMax: this.state.bedRange[1],
+                bathMin: this.state.bathRange[0],
+                bathMax: this.state.bathRange[1],
+                priceMin: this.state.priceRange[0],
+                priceMax: this.state.priceRange[1],
+                poiRangeMin: this.state.poiRange[0],
+                poiRangeMax: this.state.poiRange[1],
+                address: this.state.addressField,
+                latitude: this.state.latitude,
+                longitude: this.state.longitude,
+            }),
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            alert("Found " + responseJson.numResults+ " results");
+            this.getListingsByFilter();
+            this.props.centerMapWithDelta(responseJson.latitude, responseJson.longitude, 
+                                            responseJson.latitudeDelta, responseJson.longitudeDelta);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
 
     getListingsByFilter = () => {
         return fetch(DB_URL+'get_listings_by_filter/', {
@@ -82,15 +95,16 @@ export default class SearchFilterPage extends React.Component {
                 latitude: this.state.latitude,
                 longitude: this.state.longitude,
             }),
-          })
-          .then((response) => response.json())
-          .then((responseJson) => {
-            this.props.populateListingLocations(responseJson);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        }
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+        this.props.populateListingLocations(responseJson);
+        this.resetState();
+        })
+        .catch((error) => {
+        console.error(error);
+        });
+    }
 
     priceSliderChange = values => {
         this.setState({
@@ -124,7 +138,7 @@ export default class SearchFilterPage extends React.Component {
         this.setState({addressField: addressObject.formatted_address,
                         latitude: addressObject.lat,
                         longitude: addressObject.lng,
-                        scrollViewVisible: false});
+                        scrollViewVisible: true});
     }
 
     handleAddressChange(address, handleTextChange) {
@@ -176,9 +190,9 @@ export default class SearchFilterPage extends React.Component {
                 </View>  
                 <FilterSlider
                     minRangeVal={0}
-                    maxRangeVal={5}
-                    step={1}
-                    endRangeMarker={'5+'}
+                    maxRangeVal={20}
+                    step={2}
+                    endRangeMarker={'20+'}
                     startText={'Within: '}
                     middleText={' and '}
                     endText={ 'km of below address'}

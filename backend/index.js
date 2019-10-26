@@ -80,8 +80,8 @@ app.post('/create_listing', jsonParser, (req,res)=>{
 const bedMax = 5;
 const bathMax = 5;
 const priceMax = 5000;
-const poiRangeMax = 5;
-const MAX_NUM = 99999;
+const poiRangeMax = 20;
+const MAX_NUM = 9999999;
 app.post('/save_search_history', jsonParser, (req,res)=>{
 	console.log("Save Search History\n");
 	console.log(req.body);
@@ -94,66 +94,104 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
         else
         {
             // get all listings that match the criteria
-            var matchedListings = db.collection("searchHistory").find( {
+            db.collection("listings").find( {
                numBeds: { $gte: req.body.bedMin, $lte: req.body.bedMax == bedMax ? MAX_NUM : req.body.bedMax },
                numBaths: { $gte: req.body.bathMin, $lte: req.body.bathMax == bathMax ? MAX_NUM : req.body.bathMax},
-               price: { $gte: reg.body.priceMin, $lte: req.body.priceMax == priceMax ? MAX_NUM : req.body.bathMax },
-            } );
-            
-            // using this geolib library: https://www.npmjs.com/package/geolib
-            // only get listings within desired field if poi range is given
-            if (req.poiRangeMax != null && req.body.latitude != null && req.body.longitude != null) 
-            {
-                matchedListings.filter(listing => geolib.isPointWithinRadius(
-                                      { latitude: listing.latitude, longitude: listing.longitude },
-                                      { latitude: req.body.latitude, longitude: req.body.longitude },
-                                        req.body.poiRangeMax == poiRangeMax ? MAX_NUM : req.body.poiRangeMax));
-            }
-            
-            if (matchedListings.count() == 0)
-            {
-                // return no deltas is no results found
-                res.send({latitude: req.body.latitude, longitude: req.body.longitude,
-                          latitudeDelta: null, longitudeDelta: null});
-            }
-            else
-            {
-                // otherwise, get the bounds of the latitudes and longitudes of the matched listings and return their delta
-                var arrayOfLatLong = matchedListings.map(function(listing) {
-                                      return {latitude: listing.latitude, longitude: listing.longitude};
-                                    });
-                var bounds = geolib.getBounds(arrayOfLatLong);
-                res.send({latitude: req.body.latitude, longitude: req.body.longitude,
-                          latitudeDelta: bounds.maxLat - bounds.minLat, longitudeDelta: bounds.maxLong - bounds.minLong});
-            }
-        } 
-	});
-});
-
-app.get('/get_listings_by_filter', jsonParser, (req, res) => {
-	console.log(req.body);
-
-        db.collection("searchHistory").find( {
-               numBeds: { $gte: req.body.bedMin, $lte: req.body.bedMax == bedMax ? MAX_NUM : req.body.bedMax },
-               numBaths: { $gte: req.body.bathMin, $lte: req.body.bathMax == bathMax ? MAX_NUM : req.body.bathMax},
-               price: { $gte: reg.body.priceMin, $lte: req.body.priceMax == priceMax ? MAX_NUM : req.body.bathMax },
+               price: { $gte: req.body.priceMin, $lte: req.body.priceMax == priceMax ? MAX_NUM : req.body.priceMax },
             } ).toArray((err,result) => {
-                
                 if(err){
                     res.sendStatus(400);
                 }
                 else{
                     // using this geolib library: https://www.npmjs.com/package/geolib
                     // only get listings within desired field if poi range is given
-                    if (req.poiRangeMax != null && req.body.latitude != null && req.body.longitude != null) 
+                    
+                    var locationFiltered = [];
+                    var hasLocationFilter = false;
+                    if (req.body.poiRangeMax != null && req.body.latitude != null && req.body.longitude != null) 
                     {
-                        result.filter(listing => geolib.isPointWithinRadius(
+                        hasLocationFilter = true;
+                        result.forEach(function(listing){
+                            if (geolib.isPointWithinRadius(
                                               { latitude: listing.latitude, longitude: listing.longitude },
                                               { latitude: req.body.latitude, longitude: req.body.longitude },
-                                                req.body.poiRangeMax == poiRangeMax ? MAX_NUM : req.body.poiRangeMax));
+                                                req.body.poiRangeMax == poiRangeMax ? MAX_NUM : (req.body.poiRangeMax * 1000)))
+                            {
+                                locationFiltered.push(listing);
+                            }
+                        });
                     }
                     
-                    res.send(result);
+                    if (locationFiltered.length == 0 && hasLocationFilter == true)
+                    {
+                        // return no deltas is no results found
+                        res.send({latitude: req.body.latitude, longitude: req.body.longitude,
+                                  latitudeDelta: 0.0622, longitudeDelta: 0.0421, numResults: 0});
+                    }
+                    else
+                    {
+                        // if there's no location filter then this locationFiltered array was never populated
+                        if (hasLocationFilter == false)
+                        {
+                            locationFiltered = result;
+                        }
+                        console.log("LINE 150");
+                        // otherwise, get the bounds of the latitudes and longitudes of the matched listings and return their delta
+                        // found that syntax here: https://www.freecodecamp.org/news/15-useful-javascript-examples-of-map-reduce-and-filter-74cbbb5e0a1f/
+                        var arrayOfLatLong = locationFiltered.map(function(listing) {
+                                              return {latitude: listing.latitude, longitude: listing.longitude};
+                                            });
+                        var bounds = geolib.getBounds(arrayOfLatLong);
+                        var center = geolib.getCenterOfBounds(arrayOfLatLong);
+                        res.send({latitude: center.latitude, longitude: center.longitude,
+                                  latitudeDelta: bounds.maxLat - bounds.minLat + 0.005, longitudeDelta: bounds.maxLng - bounds.minLng + 0.005, 
+                                  numResults: locationFiltered.length});
+                    }
+                }
+            });
+        } 
+	});
+});
+
+app.post('/get_listings_by_filter', jsonParser, (req, res) => {
+    console.log("GET LISTINGS BY FILTER");
+	console.log(req.body);
+
+        // get all listings that match the criteria
+        db.collection("listings").find( {
+           numBeds: { $gte: req.body.bedMin, $lte: req.body.bedMax == bedMax ? MAX_NUM : req.body.bedMax },
+           numBaths: { $gte: req.body.bathMin, $lte: req.body.bathMax == bathMax ? MAX_NUM : req.body.bathMax},
+           price: { $gte: req.body.priceMin, $lte: req.body.priceMax == priceMax ? MAX_NUM : req.body.priceMax },
+        } ).toArray((err,result) => {
+                if(err){
+                    res.sendStatus(400);
+                }
+                else{
+                    // using this geolib library: https://www.npmjs.com/package/geolib
+                    // only get listings within desired field if poi range is given
+                    var locationFiltered = [];
+                    var hasLocationFilter = false;
+                    if (req.body.poiRangeMax != null && req.body.latitude != null && req.body.longitude != null) 
+                    {
+                        hasLocationFilter = true;
+                        result.forEach(function(listing){
+                            if (geolib.isPointWithinRadius(
+                                              { latitude: listing.latitude, longitude: listing.longitude },
+                                              { latitude: req.body.latitude, longitude: req.body.longitude },
+                                                req.body.poiRangeMax == poiRangeMax ? MAX_NUM : (req.body.poiRangeMax * 1000)))
+                            {
+                                locationFiltered.push(listing);
+                            }
+                        });
+                    }
+                    
+                    // if there's no location filter then this locationFiltered array was never populated
+                    if (hasLocationFilter == false)
+                    {
+                        locationFiltered = result;
+                    }
+                    
+                    res.send(locationFiltered);
                 }
         });
 });
