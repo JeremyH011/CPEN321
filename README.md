@@ -71,7 +71,13 @@ to run mongo and server
 ``` 
 sudo service mongod start 
 CPEN321/backend/node index.js 
-'''
+```
+
+for geolocation handling
+```
+https://www.npmjs.com/package/geolib
+npm install geolib
+```
 
 ```
 ssh renteradmin@renterassurance.westus.cloudapp.azure.com

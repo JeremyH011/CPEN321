@@ -20,10 +20,77 @@ export default class SearchFilterPage extends React.Component {
         priceRange: [0,5000],
         poiRange: [0,5],
         addressField: '',
-        latitude: 0.0,
-        longitude: 0.0,
+        latitude: null,
+        longitude: null,
         scrollViewVisible: true,
     }
+
+    handleSearch() {
+        this.saveSearchHistory();
+        this.getListingsByFilter();
+        this.setModalVisible(false);
+      }
+
+      saveSearchHistory = () => {
+            return fetch(DB_URL+'save_search_history/', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bedMin: this.state.bedRange[0],
+                    bedMax: this.state.bedRange[1],
+                    bathMin: this.state.bathRange[0],
+                    bathMax: this.state.bathRange[1],
+                    priceMin: this.state.priceRange[0],
+                    priceMax: this.state.priceRange[1],
+                    poiRangeMin: this.state.poiRange[0],
+                    poiRangeMax: this.state.poiRange[1],
+                    address: this.state.addressField,
+                    latitude: this.state.latitude,
+                    longitude: this.state.longitude,
+                }),
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.props.centerMapWithDelta(responseJson.latitude, responseJson.longitude, 
+                                              responseJson.latitudeDelta, responseJson.longitudeDelta);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+
+    getListingsByFilter = () => {
+        return fetch(DB_URL+'get_listings_by_filter/', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bedMin: this.state.bedRange[0],
+                bedMax: this.state.bedRange[1],
+                bathMin: this.state.bathRange[0],
+                bathMax: this.state.bathRange[1],
+                priceMin: this.state.priceRange[0],
+                priceMax: this.state.priceRange[1],
+                poiRangeMin: this.state.poiRange[0],
+                poiRangeMax: this.state.poiRange[1],
+                address: this.state.addressField,
+                latitude: this.state.latitude,
+                longitude: this.state.longitude,
+            }),
+          })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            this.props.populateListingLocations(responseJson);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        }
 
     priceSliderChange = values => {
         this.setState({
@@ -147,7 +214,7 @@ export default class SearchFilterPage extends React.Component {
                         )}
                     </GoogleAutoComplete>
                 </View>
-                <Button title='Search' color='#BA55D3' style={styles.modalButton} onPress={() => { }}/>
+                <Button title='Search' color='#BA55D3' style={styles.modalButton} onPress={() => { this.handleSearch()}}/>
                 <Button title='Cancel' color='#8A2BE2' style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }/>
             </Modal>
         );

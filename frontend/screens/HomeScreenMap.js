@@ -83,13 +83,28 @@ export default class HomeScreenMap extends React.Component {
     });
   }
 
+  centerMapWithDelta = (lat, long, latDelta, longDelta) => {
+    this.setState({
+      userLocation: {
+        latitude: lat,
+        longitude: long,
+        latitudeDelta: latDelta == null ? 0.0622 : latDelta,
+        longitudeDelta: longDelta == null ? 0.0421 : longDelta,
+      }
+    });
+  }
+
+  populateListingLocations = (listingsJson) => {
+    this.setState({
+      listingLocations: listingsJson.map((listingJson) => new Listing(listingJson))
+    });
+  }
+
   getListings = () => {
     return fetch(DB_URL+'get_listings/')
       .then((response) => response.json())
       .then((responseJson) => {
-        this.setState({
-            listingLocations: responseJson.map((listingJson) => new Listing(listingJson))
-          });
+        this.populateListingLocations(responseJson);
       })
       .catch((error) => {
         console.error(error);
@@ -105,7 +120,7 @@ export default class HomeScreenMap extends React.Component {
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
               <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
-              <SearchFilterPage ref='searchFilterPopup'/>
+              <SearchFilterPage ref='searchFilterPopup' centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
