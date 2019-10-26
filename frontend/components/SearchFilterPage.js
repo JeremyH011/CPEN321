@@ -10,7 +10,8 @@ import {View,
 import { API_KEY, DB_URL } from '../key';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
 import LocationItem from './LocationItem';
-import FilterSlider from './FilterSlider'
+import FilterSlider from './FilterSlider';
+import FilterSliderOneVal from './FilterSliderOneVal';
 
 export default class SearchFilterPage extends React.Component {
     state = {
@@ -18,7 +19,7 @@ export default class SearchFilterPage extends React.Component {
         bedRange: [0,5],
         bathRange: [0,5],
         priceRange: [0,5000],
-        poiRange: [0,20],
+        poiRange: [20],
         addressField: '',
         latitude: null,
         longitude: null,
@@ -30,7 +31,7 @@ export default class SearchFilterPage extends React.Component {
             bedRange: [0,5],
             bathRange: [0,5],
             priceRange: [0,5000],
-            poiRange: [0,20],
+            poiRange: [20],
             addressField: '',
             latitude: null,
             longitude: null,
@@ -56,8 +57,7 @@ export default class SearchFilterPage extends React.Component {
                 bathMax: this.state.bathRange[1],
                 priceMin: this.state.priceRange[0],
                 priceMax: this.state.priceRange[1],
-                poiRangeMin: this.state.poiRange[0],
-                poiRangeMax: this.state.poiRange[1],
+                poiRangeMax: this.state.poiRange[0],
                 address: this.state.addressField,
                 latitude: this.state.latitude,
                 longitude: this.state.longitude,
@@ -89,8 +89,7 @@ export default class SearchFilterPage extends React.Component {
                 bathMax: this.state.bathRange[1],
                 priceMin: this.state.priceRange[0],
                 priceMax: this.state.priceRange[1],
-                poiRangeMin: this.state.poiRange[0],
-                poiRangeMax: this.state.poiRange[1],
+                poiRangeMax: this.state.poiRange[0],
                 address: this.state.addressField,
                 latitude: this.state.latitude,
                 longitude: this.state.longitude,
@@ -124,9 +123,9 @@ export default class SearchFilterPage extends React.Component {
         });
     };
 
-    poiDistSliderChange = values => {
+    poiDistSliderChange = value => {
         this.setState({
-            poiRange: values,
+            poiRange: value,
         });
     };
 
@@ -188,13 +187,11 @@ export default class SearchFilterPage extends React.Component {
                         length={130}
                         changeParentSliderState={this.bathSliderChange}/>  
                 </View>  
-                <FilterSlider
-                    minRangeVal={0}
+                <FilterSliderOneVal
                     maxRangeVal={20}
                     step={2}
                     endRangeMarker={'20+'}
                     startText={'Within: '}
-                    middleText={' and '}
                     endText={ 'km of below address'}
                     length={280}
                     changeParentSliderState={this.poiDistSliderChange}/>  
