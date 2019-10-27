@@ -85,6 +85,12 @@ https://www.npmjs.com/package/geolib
 npm install geolib
 ```
 
+for firebase admin sdk
+```
+https://firebase.google.com/docs/admin/setup
+npm install firebase-admin --save
+```
+
 ```
 ssh renteradmin@renterassurance.westus.cloudapp.azure.com
 Pass: Renterassurance!
