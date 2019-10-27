@@ -128,6 +128,7 @@ app.post('/create_listing', jsonParser, (req,res)=>{
     				}
   			});
 		});
+		res.send("Saved");
 	});
 });
 
