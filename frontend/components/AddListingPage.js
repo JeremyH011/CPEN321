@@ -27,8 +27,8 @@ export default class AddListingPage extends React.Component {
         scrollViewVisible: false,
         addressField: '',
         title: '',
-        latitude: 10.1,
-        longitude: 10.2,
+        latitude: 0.0,
+        longitude: 0.0,
         price: 0,
         bed: 0,
         bath: 0,
@@ -86,19 +86,13 @@ export default class AddListingPage extends React.Component {
     }
 
     handleAddingNewListing() {
-      this.createListingInDB();
-      this.props.addLocalMarker(new Listing(
-        {"title" : this.state.title,
-         "latitude" : this.state.latitude,
-         "longitude" : this.state.longitude,
-         "address" : this.state.address,
-         "price" : this.state.price,
-         "numBeds" : this.state.bed,
-         "numBaths" : this.state.bath,
-         "maps_url" : this.state.maps_url}
-      ));
-      this.props.centerMap(this.state.latitude, this.state.longitude);
-      this.setModalVisible(false);
+      this.createListingInDB()
+      .then((response) => {
+        // Update Listings from server instead of locally.
+        this.props.getListings();
+        this.props.centerMap(this.state.latitude, this.state.longitude);
+        this.setModalVisible(false);
+      });
     }
 
     createListingInDB(){
@@ -112,11 +106,9 @@ export default class AddListingPage extends React.Component {
             numBaths: this.state.bath,
             maps_url: this.state.maps_url,
         };
-        fetch(DB_URL+'create_listing/', {
+        return fetch(DB_URL+'create_listing/', {
             method: 'POST',
             headers: {
-                //Accept: 'application/json',
-                //'Content-Type': 'application/json',
                 'Content-Type': 'multipart/form-data',
             },
             body: this.createFormData(body),

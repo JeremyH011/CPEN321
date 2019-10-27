@@ -122,7 +122,7 @@ export default class HomeScreenMap extends React.Component {
               <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
               <SearchFilterPage ref='searchFilterPopup' centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
-              <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
+              <AddListingPage ref='addListingPopup' getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </ScrollView>
     );

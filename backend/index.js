@@ -10,6 +10,8 @@ app.use(bodyParser.json())
 
 mongoclient.connect("mongodb://0.0.0.0:27017",(err,client)=> {db = client.db('redb')});
 
+app.use('/public/images', express.static('public/images'));
+
 const Storage = multer.diskStorage({
   destination(req, file, callback) {
     callback(null, './public/images')
@@ -82,20 +84,26 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 	});
 });
 
-app.post('/create_listing', upload.array('photo[]',5), jsonParser, (req,res)=>{
+app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>{
   var request_body = req.body;
   request_body['latitude'] = parseFloat(req.body.latitude);
   request_body['longitude'] = parseFloat(req.body.longitude);
   request_body['price'] = parseFloat(req.body.price);
   request_body['numBeds'] = parseInt(req.body.numBeds);
   request_body['numBaths'] = parseInt(req.body.numBaths);
+  request_body['photos'] = req.files;
 
   console.log("Create listing\n");
-	console.log(req.files);
-	console.log(request_body);
-	db.collection("listings").insertOne(request_body, (err, result) => {
-		res.send("Saved");
-	});
+  console.log(req.files);
+  console.log(request_body);
+  db.collection("listings").insertOne(request_body, (err, result) => {
+    if(err){
+      res.sendStatus(401);
+    }
+    else{
+      res.json(req.files);
+    }
+  });
 });
 
 const BED_MAX = 5;
@@ -219,7 +227,5 @@ function filterForLocations(result, req) {
 }
 
 var server = app.listen(1337, ()=> {
-	var host = server.address().address
-	var port = server.address().port
-	console.log("Server running at http://%s:%d", host, port)
+  console.log(server.address());
 });
