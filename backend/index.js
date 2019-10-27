@@ -3,6 +3,13 @@ const app = express();
 const mongoclient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
 const geolib = require('geolib');
+const admin = require('firebase-admin');
+const serviceAccount = require("./firebase.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://crafty-fulcrum-255723.firebaseio.com"
+});
 
 var jsonParser = bodyParser.json();
 
@@ -20,7 +27,11 @@ app.post('/signup', jsonParser, (req,res) => {
 					if(err) {
 						res.sendStatus(400);
 					} else {
-						res.sendStatus(201);
+						res.writeHead(201, {'Content-Type': 'application/json'});
+						var userIdObj = {
+							userId: result.insertedId
+						}
+						res.end(JSON.stringify(userIdObj));
 					}
 				});
 			} else {
@@ -32,17 +43,38 @@ app.post('/signup', jsonParser, (req,res) => {
 
 app.post('/login', jsonParser, (req,res) => {
 	console.log(req.body);
-	db.collection("users").find(req.body).count(function (err, count){
-		console.log(count);
+	db.collection("users").find(req.body).toArray(function (err, result){
+		console.log(result);
 		if(err) {
 			res.sendStatus(400);
-		} else if (count > 0) {
-			res.sendStatus(201);
+		} else if (result.length > 0) {
+			res.writeHead(201, {'Content-Type': 'application/json'});
+                                                var userIdObj = {
+                                                        userId: result[0]._id
+                                                }
+                                                res.end(JSON.stringify(userIdObj));
+
 		} else {
 			res.sendStatus(401);
 		}
 
 	});
+});
+
+app.post('/add_user_fcm_token', jsonParser, (req,res) => {
+	console.log("ADDING TOKEN " + req.body.token + " for user " + req.body.userId);
+
+	var mongo = require('mongodb');
+        var o_id = new mongo.ObjectID(req.body.userId);
+
+  	db.collection("users").updateOne({_id : o_id}, {$set: {fcmToken : req.body.token}}, function(err,result){
+                if(err){
+                        res.sendStatus(400);
+                }
+                else{
+                        res.sendStatus(200);
+                }
+        });
 });
 
 app.get('/get_listings', jsonParser, (req, res) => {
@@ -72,8 +104,30 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 app.post('/create_listing', jsonParser, (req,res)=>{
 	console.log("Create listing\n");
 	console.log(req.body);
+	
+	
 	db.collection("listings").insertOne(req.body, (err, result) => {
-		res.send("Saved");
+		db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
+			var registrationTokens = result.map(user => user.fcmToken);
+			var notificationBody = req.body.address + "\n$" + req.body.price + "/month\n" + req.body.numBeds + " bedrooms";
+			var message = {
+				notification: {title : 'New Listing', body : notificationBody},
+				tokens: [...new Set(registrationTokens)],
+			}
+
+			admin.messaging().sendMulticast(message)
+  			.then((response) => {
+    				if (response.failureCount > 0) {
+      					const failedTokens = [];
+     	 				response.responses.forEach((resp, idx) => {
+        					if (!resp.success) {
+          						failedTokens.push(registrationTokens[idx]);
+        					}
+      					});
+      					console.log('List of tokens that caused failures: ' + failedTokens);
+    				}
+  			});
+		});
 	});
 });
 
