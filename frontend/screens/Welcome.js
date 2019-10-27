@@ -5,8 +5,21 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { AsyncStorage } from 'react-native';
 
 class Welcome extends Component {
+
+  componentDidMount () {
+    this.checkIsLoggedIn();
+  }
+
+  async checkIsLoggedIn() {
+    let loggedIn = await AsyncStorage.getItem('loggedIn');
+    if (loggedIn == "true") {
+      this.props.navigation.navigate('TabNavigator');
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>

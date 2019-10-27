@@ -86,8 +86,22 @@ async getToken() {
           await AsyncStorage.setItem('fcmToken', fcmToken);
       }
   }
+  let userId = await AsyncStorage.getItem('userId');
+  this.addFCMTokenToDB(fcmToken, userId);
+}
 
-  alert(fcmToken);
+addFCMTokenToDB = (token, id) => {
+  return fetch(DB_URL+'add_user_fcm_token/', {
+      method: 'POST',
+      headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          userId: id,
+          token: token,
+      }),
+  });
 }
 
 async requestPermission() {
