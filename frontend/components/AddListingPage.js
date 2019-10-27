@@ -7,6 +7,7 @@ import {View,
     TouchableOpacity,
     ScrollView,
     ActivityIndicator,
+    Button,
     Image} from 'react-native';
 import { API_KEY, DB_URL } from '../key';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
@@ -26,13 +27,14 @@ export default class AddListingPage extends React.Component {
         scrollViewVisible: false,
         addressField: '',
         title: '',
-        latitude: 0.0,
-        longitude: 0.0,
+        latitude: 10.1,
+        longitude: 10.2,
         price: 0,
         bed: 0,
         bath: 0,
         maps_url: '',
         photos: [],
+        latest_photo: null,
     }
 
     setNewListingAddress = addressObject => {
@@ -49,9 +51,8 @@ export default class AddListingPage extends React.Component {
       }
       ImagePicker.launchImageLibrary(options, response => {
         if (response.uri) {
-          var temp_array = this.state.photos;
-          temp_array.push(response);
-          this.setState({ photos: temp_array})
+          this.state.photos.push(response);
+          this.setState({latest_photo:response});
         }
       })
     }
@@ -60,7 +61,7 @@ export default class AddListingPage extends React.Component {
       let data = new FormData();
 
       this.state.photos.forEach((photo, i) => {
-        data.append("photo", {
+        data.append("photo[]", {
           name: photo.fileName,
           type: photo.type,
           uri:
@@ -101,7 +102,7 @@ export default class AddListingPage extends React.Component {
     }
 
     createListingInDB(){
-        let body = JSON.stringify({
+        let body = {
             title: this.state.title,
             address: this.state.addressField,
             latitude: this.state.latitude,
@@ -110,19 +111,21 @@ export default class AddListingPage extends React.Component {
             numBeds: this.state.bed,
             numBaths: this.state.bath,
             maps_url: this.state.maps_url,
-        });
+        };
         fetch(DB_URL+'create_listing/', {
             method: 'POST',
             headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
+                //Accept: 'application/json',
+                //'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
             },
-            body: createFormData(body),
+            body: this.createFormData(body),
         });
     }
 
     render() {
-        const {photo} = this.state.photos[this.state.photos.length-1];
+        const {latest_photo} = this.state;
+        const length = this.state.photos.length - 1 < 0 ? 0 : this.state.photos.length - 1;
         return (
             <Modal
             animationType="slide"
@@ -193,14 +196,21 @@ export default class AddListingPage extends React.Component {
                           <Text>Cancel</Text>
                       </TouchableOpacity>
                   </View>
-                  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                  {photo && (
+                  <View style={styles.row}>
+                    <TouchableOpacity style={styles.modalButton} onPress={() => {this.handleChoosePhoto();}}>
+                      <Text> Choose Photo(s) </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{alignItems: 'center', justifyContent: 'center' }}>
+                  {latest_photo && (
                     <Image
-                      source={{ uri: photo.uri }}
-                      style={{ width: 300, height: 300 }}
+                      source={{ uri: latest_photo.uri }}
+                      style={{ width: 150, height: 150 }}
                     />
                   )}
-                  <Button title="Choose Photo" onPress={this.handleChoosePhoto} />
+                </View>
+                <View style={styles.row}>
+                  <Text>and {length} more photos...</Text>
                 </View>
                 </View>
             </Modal>

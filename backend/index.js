@@ -12,7 +12,7 @@ mongoclient.connect("mongodb://0.0.0.0:27017",(err,client)=> {db = client.db('re
 
 const Storage = multer.diskStorage({
   destination(req, file, callback) {
-    callback(null, './images')
+    callback(null, './public/images')
   },
   filename(req, file, callback) {
     callback(null, `${file.fieldname}_${Date.now()}_${file.originalname}`)
@@ -82,11 +82,18 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 	});
 });
 
-app.post('/create_listing', upload.array('photo',5), (req,res)=>{
-	console.log("Create listing\n");
+app.post('/create_listing', upload.array('photo[]',5), jsonParser, (req,res)=>{
+  var request_body = req.body;
+  request_body['latitude'] = parseFloat(req.body.latitude);
+  request_body['longitude'] = parseFloat(req.body.longitude);
+  request_body['price'] = parseFloat(req.body.price);
+  request_body['numBeds'] = parseInt(req.body.numBeds);
+  request_body['numBaths'] = parseInt(req.body.numBaths);
+
+  console.log("Create listing\n");
 	console.log(req.files);
-	console.log(req.body);
-	db.collection("listings").insertOne(req.body, (err, result) => {
+	console.log(request_body);
+	db.collection("listings").insertOne(request_body, (err, result) => {
 		res.send("Saved");
 	});
 });

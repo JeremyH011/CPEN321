@@ -14,14 +14,22 @@ class ListingMarker extends PureComponent {
     }
 
     render() {
-        return (
-          <MapView.Marker
-              coordinate={{latitude: this.props.listing.latitude,
-              longitude: this.props.listing.longitude}}
-              title={this.props.listing.title + ", $" + this.props.listing.price + "/month"}
-              onPress={this.tap}
-           />
-        );
+        let coordinates = {latitude: 0, longitude: 0};
+        if(this.props.listing.latitude != null && this.props.listing.longitude != null){
+          coordinates = {latitude: this.props.listing.latitude, longitude: this.props.listing.longitude};
+          return (
+            <MapView.Marker
+                coordinate={coordinates}
+                title={this.props.listing.title + ", $" + this.props.listing.price + "/month"}
+                onPress={this.tap}
+             />
+          );
+        }
+        else{
+          return(
+            <View/>
+          );
+        }
     }
 }
 
