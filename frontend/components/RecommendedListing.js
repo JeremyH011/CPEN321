@@ -23,7 +23,7 @@ export default class Recommended extends React.Component {
     }
 
     getRecommendedUsers(body){
-      fetch(DB_URL+`get_users?user_name=${body.user_name}`, {
+      fetch(DB_URL+`get_recommended_roommates?user_name=${body.user_name}`, {
           method: "GET",
         }).then((response) => response.json())
           .then((responseJson) => {
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#2199e8'
+      backgroundColor: '#8A2BE2'
     },
     modal: {
       flex: 14,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
       padding: 10,
       width: '80%',
       borderRadius: 150 / 2,
-      backgroundColor:'rgb(3, 218, 196)',
+      backgroundColor:'#BA55D3',
     },
     row: {
         flexDirection: 'row',

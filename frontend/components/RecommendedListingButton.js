@@ -14,7 +14,7 @@ const RecommendedListingButton = props => (
     <Text
       style={styles.text}
     >
-      Get Recommended!
+      Recommended Roommates!
     </Text>
   </Button>
 );
@@ -23,10 +23,10 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     margin: 16,
-    right: '22.5%',
-    bottom: 20,
-    maxHeight: 50,
-    fontSize: 8,
+    right: '14.5%',
+    bottom: 35,
+    maxHeight: 100,
+    fontSize: 5,
     borderRadius: 150 / 2,
   },
   text:{

@@ -77,7 +77,7 @@ app.post('/create_listing', jsonParser, (req,res)=>{
 	});
 });
 
-app.get('/get_users', jsonParser, (req, res) => {
+app.get('/get_recommended_roommates', jsonParser, (req, res) => {
 	console.log("GETTING USERS WITH QUERY: ");
 	console.log(req.query);
 
