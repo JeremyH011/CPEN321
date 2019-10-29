@@ -6,7 +6,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-	"bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
+    "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
   },
   "dependencies": {
     "@ptomasroos/react-native-multi-slider": "^1.0.0",
@@ -29,7 +29,8 @@
     "@babel/runtime": "7.6.0",
     "@react-native-community/eslint-config": "0.0.3",
     "babel-jest": "24.9.0",
-    "eslint": "6.4.0",
+    "eslint": "^6.4.0",
+    "eslint-plugin-react": "^7.16.0",
     "jest": "24.9.0",
     "metro-react-native-babel-preset": "0.54.1",
     "react-test-renderer": "16.8.6"
