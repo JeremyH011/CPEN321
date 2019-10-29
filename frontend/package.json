@@ -9,6 +9,7 @@
 	"bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
   },
   "dependencies": {
+    "@ptomasroos/react-native-multi-slider": "^1.0.0",
     "@react-native-community/geolocation": "^2.0.2",
     "react": "16.8.6",
     "react-native": "0.60.5",
