@@ -32,7 +32,7 @@ const AppSwitchNavigator = createSwitchNavigator({
   TabNavigator: {screen: AppTabNavigator},
   });
 
-const AppContainer = createAppContainer(AppTabNavigator);
+const AppContainer = createAppContainer(AppSwitchNavigator);
 
 export default class App extends React.Component {
   render() {

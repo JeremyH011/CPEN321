@@ -40,8 +40,7 @@ export default class HomeScreenMap extends React.Component {
 
   state = {
     userLocation: null,
-    user_name: "test_user",
-    user_email: "temp_email@gmail.com",
+    userId: null,
     listingLocations: [],
   }
 
@@ -67,7 +66,7 @@ export default class HomeScreenMap extends React.Component {
   }
 
   getRecommendedHandler = () => {
-    this.refs.getRecommendedPopup.getRecommendedUsers({"user_name":this.state.user_name});
+    this.refs.getRecommendedPopup.getRecommendedUsers({"userId":this.state.userId});
     this.refs.getRecommendedPopup.setModalVisible(true);
   }
 
@@ -95,8 +94,8 @@ async getToken() {
           await AsyncStorage.setItem('fcmToken', fcmToken);
       }
   }
-  let userId = await AsyncStorage.getItem('userId');
-  this.addFCMTokenToDB(fcmToken, userId);
+  this.setState({userId: await AsyncStorage.getItem('userId')}); 
+  this.addFCMTokenToDB(fcmToken, this.state.userId);
 }
 
 addFCMTokenToDB = (token, id) => {
@@ -127,8 +126,8 @@ async requestPermission() {
 
 //Remove listeners allocated in createNotificationListeners()
 componentWillUnmount() {
-this.notificationListener();
-this.notificationOpenedListener();
+  this.notificationListener();
+  this.notificationOpenedListener();
 }
 
 async createNotificationListeners() {
@@ -232,11 +231,11 @@ Alert.alert(
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
               <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
-              <SearchFilterPage ref='searchFilterPopup' centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
+              <SearchFilterPage ref='searchFilterPopup' userId = {this.state.userId} centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
               <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
               <RecommendedListing ref='getRecommendedPopup'/>
-              <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
+              <AddListingPage ref='addListingPopup' userId = {this.state.userId} addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </ScrollView>
     );
