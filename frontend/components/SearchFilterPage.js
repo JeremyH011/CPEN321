@@ -61,14 +61,18 @@ export default class SearchFilterPage extends React.Component {
                 address: this.state.addressField,
                 latitude: this.state.latitude,
                 longitude: this.state.longitude,
+                userId: this.props.userId,
             }),
         })
         .then((response) => response.json())
         .then((responseJson) => {
             alert("Found " + responseJson.numResults+ " results");
-            this.getListingsByFilter();
-            this.props.centerMapWithDelta(responseJson.latitude, responseJson.longitude, 
-                                            responseJson.latitudeDelta, responseJson.longitudeDelta);
+            if(responseJson.numResults > 0)
+            {
+                this.getListingsByFilter();
+                this.props.centerMapWithDelta(responseJson.latitude, responseJson.longitude, 
+                                                responseJson.latitudeDelta, responseJson.longitudeDelta);
+            }
         })
         .catch((error) => {
             console.error(error);

@@ -7,6 +7,7 @@ import {
   TextInput,
 } from "react-native";
 import { DB_URL } from '../key';
+import { AsyncStorage } from 'react-native';
 
 class SignUp extends Component {
 
@@ -29,13 +30,24 @@ class SignUp extends Component {
     })
     .then((response) => {
       if (response.status == 201) {
-        this.props.navigation.navigate('TabNavigator');
+        return response.json();
       } else if (response.status == 401){
         alert("An account with that email already exists!");
       } else {
         alert("Server error. Try again later!");
       }
+    })
+    .then((responseJson) => {
+      if (responseJson) {
+        this.handleSuccessfulSignup(responseJson.userId);
+        this.props.navigation.navigate('TabNavigator');
+      }
     });
+  }
+
+  async handleSuccessfulSignup(userId) {
+    await AsyncStorage.setItem('userId', userId);
+    await AsyncStorage.setItem('loggedIn', "true");
   }
 
   render() {

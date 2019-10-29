@@ -81,6 +81,7 @@ export default class AddListingPage extends React.Component {
                 numBeds: this.state.bed,
                 numBaths: this.state.bath,
                 maps_url: this.state.maps_url,
+                userId: this.state.userId,
             }),
         });
     }
