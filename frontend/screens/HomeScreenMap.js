@@ -22,6 +22,8 @@ import Geolocation from '@react-native-community/geolocation';
 import FetchLocation from '../components/FetchLocation';
 import UsersMap from '../components/UsersMap'
 import AddListingButton from '../components/AddListingButton';
+import RecommendedListingButton from '../components/RecommendedListingButton';
+import RecommendedListing from '../components/RecommendedListing';
 import tabBarIcon from '../components/tabBarIcon';
 import AddListingPage from '../components/AddListingPage';
 import Listing from '../classes/Listing';
@@ -38,6 +40,8 @@ export default class HomeScreenMap extends React.Component {
 
   state = {
     userLocation: null,
+    user_name: "test_user",
+    user_email: "temp_email@gmail.com",
     listingLocations: [],
   }
 
@@ -60,6 +64,11 @@ export default class HomeScreenMap extends React.Component {
 
   addListingHandler = () => {
     this.refs.addListingPopup.setModalVisible(true);
+  }
+
+  getRecommendedHandler = () => {
+    this.refs.getRecommendedPopup.getRecommendedUsers({"user_name":this.state.user_name});
+    this.refs.getRecommendedPopup.setModalVisible(true);
   }
 
   componentDidMount(){
@@ -224,7 +233,9 @@ Alert.alert(
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
               <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
               <SearchFilterPage ref='searchFilterPopup' centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
+              <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
+              <RecommendedListing ref='getRecommendedPopup'/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </ScrollView>
