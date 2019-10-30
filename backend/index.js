@@ -116,6 +116,21 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 	});
 });
 
+app.get('/get_listings_by_usedId', jsonParser, (req, res) => {
+	console.log(req.body);
+
+    var o_id = getOIdFromUserId(req.body.userId);
+
+  db.collection("listings").find(o_id).toArray((err,result) => {
+		if(err){
+			res.sendStatus(400);
+		}
+		else{
+			res.send(result);
+		}
+	});
+});
+
 function getOIdFromUserId(userId){
     var mongo = require('mongodb');
     console.log(userId);

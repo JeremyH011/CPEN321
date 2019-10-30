@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     },
     boxItem:{
       fontSize:20,
-      margin: '5%'
+      margin: '5%',
+      borderWidth: 1,
     }
 });
