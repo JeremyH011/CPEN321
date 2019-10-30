@@ -23,7 +23,7 @@ class LocationItem extends PureComponent {
         return (
           <TouchableOpacity style={styles.root} onPress={this._handlePress}>
             <Text>{this.props.description}</Text>
-          </TouchableOpacity>  
+          </TouchableOpacity>
         );
     }
 }

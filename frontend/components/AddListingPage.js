@@ -1,22 +1,26 @@
 import React from 'react'
-import {View, 
+import {View,
     StyleSheet,
     Text,
     Modal,
     TextInput,
     TouchableOpacity,
     ScrollView,
-    ActivityIndicator } from 'react-native';
+    ActivityIndicator,
+    Button,
+    Image} from 'react-native';
 import { API_KEY, DB_URL } from '../key';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
 import LocationItem from './LocationItem';
 import { Dropdown } from 'react-native-material-dropdown';
 import TextInputMask from 'react-native-text-input-mask';
+import Listing from '../classes/Listing';
+import ImagePicker from 'react-native-image-picker';
 
 export default class AddListingPage extends React.Component {
-    // @todo: change this so that fields related to listing are 
-    //        their own obj inside state, rather than remain as 
-    //        members of state. refer to userLocation inside 
+    // @todo: change this so that fields related to listing are
+    //        their own obj inside state, rather than remain as
+    //        members of state. refer to userLocation inside
     //        HomeScreenMap.js
     state = {
         modalVisible: false,
@@ -29,15 +33,48 @@ export default class AddListingPage extends React.Component {
         bed: 0,
         bath: 0,
         maps_url: '',
+        photos: [],
+        latest_photo: null,
     }
 
     setNewListingAddress = addressObject => {
-        this.setState({addressField: addressObject.formatted_address, 
+        this.setState({addressField: addressObject.formatted_address,
                         latitude: addressObject.lat,
                         longitude: addressObject.lng,
                         maps_url: addressObject.maps_url,
                         scrollViewVisible: false});
     }
+
+    handleChoosePhoto(){
+      const options = {
+        noData: true,
+      }
+      ImagePicker.launchImageLibrary(options, response => {
+        if (response.uri) {
+          this.state.photos.push(response);
+          this.setState({latest_photo:response});
+        }
+      })
+    }
+
+    createFormData(body){
+      let data = new FormData();
+
+      this.state.photos.forEach((photo, i) => {
+        data.append("photo[]", {
+          name: photo.fileName,
+          type: photo.type,
+          uri:
+            Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
+        });
+      });
+
+      Object.keys(body).forEach(key => {
+        data.append(key, body[key]);
+      });
+
+      return data;
+    };
 
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
@@ -48,28 +85,40 @@ export default class AddListingPage extends React.Component {
         this.setState({addressField: address, scrollViewVisible: true});
     }
 
-    createListingInDB = () => {
-        fetch(DB_URL+'create_listing/', {
+    handleAddingNewListing() {
+      this.createListingInDB()
+      .then((response) => {
+        // Update Listings from server instead of locally.
+        this.props.getListings();
+        this.props.centerMap(this.state.latitude, this.state.longitude);
+        this.setModalVisible(false);
+      });
+    }
+
+    createListingInDB(){
+        let body = {
+            title: this.state.title,
+            address: this.state.addressField,
+            latitude: this.state.latitude,
+            longitude: this.state.longitude,
+            price: this.state.price,
+            numBeds: this.state.bed,
+            numBaths: this.state.bath,
+            maps_url: this.state.maps_url,
+            userId: this.props.userId,
+        };
+        return fetch(DB_URL+'create_listing/', {
             method: 'POST',
             headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
             },
-            body: JSON.stringify({
-                title: this.state.title,
-                pricePerMonth: this.state.price,
-                address: this.state.addressField,
-                latitude: this.state.latitude,
-                longitude: this.state.longitude,
-                price: this.state.price,
-                numBeds: this.state.bed,
-                numBaths: this.state.bath,
-                maps_url: this.state.maps_url,
-            }),
+            body: this.createFormData(body),
         });
     }
 
     render() {
+        const {latest_photo} = this.state;
+        const length = this.state.photos.length - 1 < 0 ? 0 : this.state.photos.length - 1;
         return (
             <Modal
             animationType="slide"
@@ -77,8 +126,8 @@ export default class AddListingPage extends React.Component {
             visible={this.state.modalVisible}
             onRequestClose={() => { this.setModalVisible(false); } }>
                 <View style={styles.modal}>
-                    <TextInput 
-                        style={styles.modalTextInput} 
+                    <TextInput
+                        style={styles.modalTextInput}
                         placeholder="Title"
                         onChangeText={(text) => this.setState({title: text})}/>
                     <View style={styles.row}>
@@ -97,9 +146,9 @@ export default class AddListingPage extends React.Component {
                             />
                         </View>
                         <View>
-                            <TextInputMask 
-                                style={styles.priceTextInput} 
-                                placeholder="$/month" 
+                            <TextInputMask
+                                style={styles.priceTextInput}
+                                placeholder="$/month"
                                 mask={"$[99990]"}
                                 onChangeText={(text) => this.setState({price: parseInt(text.split('$')[1])})}/>
                         </View>
@@ -110,13 +159,13 @@ export default class AddListingPage extends React.Component {
                             {this.setState()}
                                 <TextInput ref='addressTextInput'
                                     value={this.state.addressField}
-                                    style={styles.modalTextInput} 
+                                    style={styles.modalTextInput}
                                     placeholder="Address"
                                     onChangeText={(text) => this.handleAddressChange(text, handleTextChange)}/>
-                                {isSearching && <ActivityIndicator/>}                                        
-                                
+                                {isSearching && <ActivityIndicator/>}
+
                                 { this.state.scrollViewVisible == true &&
-                                <ScrollView 
+                                <ScrollView
                                     style={styles.scrollView}>
                                     {locationResults.map(element => (
                                         <LocationItem
@@ -132,13 +181,29 @@ export default class AddListingPage extends React.Component {
                             </React.Fragment>
                         )}
                     </GoogleAutoComplete>
+                  <View style={styles.row}>
+                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
+                          <Text>Add Listing</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
+                          <Text>Cancel</Text>
+                      </TouchableOpacity>
+                  </View>
+                  <View style={styles.row}>
+                    <TouchableOpacity style={styles.modalButton} onPress={() => {this.handleChoosePhoto();}}>
+                      <Text> Choose Photo(s) </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{alignItems: 'center', justifyContent: 'center' }}>
+                  {latest_photo && (
+                    <Image
+                      source={{ uri: latest_photo.uri }}
+                      style={{ width: 150, height: 150 }}
+                    />
+                  )}
+                </View>
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.modalButton} onPress={this.createListingInDB}>
-                        <Text>Add Listing</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
-                        <Text>Cancel</Text>
-                    </TouchableOpacity>
+                  <Text>and {length} more photos...</Text>
                 </View>
                 </View>
             </Modal>
