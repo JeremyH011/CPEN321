@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "334255029430",
+    "firebase_url": "https://crafty-fulcrum-255723.firebaseio.com",
+    "project_id": "crafty-fulcrum-255723",
+    "storage_bucket": "crafty-fulcrum-255723.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334255029430:android:5442f20d85e3ef9e02ba17",
+        "android_client_info": {
+          "package_name": "com.renteasy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "334255029430-5ivnfsamfrvdlnuni4s97gb0l5shcsnp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBIoi1vnzi2gtKhO8Dc1aPUk9AIpuss3I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "334255029430-5ivnfsamfrvdlnuni4s97gb0l5shcsnp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
