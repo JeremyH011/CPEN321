@@ -1,11 +1,12 @@
 const express = require('express');
-const app = express();
 const mongoclient = require('mongodb').MongoClient;
+const multer = require('multer')
 const bodyParser = require('body-parser');
 const geolib = require('geolib');
 const admin = require('firebase-admin');
 const serviceAccount = require("./firebase.json");
 
+const app = express();
 var constants = require("./constants");
 
 admin.initializeApp({
@@ -14,8 +15,22 @@ admin.initializeApp({
 });
 
 var jsonParser = bodyParser.json();
+app.use(bodyParser.json())
 
 mongoclient.connect(constants.MONGO_DB_URL,(err,client)=> {db = client.db(constants.MONGO_DB_NAME)});
+
+app.use('/public/images', express.static('public/images'));
+
+const Storage = multer.diskStorage({
+  destination(req, file, callback) {
+    callback(null, './public/images')
+  },
+  filename(req, file, callback) {
+    callback(null, `${file.fieldname}_${Date.now()}_${file.originalname}`)
+  },
+});
+
+const upload = multer({ storage: Storage });
 
 app.post('/signup', jsonParser, (req,res) => {
 	console.log(req.body);
@@ -103,17 +118,26 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 
 function getOIdFromUserId(userId){
     var mongo = require('mongodb');
+    console.log(userId);
     return new mongo.ObjectID(userId);
 }
 
-app.post('/create_listing', jsonParser, (req,res)=>{
-	console.log("Create listing\n");
-	console.log(req.body);
-	
-    req.body.userId = getOIdFromUserId(req.body.userId);
-    
-	db.collection("listings").insertOne(req.body, (err, result) => {
-		db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
+app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>{
+  console.log(req.body);
+  var request_body = req.body;
+  request_body['latitude'] = parseFloat(req.body.latitude);
+  request_body['longitude'] = parseFloat(req.body.longitude);
+  request_body['price'] = parseFloat(req.body.price);
+  request_body['numBeds'] = parseInt(req.body.numBeds);
+  request_body['numBaths'] = parseInt(req.body.numBaths);
+  request_body['photos'] = req.files;
+  request_body['userId'] = getOIdFromUserId(req.body.userId);
+
+  console.log("Create listing\n");
+  console.log(req.files);
+  console.log(request_body);
+  db.collection("listings").insertOne(request_body, (err, result) => {
+	db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
 			var registrationTokens = result.map(user => user.fcmToken);
 			var notificationBody = req.body.address + "\n$" + req.body.price + "/month\n" + req.body.numBeds + " bedrooms";
 			var message = {
@@ -134,8 +158,9 @@ app.post('/create_listing', jsonParser, (req,res)=>{
     				}
   			});
 		});
-		res.send("Saved");
-	});
+  });
+  
+  res.send("Saved");
 });
 
 app.get('/get_recommended_roommates', jsonParser, (req, res) => {
@@ -254,7 +279,7 @@ app.post('/get_listings_by_filter', jsonParser, (req, res) => {
                     // only get listings within desired field if poi range is given
                     var locationFiltered = [];
                     var hasLocationFilter = doesReqHaveLocationFilter(req);
-                    if (hasLocationFilter == true) 
+                    if (hasLocationFilter == true)
                     {
                         locationFiltered = filterForLocations(result, req);
                     }
@@ -262,7 +287,7 @@ app.post('/get_listings_by_filter', jsonParser, (req, res) => {
                     {
                         locationFiltered = result;
                     }
-                    
+
                     res.send(locationFiltered);
                 }
         });
@@ -288,7 +313,5 @@ function filterForLocations(result, req) {
 }
 
 var server = app.listen(constants.PORT_NUM, ()=> {
-	var host = server.address().address
-	var port = server.address().port
-	console.log("Server running at http://%s:%d", host, port)
+  console.log(server.address());
 });

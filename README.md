@@ -61,6 +61,11 @@ npm install --save @ptomasroos/react-native-multi-slider
 react-native link @ptomasroos/react-native-multi-slider
 ```
 
+for image picker
+```
+npm install --save image-picker
+```
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.
@@ -83,6 +88,11 @@ for geolocation handling
 ```
 https://www.npmjs.com/package/geolib
 npm install geolib
+```
+
+for multer
+```
+npm install multer
 ```
 
 for firebase admin sdk
