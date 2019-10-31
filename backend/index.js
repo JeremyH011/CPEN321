@@ -32,13 +32,6 @@ const Storage = multer.diskStorage({
 
 const upload = multer({ storage: Storage });
 
-app.post('/date_test', jsonParser, (req,res) => {
-	console.log(req.body);
-	req.body['date'] = new Date(Date.now()).toISOString();
-	console.log(req.body);
-	res.send('OK');
-});
-
 app.post('/signup', jsonParser, (req,res) => {
 	req.body['date'] = new Date(Date.now()).toISOString();
 	console.log(req.body);
