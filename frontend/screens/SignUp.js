@@ -11,7 +11,18 @@ import AsyncStorage from '@react-native-community/async-storage';
 import TextInputMask from 'react-native-text-input-mask';
 import CheckboxFormX from 'react-native-checkbox-form';
 
+const data = [
+  {
+    label: 'Opt-in to Roommate Recommendation',
+    RNchecked: false
+  }
+];
+
 class SignUp extends Component {
+
+  _onSelect = (item) => {
+    this.setState({optIn: true});
+  }
 
   state={
       nameField: '',
@@ -19,7 +30,8 @@ class SignUp extends Component {
       jobField: '',
       emailField: '',
       passwordField: '',
-      passwordConfirm: ''
+      passwordConfirm: '',
+      optIn: false
      }
 
   try_signup = () => {
@@ -128,6 +140,19 @@ class SignUp extends Component {
             onChangeText={(confirm) => this.setState({passwordConfirm: confirm})}
             onEndEditing={() => this.checkPasswords()} />
         </View>
+        <View style={styles.checkbox} >
+          <CheckboxFormX
+            style={{ width: 300}}
+            dataSource={data}
+            itemShowKey="label"
+            itemCheckedKey="RNchecked"
+            iconColor={"#BA55D3"}
+            iconSize={32}
+            formHorizontal={false}
+            labelHorizontal={true}
+            onChecked={(item) => this._onSelect(item)}
+            />
+        </View>
         <View style={styles.columncontainer}>
           <Button style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.try_signup()}/>
           <Button style={styles.buttons} color='#8A2BE2' title="Go Back" onPress={() => this.props.navigation.navigate('Welcome')}/>
@@ -149,6 +174,14 @@ const styles = StyleSheet.create({
     flex:2,
     flexDirection: 'column',
     justifyContent:"center"
+  },
+
+  checkbox: {
+    flex:2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection:'row',
+    marginHorizontal: 10
   },
 
   buttons: {
