@@ -49,11 +49,33 @@ npm install --save react-native-text-input-mask
 react-native link react-native-text-input-mask
 ```
 
+for push notifications
+```
+npm install --save react-native-firebase
+react-native link react-native-firebase
+```
+
 for slider
 ```
 npm install --save @ptomasroos/react-native-multi-slider
 react-native link @ptomasroos/react-native-multi-slider
 ```
+
+for AsyncStorage
+```
+npm install @react-native-community/async-storage
+```
+
+for checkbox on signup and profile pages
+```
+npm install react-native-checkbox-form --save
+```
+
+for stack navigator
+```
+npm install react-navigation-stack
+```
+
 
 if an error similar to below is seen when running ```react-native run-android```
 ```
@@ -67,16 +89,22 @@ navigate to frontend/android/app/build, delete contents of build directory and t
 
 # Backend
 
-to run mongo and server 
-``` 
-sudo service mongod start 
-CPEN321/backend/node index.js 
+to run mongo and server
+```
+sudo service mongod start
+CPEN321/backend/node index.js
 ```
 
 for geolocation handling
 ```
 https://www.npmjs.com/package/geolib
 npm install geolib
+```
+
+for firebase admin sdk
+```
+https://firebase.google.com/docs/admin/setup
+npm install firebase-admin --save
 ```
 
 ```

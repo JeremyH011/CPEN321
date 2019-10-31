@@ -23,7 +23,7 @@ export default class Recommended extends React.Component {
     }
 
     getRecommendedUsers(body){
-      fetch(DB_URL+`get_recommended_roommates?user_name=${body.user_name}`, {
+      fetch(DB_URL+`get_recommended_roommates?userId=${body.userId}`, {
           method: "GET",
         }).then((response) => response.json())
           .then((responseJson) => {
