@@ -3,17 +3,23 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Button,
   TextInput,
-} from "react-native";
+  ScrollView } from "react-native";
 import { DB_URL } from '../key';
 import { AsyncStorage } from 'react-native';
+import TextInputMask from 'react-native-text-input-mask';
+import CheckboxFormX from 'react-native-checkbox-form';
 
 class SignUp extends Component {
 
   state={
-        email:'',
-        password: ''
+      nameField: '',
+      ageField: 0,
+      jobField: '',
+      emailField: '',
+      passwordField: '',
+      passwordConfirm: ''
      }
 
   try_signup = () => {
@@ -24,8 +30,11 @@ class SignUp extends Component {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            email: this.state.email,
-            password: this.state.password,
+          name: this.state.nameField,
+          age: this.state.ageField,
+          job: this.state.jobField,
+          email: this.state.emailField,
+          password: this.state.passwordField,
         }),
     })
     .then((response) => {
@@ -45,6 +54,13 @@ class SignUp extends Component {
     });
   }
 
+  checkPasswords() {
+    if(this.state.passwordField == this.state.passwordConfirm) {
+
+    }
+
+  }
+
   async handleSuccessfulSignup(userId) {
     await AsyncStorage.setItem('userId', userId);
     await AsyncStorage.setItem('loggedIn', "true");
@@ -52,24 +68,71 @@ class SignUp extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <TextInput
-          placeholder="email"
-          style={styles.textInput}
-          onChangeText={(email) => this.setState({email})}/>
-        <TextInput
-          placeholder="password"
-          style={styles.textInput}
-          onChangeText={(password) => this.setState({password})}/>
-        <View style={styles.rowcontainer}>
-          <TouchableOpacity style={styles.buttons} onPress={() => this.props.navigation.navigate('Welcome')}>
-            <Text>Go Back</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttons} onPress={() => this.try_signup()}>
-            <Text>Sign Up!</Text>
-          </TouchableOpacity>
+      <ScrollView
+        keyboardShouldPersistTaps='handled'
+        contentContainerStyle={{flexGrow: 1}}>
+        <View style={styles.title}>
+          <Text style={styles.textTitle}>SIGN UP</Text>
         </View>
-      </View>
+        <View style={styles.container}>
+          <Text>Name</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Enter your first and last name"
+            editable={true}
+            autoCapitalize={'words'}
+            blurOnSubmit={false}
+            returnKeyType={'next'}
+            onChangeText={(name) => this.setState({nameField: name})}
+          />
+          <Text>Age</Text>
+          <TextInputMask
+            keyboardType='numeric'
+            style={styles.textInput}
+            placeholder="Age"
+            mask={"[99]"}
+            onChangeText={(age) => this.setState({ageField: parseInt(age)})}/>
+          <Text>Job</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Enter your current occupation..."
+            returnKeyType={'done'}
+            blurOnSubmit={false}
+            onChangeText={(job) => this.setState({jobField: job})}
+          />
+          <Text>Email</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Email address..."
+            returnKeyType={'done'}
+            autoCapitalize={'none'}
+            blurOnSubmit={false}
+            onChangeText={(email) => this.setState({emailField: email})}
+          />
+          <Text>Password</Text>
+          <TextInput secureTextEntry
+            style={styles.textInput}
+            placeholder="Enter a password"
+            returnKeyType={'done'}
+            autoCapitalize={'none'}
+            blurOnSubmit={false}
+            onChangeText={(password) => this.setState({passwordField: password})}
+          />
+          <Text>Confirm Password</Text>
+          <TextInput secureTextEntry
+            style={styles.textInput}
+            placeholder="Confirm Password..."
+            returnKeyType={'done'}
+            autoCapitalize={'none'}
+            blurOnSubmit={false}
+            onChangeText={(confirm) => this.setState({passwordConfirm: confirm})}
+            onEndEditing={() => this.checkPasswords()} />
+        </View>
+        <View style={styles.columncontainer}>
+          <Button style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.try_signup()}/>
+          <Button style={styles.buttons} color='#8A2BE2' title="Go Back" onPress={() => this.props.navigation.navigate('Welcome')}/>
+        </View>
+      </ScrollView>
     );
   }
 }
@@ -77,20 +140,33 @@ export default SignUp;
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex:4,
     alignItems:'center',
     justifyContent:'center',
   },
 
-  rowcontainer: {
-    flexDirection: 'row'
+  columncontainer: {
+    flex:2,
+    flexDirection: 'column',
+    justifyContent:"center"
   },
 
   buttons: {
-      alignItems: 'center',
       backgroundColor: '#DDDDDD',
       margin: 10,
       padding: 10,
+  },
+
+  title: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#8A2BE2'
+  },
+
+  textTitle: {
+    fontSize:15,
+    color:'white'
   },
 
   textInput: {
@@ -99,5 +175,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 10,
     padding: 10,
-  }
+  },
 })

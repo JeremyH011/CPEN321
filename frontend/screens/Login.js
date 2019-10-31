@@ -3,9 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Button,
   TextInput,
-} from "react-native";
+  ScrollView } from "react-native";
 import { DB_URL } from '../key';
 import { AsyncStorage } from 'react-native';
 
@@ -52,24 +52,35 @@ class Login extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <TextInput
-          placeholder="email"
-          style={styles.textInput}
-          onChangeText={(email) => this.setState({email})}/>
-        <TextInput
-          placeholder="password"
-          style={styles.textInput}
-          onChangeText={(password) => this.setState({password})}/>
-        <View style={styles.rowcontainer}>
-          <TouchableOpacity style={styles.buttons} onPress={() => this.props.navigation.navigate('Welcome')}>
-            <Text>Go Back</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttons} onPress={() => this.try_login()}>
-            <Text>Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+          <ScrollView
+            keyboardShouldPersistTaps='handled'
+            contentContainerStyle={{flexGrow: 1}}>
+            <View style={styles.title}>
+              <Text style={styles.textTitle}>LOGIN</Text>
+            </View>
+            <View style={styles.container}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Email address..."
+                returnKeyType={'done'}
+                blurOnSubmit={false}
+                autoCapitalize={'none'}
+                onChangeText={(email) => this.setState({email})}
+              />
+              <TextInput secureTextEntry
+                style={styles.textInput}
+                placeholder="Password"
+                returnKeyType={'done'}
+                blurOnSubmit={false}
+                autoCapitalize={'none'}
+                onChangeText={(password) => this.setState({password})}
+              />
+            </View>
+            <View style={styles.buttoncontainer}>
+              <Button color='#BA55D3' title="Login" style={styles.buttons} onPress={() => this.try_login()}/>
+              <Button color='#8A2BE2' title="Go Back" style={styles.buttons} onPress={() => this.props.navigation.navigate('Welcome')}/>
+            </View>
+          </ScrollView>
     );
   }
 }
@@ -77,13 +88,26 @@ export default Login;
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex:7,
     alignItems:'center',
-    justifyContent:'center',
+    justifyContent:'center'
   },
 
-  rowcontainer: {
-    flexDirection: 'row'
+  title: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#8A2BE2'
+  },
+
+  textTitle: {
+    fontSize:15,
+    color:'white'
+  },
+
+  buttoncontainer: {
+    flex:7,
+    justifyContent:'center'
   },
 
   buttons: {

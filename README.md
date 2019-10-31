@@ -91,6 +91,11 @@ https://firebase.google.com/docs/admin/setup
 npm install firebase-admin --save
 ```
 
+for checkbox on signup and profile pages
+```
+npm install react-native-checkbox-form --save
+```
+
 ```
 ssh renteradmin@renterassurance.westus.cloudapp.azure.com
 Pass: Renterassurance!
