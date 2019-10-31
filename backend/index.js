@@ -201,31 +201,41 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
   res.send("Saved");
 });
 
+const NUM_LATEST_SEARCHES = 5;
+const NUM_FILTERED_BY_PRICE = 100;
+const FILTER_RADIUS_KM = 10;
+const M_IN_KM = 1000;
+const NUM_RECOMMENDED_USERS = 10;
 app.get('/get_recommended_roommates', jsonParser, (req, res) => {
 	console.log("GETTING USERS WITH QUERY: ");
 	console.log(req.query);
-	// Get user OId from query
+
 	var request_body = {};
 	var OId = getOIdFromUserId(req.query.userId);
 	request_body['userId'] = OId;
 
-	db.collection("searchHistory").find(request_body).sort({date: -1}).limit(2).toArray((err, result) => {
+  // Find the latest NUM_LATEST_SEARCHES belonging to this user
+	db.collection("searchHistory").find(request_body)
+                                .sort({date: -1})
+                                .limit(NUM_LATEST_SEARCHES)
+                                .toArray((err, result) => {
 		if(err){
 			return res.sendStatus(400);
 		}
 
+    // Find all the searches that have an address
 		var arrayOfLatLong = result.filter(search => doesSearchHaveLocationFilter(search))
-					   .map(function(listing) {
-						return {latitude: listing.latitude, longitude: listing.longitude};
-					   });
+                               .map(function(listing) {
+                                   return {latitude: listing.latitude, longitude: listing.longitude};
+                                 });
 
-		var bounds = null;
+    // Get the centroid of the latest searches
 		var center = null;
 		if(arrayOfLatLong.length != 0){
-			bounds = geolib.getBounds(arrayOfLatLong);
-	    		center = geolib.getCenterOfBounds(arrayOfLatLong);
+      center = geolib.getCenterOfBounds(arrayOfLatLong);
 		}
 
+    // Determine the price range to filter recommended users on
 		var min = PRICE_MAX;
 		var max = 0;
 		for(let i = 0; i < result.length; i ++){
@@ -236,38 +246,52 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
 				max = result[i].priceMax;
 			}
 		}
-		var initial_collection_history = {$and: [
-																							{$or: [
-																											{$and: [
-																												{priceMin: {$gte: min}},
-																												{priceMin: {$lte: max}}
-																											]},
-																											{$and: [
-																												{priceMax: {$gte: min}},
-																												{priceMax: {$lte: max}}
-																											]}
-																										]
-																							},
-																							{userId: {$ne: OId}}
-																						]
-	};
-		db.collection("searchHistory").find(initial_collection_history).sort({date : -1}).limit(100).toArray((err, result) => {
-			var score_hash = new Map();
 
+		var initial_collection_history = {$and: [
+                                        {$or: [
+                                          {$and: [
+                                            {priceMin: {$gte: min}},
+                                            {priceMin: {$lte: max}}
+                                          ]},
+                                          {$and: [
+                                            {priceMax: {$gte: min}},
+                                            {priceMax: {$lte: max}}
+                                          ]}
+                                        ]},
+                                        {userId: {$ne: OId}
+                                      }]
+                                    };
+
+    // Find all the users with an overlapping price query
+		db.collection("searchHistory").find(initial_collection_history)
+                                  .sort({date : -1})
+                                  .limit(NUM_FILTERED_BY_PRICE)
+                                  .toArray((err, result) => {
+
+      // Filter out irrelevant users based on centroid
 			var addr_filtered = result.filter(function(search) {
+        // If the user has no centroid, then consider all NUM_FILTERED_BY_PRICE users
 				if (center == null) {
 					return true;
 				} else {
+          // If the user did have a centroid, then disregard all searches that did not
+          // search by address, or that are more than FILTER_RADIUS_KM kilometers away
 					if (search.latitude != null && search.longitude != null) {
 						return geolib.isPointWithinRadius({latitude : search.latitude, longitude : search.longitude},
-					                                  {latitude : center.latitude, longitude : center.longitude},
-					                                   10000);
+					                                    {latitude : center.latitude, longitude : center.longitude},
+					                                    FILTER_RADIUS_KM*M_IN_KM);
 					} else {
 						return false;
 					}
 				}
 			});
 
+      // Key: UserId, Value: Score
+      var score_hash = new Map();
+
+      // Stage 1 of scoring: (Score the users based on overlapping price)
+      // min <= priceMin <= max : +1 score
+      // min <= priceMax <= max : +1 score
 			addr_filtered.forEach(function(element) {
 				var score = 0;
 				if (element.priceMin >= min && element.priceMax <= max) {
@@ -278,6 +302,9 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
 					score++;
 				}
 
+        // Convert the ObjectId to string, to get correct hash, because
+        // object ids with same string id could have different hashes if in
+        // different ObjectID objects
 				var hash_key = element.userId.toString();
 
 				if (score_hash.has(hash_key)) {
@@ -287,10 +314,12 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
 				}
 			});
 
+      // Array.from returns [..., {userId,score} ,...], so sort by score
+      // and return the list of userIds of the first 10 users with the highest score.
 			var score_arr_sorted = Array.from(score_hash).sort(function(a,b) {
-				                                        return b[1] - a[1];
-			                                              })
-			                                             .slice(0,5)
+                                                       return b[1] - a[1];
+                                                     })
+			                                             .slice(0,NUM_RECOMMENDED_USERS)
 			                                             .map(user => getOIdFromUserId(user[0]));
 
 			db.collection("users").find({'_id' : {$in : score_arr_sorted}}).toArray((err, result) => {
