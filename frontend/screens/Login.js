@@ -7,7 +7,7 @@ import {
   TextInput,
   ScrollView } from "react-native";
 import { DB_URL } from '../key';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 class Login extends Component {
 
@@ -40,7 +40,7 @@ class Login extends Component {
     .then((responseJson) => {
       if (responseJson) {
         this.handleSuccessfulLogin(responseJson.userId);
-        this.props.navigation.navigate('TabNavigator');
+        this.props.navigation.navigate('SignedIn');
       }
     });
   }

@@ -7,7 +7,7 @@ import {
   TextInput,
   ScrollView } from "react-native";
 import { DB_URL } from '../key';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import TextInputMask from 'react-native-text-input-mask';
 import CheckboxFormX from 'react-native-checkbox-form';
 
@@ -49,7 +49,7 @@ class SignUp extends Component {
     .then((responseJson) => {
       if (responseJson) {
         this.handleSuccessfulSignup(responseJson.userId);
-        this.props.navigation.navigate('TabNavigator');
+        this.props.navigation.navigate('SignedIn');
       }
     });
   }

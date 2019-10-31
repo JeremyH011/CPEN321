@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Button, } from 'react-native';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import tabBarIcon from '../components/tabBarIcon';
 
@@ -12,7 +12,7 @@ export default class Profile extends React.Component {
     async handleLogOut(){
         await AsyncStorage.setItem('loggedIn', "false");
         await AsyncStorage.removeItem('userId');
-        this.props.navigation.navigate('Welcome');
+        this.props.navigation.navigate('SignedOut');
     }
 
     render() {

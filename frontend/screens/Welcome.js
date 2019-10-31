@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Button,
   ScrollView } from "react-native";
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 class Welcome extends Component {
 
@@ -16,7 +16,7 @@ class Welcome extends Component {
   async checkIsLoggedIn() {
     let loggedIn = await AsyncStorage.getItem('loggedIn');
     if (loggedIn == "true") {
-      this.props.navigation.navigate('TabNavigator');
+      this.props.navigation.navigate('SignedIn');
     }
   }
 

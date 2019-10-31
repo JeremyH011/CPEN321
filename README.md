@@ -61,6 +61,22 @@ npm install --save @ptomasroos/react-native-multi-slider
 react-native link @ptomasroos/react-native-multi-slider
 ```
 
+for AsyncStorage
+```
+npm install @react-native-community/async-storage
+```
+
+for checkbox on signup and profile pages
+```
+npm install react-native-checkbox-form --save
+```
+
+for stack navigator
+```
+npm install react-navigation-stack
+```
+
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.
@@ -89,11 +105,6 @@ for firebase admin sdk
 ```
 https://firebase.google.com/docs/admin/setup
 npm install firebase-admin --save
-```
-
-for checkbox on signup and profile pages
-```
-npm install react-native-checkbox-form --save
 ```
 
 ```
