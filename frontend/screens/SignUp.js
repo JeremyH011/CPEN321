@@ -29,9 +29,10 @@ class SignUp extends Component {
       ageField: 0,
       jobField: '',
       emailField: '',
-      passwordField: '',
-      passwordConfirm: '',
-      optIn: false
+      passwordField: "",
+      passwordConfirm: "",
+      optIn: false,
+      passErrorMsg: ""
      }
 
   try_signup = () => {
@@ -66,11 +67,13 @@ class SignUp extends Component {
     });
   }
 
-  checkPasswords() {
-    if(this.state.passwordField == this.state.passwordConfirm) {
-
+  checkPasswords(pass1, pass2) {
+    if(!(pass1 === pass2)) {
+      this.setState({passErrorMsg: "Passwords do not match."})
+    } else {
+      this.setState({passErrorMsg: ""});
+      this.try_signup();
     }
-
   }
 
   async handleSuccessfulSignup(userId) {
@@ -137,8 +140,8 @@ class SignUp extends Component {
             returnKeyType={'done'}
             autoCapitalize={'none'}
             blurOnSubmit={false}
-            onChangeText={(confirm) => this.setState({passwordConfirm: confirm})}
-            onEndEditing={() => this.checkPasswords()} />
+            onChangeText={(confirm) => this.setState({passwordConfirm: confirm})} />
+          <Text style={{color: 'red'}}>{this.state.passErrorMsg}</Text>
         </View>
         <View style={styles.checkbox} >
           <CheckboxFormX
@@ -154,7 +157,7 @@ class SignUp extends Component {
             />
         </View>
         <View style={styles.columncontainer}>
-          <Button style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.try_signup()}/>
+          <Button style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.checkPasswords(this.state.passwordField, this.state.passwordConfirm)} />
           <Button style={styles.buttons} color='#8A2BE2' title="Go Back" onPress={() => this.props.navigation.navigate('Welcome')}/>
         </View>
       </ScrollView>
