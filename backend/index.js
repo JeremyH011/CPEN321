@@ -1,4 +1,4 @@
-const express = require('express');
+	const express = require('express');
 const mongoclient = require('mongodb').MongoClient;
 const multer = require('multer')
 const bodyParser = require('body-parser');
@@ -85,11 +85,12 @@ app.post('/add_user_fcm_token', jsonParser, (req,res) => {
 
     var o_id = getOIdFromUserId(req.body.userId);
 
-  	db.collection("users").updateOne({_id : o_id}, {$set: {fcmToken : req.body.token}}, function(err,result){
+    db.collection("users").updateOne({_id : o_id}, {$set: {fcmToken : req.body.token}}, function(err,result){
                 if(err){
                         res.sendStatus(400);
                 }
                 else{
+                        res.send(result);
                         res.sendStatus(200);
                 }
         });
@@ -139,8 +140,10 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
 	//console.log("Create listing\n");
 	//console.log(req.files);
 	//console.log(request_body);
-  db.collection("listings").insertOne(request_body, (err, result) => {
-	db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
+	var response = {};
+	db.collection("listings").insertOne(request_body, (err, result) => {
+		response['id'] = result;
+		db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
 			var registrationTokens = result.map(user => user.fcmToken);
 			var notificationBody = req.body.address + "\n$" + req.body.price + "/month\n" + req.body.numBeds + " bedrooms";
 			var message = {
@@ -149,21 +152,21 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
 			}
 
 			admin.messaging().sendMulticast(message)
-  			.then((response) => {
-    				if (response.failureCount > 0) {
-      					const failedTokens = [];
-     	 				response.responses.forEach((resp, idx) => {
-        					if (!resp.success) {
-          						failedTokens.push(registrationTokens[idx]);
-        					}
-      					});
-      					//console.log('List of tokens that caused failures: ' + failedTokens);
-    				}
-  			});
+				.then((response) => {
+						if (response.failureCount > 0) {
+								const failedTokens = [];
+						response.responses.forEach((resp, idx) => {
+									if (!resp.success) {
+											failedTokens.push(registrationTokens[idx]);
+									}
+								});
+								//console.log('List of tokens that caused failures: ' + failedTokens);
+						}
+				});
 		});
-  });
+	});
 
-  res.send("Saved");
+	res.send(response);
 });
 
 const NUM_LATEST_SEARCHES = 5;
@@ -281,10 +284,10 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
       // Array.from returns [..., {userId,score} ,...], so sort by score
       // and return the list of userIds of the first 10 users with the highest score.
 			var score_arr_sorted = Array.from(score_hash).sort(function(a,b) {
-                                                       return b[1] - a[1];
-                                                     })
-			                                             .slice(0,NUM_RECOMMENDED_USERS)
-			                                             .map(user => getOIdFromUserId(user[0]));
+																											 return b[1] - a[1];
+																										 })
+																									.slice(0,NUM_RECOMMENDED_USERS)
+																									.map(user => getOIdFromUserId(user[0]));
 
 			db.collection("users").find({'_id' : {$in : score_arr_sorted}}).toArray((err, result) => {
 				if (err) {
@@ -380,13 +383,17 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
 });
 
 function saveSearchHistory(req){
+  var ret;
 	req.body.userId = getOIdFromUserId(req.body.userId);
 	db.collection("searchHistory").insertOne(req.body, (err, result) => {
+			ret = result;
 			if (err)
 			{
-					return -1;
+				ret = -1;
+				return ret;
 			}
-			return 0;
+			ret = 0
+			return ret;
 	});
 }
 
