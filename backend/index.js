@@ -17,6 +17,7 @@ admin.initializeApp({
 var jsonParser = bodyParser.json();
 app.use(bodyParser.json())
 
+var db;
 mongoclient.connect(constants.MONGO_DB_URL,(err,client)=> {db = client.db(constants.MONGO_DB_NAME)});
 
 app.use('/public/images', express.static('public/images'));
