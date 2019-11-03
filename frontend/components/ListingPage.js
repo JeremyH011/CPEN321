@@ -33,9 +33,6 @@ export default class ListingPage extends React.Component {
 
   render() {
       const item = this.props.photos;
-      if(item != null){
-
-      }
       return (
         <Modal
           visible= {this.props.visible}
