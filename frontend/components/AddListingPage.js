@@ -85,14 +85,57 @@ export default class AddListingPage extends React.Component {
         this.setState({addressField: address, scrollViewVisible: true});
     }
 
-    handleAddingNewListing() {
-      this.createListingInDB()
-      .then((response) => {
-        // Update Listings from server instead of locally.
-        this.props.getListings();
-        this.props.centerMap(this.state.latitude, this.state.longitude);
-        this.setModalVisible(false);
+    resetState = () => {
+      this.setState({
+        addressField: '',
+        title: '',
+        latitude: 0.0,
+        longitude: 0.0,
+        price: 0,
+        bed: 0,
+        bath: 0,
+        maps_url: '',
+        photos: [],
+        latest_photo: null,
       });
+    }
+
+    ensureFormComplete() {
+      if(this.state.addressField == '')
+      {
+        alert("Address field is empty");
+        return false;
+      }
+      else if(this.state.title == '') 
+      {
+        alert("Title field is empty");
+        return false;
+      }
+      else if(this.state.price == 0) 
+      {
+        alert("Price can't be 0");
+        return false;
+      }
+      else if(this.state.photos == [])
+      {
+        alert("Need at least one photo");
+        return false;
+      }
+      return true;
+    }
+
+    handleAddingNewListing() {
+      if(ensureFormComplete())
+      {
+        this.createListingInDB()
+        .then((response) => {
+          // Update Listings from server instead of locally.
+          this.resetState();
+          this.props.getListings();
+          this.props.centerMap(this.state.latitude, this.state.longitude);
+          this.setModalVisible(false);
+        });
+      }
     }
 
     createListingInDB(){
