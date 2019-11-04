@@ -48,6 +48,7 @@ class SignUp extends Component {
           job: this.state.jobField,
           email: this.state.emailField,
           password: this.state.passwordField,
+          optIn: this.state.optIn,
         }),
     })
     .then((response) => {

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Modal, Text} from 'react-native';
+import {Modal, Text, Image} from 'react-native';
 
 export default class ViewUserPage extends React.Component {
 
@@ -11,7 +11,7 @@ export default class ViewUserPage extends React.Component {
           style = {styles.modal}
         >
         <View style={styles.profilePic}>
-          <Image source={require('./Profile_Placeholder.png')} />
+          <Image source={require('./Portrait_Placeholder.png')} />
         </View>
           <Text>Name : {this.props.name}</Text>
           <TouchableOpacity style={styles.modalButton} onPress={() => this.props.navigation.navigate("Chat") }>

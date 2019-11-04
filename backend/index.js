@@ -101,6 +101,21 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 	});
 });
 
+app.get('/get_user_by_id', jsonParser, (req, res) => {
+	console.log(req.body);
+
+    var o_id = getOIdFromUserId(req.body.userId);
+
+  db.collection("users").find(o_id).toArray((err,result) => {
+		if(err){
+			res.sendStatus(400);
+		}
+		else{
+			res.send(result);
+		}
+	});
+});
+
 function getOIdFromUserId(userId){
     var mongo = require('mongodb');
     return new mongo.ObjectID(userId);
@@ -109,9 +124,9 @@ function getOIdFromUserId(userId){
 app.post('/create_listing', jsonParser, (req,res)=>{
 	console.log("Create listing\n");
 	console.log(req.body);
-	
+
     req.body.userId = getOIdFromUserId(req.body.userId);
-    
+
 	db.collection("listings").insertOne(req.body, (err, result) => {
 		db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
 			var registrationTokens = result.map(user => user.fcmToken);
@@ -142,7 +157,7 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
 	console.log("GETTING USERS WITH QUERY: ");
 	console.log(req.query);
 
-    // not used for now but this is how u will get ur own id 
+    // not used for now but this is how u will get ur own id
 	/*var mongo = require('mongodb');
 	var o_id = new mongo.ObjectID(req.body.userId);*/
 
@@ -163,7 +178,7 @@ const VIEWPORT_BUFFER = 0.005;
 app.post('/save_search_history', jsonParser, (req,res)=>{
 	console.log("Save Search History\n");
 	console.log(req.body);
-    
+
     // get all listings that match the criteria
     db.collection("listings").find( {
        numBeds: { $gte: req.body.bedMin, $lte: req.body.bedMax == BED_MAX ? MAX_NUM : req.body.bedMax },
@@ -176,14 +191,14 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
         else{
             // using this geolib library: https://www.npmjs.com/package/geolib
             // only get listings within desired field if poi range is given
-            
+
             var locationFiltered = [];
             var hasLocationFilter = doesReqHaveLocationFilter(req);
-            if (hasLocationFilter == true) 
+            if (hasLocationFilter == true)
             {
                 locationFiltered = filterForLocations(result, req);
             }
-            
+
             if (locationFiltered.length == 0 && hasLocationFilter == true)
             {
                 // return default deltas and centered at passed in address since no results found
@@ -210,7 +225,7 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
                                     });
                 var bounds = geolib.getBounds(arrayOfLatLong);
                 var center = geolib.getCenterOfBounds(arrayOfLatLong);
-                
+
                 if(!isDefaultSearch(req))
                 {
 
@@ -218,13 +233,13 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
                     db.collection("searchHistory").insertOne(req.body, (err, result) => {
                         if (err)
                         {
-                            return res.sendStatus(400);   
+                            return res.sendStatus(400);
                         }
                     });
                 }
-                
+
                 res.send({latitude: center.latitude, longitude: center.longitude,
-                          latitudeDelta: bounds.maxLat - bounds.minLat + VIEWPORT_BUFFER, longitudeDelta: bounds.maxLng - bounds.minLng + VIEWPORT_BUFFER, 
+                          latitudeDelta: bounds.maxLat - bounds.minLat + VIEWPORT_BUFFER, longitudeDelta: bounds.maxLng - bounds.minLng + VIEWPORT_BUFFER,
                           numResults: locationFiltered.length});
             }
         }
@@ -254,7 +269,7 @@ app.post('/get_listings_by_filter', jsonParser, (req, res) => {
                     // only get listings within desired field if poi range is given
                     var locationFiltered = [];
                     var hasLocationFilter = doesReqHaveLocationFilter(req);
-                    if (hasLocationFilter == true) 
+                    if (hasLocationFilter == true)
                     {
                         locationFiltered = filterForLocations(result, req);
                     }
@@ -262,7 +277,7 @@ app.post('/get_listings_by_filter', jsonParser, (req, res) => {
                     {
                         locationFiltered = result;
                     }
-                    
+
                     res.send(locationFiltered);
                 }
         });
