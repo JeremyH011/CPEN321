@@ -27,10 +27,21 @@ export default class Recommended extends React.Component {
           method: "GET",
         }).then((response) => response.json())
           .then((responseJson) => {
-            this.setState({
-              recommended: responseJson.map((listingJson) => new User(listingJson))
-            });
-            console.log(this.state.recommended);
+            if(response.status == 401) 
+            {
+                alert("No recommended roommates found. Increased app usage will help our algorithm better match you with roommates!");
+            } 
+            else if (response.status == 201)
+            {
+              this.setState({
+                recommended: responseJson.map((listingJson) => new User(listingJson))
+              });
+              console.log(this.state.recommended);
+            } 
+            else 
+            {
+              alert("Server error.");
+            }
           })
           .catch((error) => {
             console.error(error);

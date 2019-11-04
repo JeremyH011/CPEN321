@@ -173,6 +173,15 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
 
 	db.collection("users").find().toArray((err,result) => {
 		console.log(result);
+        if(err)
+        {
+            res.sendStatus(400);
+        }
+        if(result.length == 0)
+        {
+            res.send(401); // no recommended users found
+        }
+		res.writeHead(201); // success
 		res.send(result);
 	});
 });
