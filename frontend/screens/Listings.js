@@ -8,7 +8,7 @@ import Listing from '../classes/Listing';
 import { AsyncStorage } from 'react-native';
 import { DB_URL } from '../key';
 import ListingPage from '../components/ListingPage';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import MyListing from '../components/MyListing';
 
 export default class Listings extends React.Component {
     static navigationOptions = {
@@ -92,13 +92,10 @@ export default class Listings extends React.Component {
               <ScrollView style={styles.scrollView}>
               {
                   this.state.addedListings.map((item)=>(
-                  <TouchableOpacity onPress={() => this.handleListingSelect(item, true)}>
-                      <Text style={styles.boxItem}>
-                        Title: {item.title}{"\n"}
-                        $/month: {item.price}{"\n"}
-                        Address: {item.address}{"\n"}
-                        </Text>
-                  </TouchableOpacity>
+                    <MyListing 
+                      listing={item}
+                      handleListingSelect={this.handleListingSelect}>
+                    </MyListing>
                   ))
               }
               </ScrollView>
@@ -141,8 +138,4 @@ const styles = StyleSheet.create({
       color:'black',
       fontSize:15,
     },
-    boxItem:{
-      fontSize: 20,
-      margin: '5%',
-    }
 });
