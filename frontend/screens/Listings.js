@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView} from 'react-native';
+import { Header } from 'react-native-elements';
 import {NavigationEvents} from 'react-navigation';
 
 import tabBarIcon from '../components/tabBarIcon';
@@ -10,6 +11,7 @@ import { DB_URL } from '../key';
 export default class Listings extends React.Component {
     static navigationOptions = {
         tabBarIcon: tabBarIcon('md-list-box'),
+        title: "Your Listings"
     };
 
     state = {
@@ -60,28 +62,28 @@ export default class Listings extends React.Component {
                   console.log("will focus", payload);
                   this.onTabPressed();
                 }}
+              />    
+              <Header
+                placement="left"
+                containerStyle={styles.title}
+                centerComponent={{ text: 'YOUR LISTINGS', style: { color: '#FFF', fontSize: 25 } }}
               />
-              <View style={styles.title}>
-                <Text style={styles.textTitle}>Your Listings</Text>
-              </View>       
               {this.state.addedListings.length == 0 && 
                     <View style={styles.noAddedListing}>
                         <Text style={styles.noAddedListingText}>Your Added Listings Will be Here</Text>
                     </View>
               }
-              <View style={styles.modal}>
-                      <ScrollView style={styles.scrollView}>
-                      {
-                          this.state.addedListings.map((item)=>(
-                          <Text style={styles.boxItem}>
-                              Title: {item.title}{"\n"}
-                              $/month: {item.price}{"\n"}
-                              Address: {item.address}{"\n"}
-                          </Text>
-                          ))
-                      }
-                      </ScrollView>
-              </View>
+              <ScrollView style={styles.scrollView}>
+              {
+                  this.state.addedListings.map((item)=>(
+                  <Text style={styles.boxItem}>
+                      Title: {item.title}{"\n"}
+                      $/month: {item.price}{"\n"}
+                      Address: {item.address}{"\n"}
+                  </Text>
+                  ))
+              }
+              </ScrollView>
             </View>
           );
     }
@@ -89,9 +91,6 @@ export default class Listings extends React.Component {
 
 const styles = StyleSheet.create({
     title: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
       backgroundColor: '#8A2BE2'
     },
     noAddedListing: {
@@ -106,11 +105,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       margin: 15
     },
-    modal: {
-      flex: 14,
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-    },
     scrollView: {
       margin:'5%',
     },
@@ -120,16 +114,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%',
     },
-    textTitle: {
-      fontSize:15,
-      color:'white'
-    },
     text: {
       color:'black',
       fontSize:15,
     },
     boxItem:{
-      fontSize:20,
+      fontSize: 20,
       margin: '5%',
     }
 });

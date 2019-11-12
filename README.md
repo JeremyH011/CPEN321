@@ -66,6 +66,11 @@ for image picker
 npm install --save image-picker
 ```
 
+for some random ui elements
+```
+npm install react-native-elements --save
+```
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.
