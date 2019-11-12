@@ -135,10 +135,10 @@ export default class AddListingPage extends React.Component {
         this.createListingInDB()
         .then((response) => {
           // Update Listings from server instead of locally.
-          this.resetState();
           this.props.getListings();
           this.props.centerMap(this.state.latitude, this.state.longitude);
           this.setModalVisible(false);
+          this.resetState();
         });
       }
     }
