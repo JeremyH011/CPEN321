@@ -7,6 +7,8 @@ import tabBarIcon from '../components/tabBarIcon';
 import Listing from '../classes/Listing';
 import { AsyncStorage } from 'react-native';
 import { DB_URL } from '../key';
+import ListingPage from '../components/ListingPage';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class Listings extends React.Component {
     static navigationOptions = {
@@ -15,8 +17,23 @@ export default class Listings extends React.Component {
     };
 
     state = {
+        selectedListing: null,
+        selectedListingModalVisible: false,
         userId: null,
         addedListings: []
+    }
+
+    handleListingSelect = (listing, displayModal) => {
+      if (this.state.selectedListing) {
+        this.state.selectedListing.tapped = false;
+      }
+  
+      this.setState({selectedListing:listing,
+                     selectedListingModalVisible: displayModal});
+    }
+  
+    handleCloseModal = () => {
+      this.setState({selectedListingModalVisible: false});
     }
 
     onTabPressed(){
@@ -47,7 +64,6 @@ export default class Listings extends React.Component {
           }).then((response) => response.json())
             .then((responseJson) => {
               this.populateAddedListings(responseJson);
-              console.log(this.state.addedListings);
             })
             .catch((error) => {
               console.error(error);
@@ -76,14 +92,21 @@ export default class Listings extends React.Component {
               <ScrollView style={styles.scrollView}>
               {
                   this.state.addedListings.map((item)=>(
-                  <Text style={styles.boxItem}>
-                      Title: {item.title}{"\n"}
-                      $/month: {item.price}{"\n"}
-                      Address: {item.address}{"\n"}
-                  </Text>
+                  <TouchableOpacity onPress={() => this.handleListingSelect(item, true)}>
+                      <Text style={styles.boxItem}>
+                        Title: {item.title}{"\n"}
+                        $/month: {item.price}{"\n"}
+                        Address: {item.address}{"\n"}
+                        </Text>
+                  </TouchableOpacity>
                   ))
               }
               </ScrollView>
+              <ListingPage
+              {...this.state.selectedListing}
+              visible={this.state.selectedListingModalVisible}
+              close={this.handleCloseModal}
+              />
             </View>
           );
     }
