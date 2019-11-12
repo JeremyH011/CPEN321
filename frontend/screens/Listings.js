@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView} from 'react-native';
+import {NavigationEvents} from 'react-navigation';
 
 import tabBarIcon from '../components/tabBarIcon';
 import Listing from '../classes/Listing';
@@ -16,23 +17,34 @@ export default class Listings extends React.Component {
         addedListings: []
     }
 
-    componentDidMount(){
+    onTabPressed(){
         this.setUserId();
-        this.getAddedListings();
     }
 
     async setUserId(){
         this.setState({userId: await AsyncStorage.getItem('userId')});
+        this.getAddedListings();
+    }
+
+    populateAddedListings = (listingsJson) => {
+      this.setState({
+        addedListings: listingsJson.map((listingJson) => new Listing(listingJson))
+      });
     }
 
     getAddedListings(){
-        fetch(DB_URL+`get_listings_by_usedId?userId=${this.state.userId}`, {
-            method: "GET",
+        fetch(DB_URL+`get_listings_by_usedId/`, {
+            method: "POST",
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: this.state.userId
+            }),
           }).then((response) => response.json())
             .then((responseJson) => {
-              this.setState({
-                addedListings: responseJson.map((listingJson) => new Listing(listingJson))
-              });
+              this.populateAddedListings(responseJson);
               console.log(this.state.addedListings);
             })
             .catch((error) => {
@@ -43,31 +55,33 @@ export default class Listings extends React.Component {
     render() {
         return (
             <View>
+              <NavigationEvents
+                onWillFocus={payload => {
+                  console.log("will focus", payload);
+                  this.onTabPressed();
+                }}
+              />
               <View style={styles.title}>
-                <Text style={styles.textTitle}>Listings</Text>
-              </View>
+                <Text style={styles.textTitle}>Your Listings</Text>
+              </View>       
               {this.state.addedListings.length == 0 && 
                     <View style={styles.noAddedListing}>
                         <Text style={styles.noAddedListingText}>Your Added Listings Will be Here</Text>
                     </View>
               }
-              
-              {this.state.addedListings.length > 0 &&
-                    <View style={styles.modal}>
-                            <Text>Your Added Listings</Text>
-                            <ScrollView style={styles.scrollView}>
-                            {
-                                this.state.recommended.map((item)=>(
-                                <Text style={styles.boxItem} key={item.email}>
-                                    Title: {item.titlee}{"\n"}
-                                    $/month: {item.price}{"\n"}
-                                    Address: {item.address}{"\n"}
-                                </Text>
-                                ))
-                            }
-                            </ScrollView>
-                    </View>
-              }
+              <View style={styles.modal}>
+                      <ScrollView style={styles.scrollView}>
+                      {
+                          this.state.addedListings.map((item)=>(
+                          <Text style={styles.boxItem}>
+                              Title: {item.title}{"\n"}
+                              $/month: {item.price}{"\n"}
+                              Address: {item.address}{"\n"}
+                          </Text>
+                          ))
+                      }
+                      </ScrollView>
+              </View>
             </View>
           );
     }
@@ -85,14 +99,15 @@ const styles = StyleSheet.create({
         marginTop: 30,
         marginBottom: 30,
         justifyContent: 'center',
-        borderWidth: 1,
     },
     noAddedListingText: {
       fontSize: 28,
       textAlign: 'center',
+      justifyContent: 'center',
+      margin: 15
     },
     modal: {
-      flex: 1,
+      flex: 14,
       alignItems: 'flex-start',
       justifyContent: 'center',
     },
@@ -116,6 +131,5 @@ const styles = StyleSheet.create({
     boxItem:{
       fontSize:20,
       margin: '5%',
-      borderWidth: 1,
     }
 });
