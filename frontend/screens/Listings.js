@@ -34,6 +34,8 @@ export default class Listings extends React.Component {
   
     handleCloseModal = () => {
       this.setState({selectedListingModalVisible: false});
+      this.state.addedListings = [];
+      this.getAddedListings();
     }
 
     onTabPressed(){
@@ -103,6 +105,7 @@ export default class Listings extends React.Component {
               {...this.state.selectedListing}
               visible={this.state.selectedListingModalVisible}
               close={this.handleCloseModal}
+              currentUserId = {this.state.userId}
               />
             </View>
           );
@@ -127,6 +130,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
       margin:'5%',
+      marginBottom: 10
     },
     row: {
         flexDirection: 'row',

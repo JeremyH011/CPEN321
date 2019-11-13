@@ -133,6 +133,18 @@ app.post('/get_listings_by_usedId', jsonParser, (req, res) => {
 	});
 });
 
+app.post('/delete_listing', jsonParser, (req, res) => {
+	console.log(req.body);
+
+    var o_id = getOIdFromUserId(req.body.listingId);
+
+  db.collection("listings").remove({
+           _id: { $eq : o_id },
+        });
+        
+      res.send(200);
+});
+
 function getOIdFromUserId(userId){
     var mongo = require('mongodb');
     console.log(userId);
