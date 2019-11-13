@@ -129,8 +129,7 @@ const styles = StyleSheet.create({
       margin: 15
     },
     scrollView: {
-      margin:'5%',
-      marginBottom: 10
+      margin:'10%',
     },
     row: {
         flexDirection: 'row',
