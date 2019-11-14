@@ -16,6 +16,7 @@ function wp (percentage) {
     return Math.round(value);
 }
 
+const slideHeight = viewportHeight * 0.36;
 const slideWidth = wp(75);
 const itemHorizontalMargin = wp(2);
 
@@ -27,12 +28,15 @@ export default class ListingPage extends React.Component {
   _renderItem ({item, index}) {
     const url = { uri: DB_URL + item.path.replace(/\\/g, "/")};
     return (
-      <Image key={index} source = {url} style = {{height: 300, resizeMode : 'center', margin: 5 }}/>
+      <Image source = {url} style = {{height: 300, resizeMode : 'center', margin: 5 }}/>
     );
   }
 
   render() {
       const item = this.props.photos;
+      if(item != null){
+        console.log(item);
+      }
       return (
         <Modal
           visible= {this.props.visible}
