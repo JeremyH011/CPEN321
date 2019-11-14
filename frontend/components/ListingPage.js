@@ -5,7 +5,8 @@ import {Modal,
         Dimensions,
         StyleSheet,
         ScrollView,
-        Image} from 'react-native';
+        Image,
+        Button} from 'react-native';
 import {DB_URL} from '../key';
 import Carousel from 'react-native-snap-carousel';
 
@@ -30,6 +31,28 @@ export default class ListingPage extends React.Component {
     return (
       <Image source = {url} style = {{height: 300, resizeMode : 'center', margin: 5 }}/>
     );
+  }
+
+  deleteListing = () => {
+    fetch(DB_URL+`delete_listing/`, {
+      method: "POST",
+      headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          listingId: this.props.listingId
+      }),
+    }).then((response) => {
+      if(response.status == 200)
+      {
+        alert("Listing Deleted");
+        this.props.close();
+      }
+    })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   render() {
@@ -63,6 +86,9 @@ export default class ListingPage extends React.Component {
               <Text style={styles.text}>Maps URL : {this.props.mapsUrl}</Text>
             </ScrollView>
           </View>
+          {this.props.currentUserId == this.props.userId &&
+            <Button color='#BA55D3' title='Delete' onPress = {() => this.deleteListing()}></Button>
+          }
         </Modal>
       );
   }
