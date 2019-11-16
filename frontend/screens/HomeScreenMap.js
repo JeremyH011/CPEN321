@@ -94,7 +94,7 @@ async getToken() {
           await AsyncStorage.setItem('fcmToken', fcmToken);
       }
   }
-  this.setState({userId: await AsyncStorage.getItem('userId')}); 
+  this.setState({userId: await AsyncStorage.getItem('userId')});
   this.addFCMTokenToDB(fcmToken, this.state.userId);
 }
 
@@ -229,7 +229,7 @@ Alert.alert(
             style={styles.scrollView}>
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
-              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
+              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap} userId={this.state.userId} getListings={this.getListings}/>
               <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
               <SearchFilterPage ref='searchFilterPopup' userId = {this.state.userId} centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
               <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>

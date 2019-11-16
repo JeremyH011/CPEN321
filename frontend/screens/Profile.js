@@ -36,6 +36,7 @@ export default class Profile extends React.Component {
       let id = await AsyncStorage.getItem('userId');
       this.setState({userId: id});
       this.getUserInfo({"userId":this.state.userId});
+      console.log("attempting to get userdata\n");
     }
 
     getUserInfo(body){
@@ -46,6 +47,7 @@ export default class Profile extends React.Component {
             this.setState({
               userInfo: responseJson.map((userJson) => new User(userJson))
             });
+            console.log("User info:");
             console.log(this.state.userInfo);
           })
           .catch((error) => {
@@ -58,7 +60,8 @@ export default class Profile extends React.Component {
 
     render() {
       if (!this.state.loadedData) {
-        this.setState({loadedData: true});
+        console.log("Have not loaded data\n");
+        //this.setState({loadedData: true});
       //  this.setState({modalVisible: true});
         this.getUserData();
       }
