@@ -4,6 +4,7 @@ import { FAB } from 'react-native-paper';
 
 const SearchFilterButton = props => (
   <FAB
+    testID={props.testID}
     style={styles.fab}
     icon="search"
     onPress={props.onSearchFilterClicked}

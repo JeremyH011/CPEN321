@@ -47,11 +47,11 @@ export default class Recommended extends React.Component {
             <View style={styles.title}>
               <Text style={styles.textTitle}>RECOMMENDED</Text>
             </View>
-            <View style={styles.modal}>
+            <View testID={this.props.testID} style={styles.modal}>
               <ScrollView style={styles.scrollView}>
                 {
                   this.state.recommended.map((item)=>(
-                    <Text style={styles.boxItem} key={item.email}>
+                    <Text testID="recommended_roomate" style={styles.boxItem} key={item.email}>
                       Name: {item.name}{"\n"}
                       Email: {item.email}
                     </Text>
@@ -60,7 +60,7 @@ export default class Recommended extends React.Component {
               </ScrollView>
             </View>
             <View style={styles.row}>
-                <TouchableOpacity style={styles.modalButton} onPress={() => {this.setModalVisible(false);}}>
+                <TouchableOpacity testID="recommended_roomates_back_button" style={styles.modalButton} onPress={() => {this.setModalVisible(false);}}>
                     <Text style={styles.text}>Back</Text>
                 </TouchableOpacity>
             </View>

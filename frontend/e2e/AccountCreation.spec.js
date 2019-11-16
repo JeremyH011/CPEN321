@@ -61,9 +61,84 @@ describe('New account', () => {
     await expect(element(by.id('map_screen'))).toBeVisible();
   });
 
+  // Check no recommended roommates
+  it('should check recommended roommates and see none', async () => {
+    await expect(element(by.id('map_screen'))).toBeVisible();
+
+    const recommendedRoomatesButton = element(by.id("recommended_roommates_button"));
+    await expect(recommendedRoomatesButton).toBeVisible();
+    recommendedRoomatesButton.tap();
+
+    await expect(element(by.id('recommended_roommates_page'))).toBeVisible();
+
+    await expect(element(by.id('recommended_roomate'))).toNotExist();
+
+    const recommendedRoomatesBackButton = element(by.id("recommended_roomates_back_button"));
+    await expect(recommendedRoomatesBackButton).toBeVisible();
+    recommendedRoomatesBackButton.tap();
+
+    await expect(element(by.id('map_screen'))).toBeVisible();
+  });
+
+  const test_search_address = "manitoba";
+
+  // Search for address
+  it('should make a search for listings', async () => {
+    await expect(element(by.id('map_screen'))).toBeVisible();
+
+    const searchButton = element(by.id("search_button"));
+    await expect(searchButton).toBeVisible();
+    searchButton.tap();
+
+    await expect(element(by.id('search_page'))).toBeVisible();
+
+    const addressInput = element(by.id('address_input'));
+    await expect(addressInput).toBeVisible();
+    addressInput.typeText(test_search_address+"\n");
+
+    await expect(element(by.id('address_scrollview'))).toBeVisible();
+
+    const autocompleteItem = element(by.id("location_item")).atIndex(0);
+    await expect(autocompleteItem).toBeVisible();
+    await autocompleteItem.tap();
+
+    const searchListingsButton = element(by.id('search_listings_button'));
+    await expect(searchListingsButton).toBeVisible();
+    await searchListingsButton.tap();
+
+    const alert = element(by.text("OK"));
+
+    const startDate = new Date();
+    await expect(alert).toBeVisible();
+    const endDate = new Date();
+    console.log("GOT SEARCH RESULTS IN " + (endDate.getTime() - startDate.getTime()) / 1000 + " SECONDS");
+
+    await alert.tap();
+    await expect(element(by.id('map_screen'))).toBeVisible();
+  });
+
+  // Check that there are recommended roomates
+  it('should check recommended roommates and see some', async () => {
+    await expect(element(by.id('map_screen'))).toBeVisible();
+
+    const recommendedRoomatesButton = element(by.id("recommended_roommates_button"));
+    await expect(recommendedRoomatesButton).toBeVisible();
+    recommendedRoomatesButton.tap();
+
+    await expect(element(by.id('recommended_roommates_page'))).toBeVisible();
+
+    await expect(element(by.id('recommended_roomate')).atIndex(0)).toExist();
+
+    const recommendedRoomatesBackButton = element(by.id("recommended_roomates_back_button"));
+    await expect(recommendedRoomatesBackButton).toBeVisible();
+    recommendedRoomatesBackButton.tap();
+
+    await expect(element(by.id('map_screen'))).toBeVisible();
+  });
+
   const test_title = "test_title";
-  const test_price = "1234";
   const test_address = "4333";
+  const test_price = "1234";
 
   // Adding a listing
   it('should create a new listing', async () => {

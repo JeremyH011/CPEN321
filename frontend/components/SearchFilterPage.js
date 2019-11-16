@@ -156,7 +156,7 @@ export default class SearchFilterPage extends React.Component {
             transparent={false}
             visible={this.state.modalVisible}
             onRequestClose={() => { this.setModalVisible(false); } }>
-                <View style={styles.title}>
+                <View testID={this.props.testID} style={styles.title}>
                     <Text style={styles.textTitle}>Narrow your Search</Text>
                 </View>      
                 <FilterSlider
@@ -205,6 +205,7 @@ export default class SearchFilterPage extends React.Component {
                             <React.Fragment>
                             {this.setState()}
                                 <TextInput ref='addressTextInput'
+                                    testID="address_input"
                                     value={this.state.addressField}
                                     style={styles.modalTextInput}
                                     placeholder="Address"
@@ -213,9 +214,11 @@ export default class SearchFilterPage extends React.Component {
 
                                 { this.state.scrollViewVisible == true &&
                                 <ScrollView
+                                    testID="address_scrollview"
                                     style={styles.scrollView}>
                                     {locationResults.map(element => (
                                         <LocationItem
+                                        testID="location_item"
                                         setNewListingAddress={this.setNewListingAddress}
                                         {...element}
                                         key={element.id}
@@ -229,7 +232,7 @@ export default class SearchFilterPage extends React.Component {
                         )}
                     </GoogleAutoComplete>
                 </View>
-                <Button title='Search' color='#BA55D3' style={styles.modalButton} onPress={() => { this.handleSearch()}}/>
+                <Button testID="search_listings_button" title='Search' color='#BA55D3' style={styles.modalButton} onPress={() => { this.handleSearch()}}/>
                 <Button title='Cancel' color='#8A2BE2' style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }/>
             </Modal>
         );
