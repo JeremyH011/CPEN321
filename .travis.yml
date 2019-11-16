@@ -4,6 +4,5 @@ services:
 before_install:
   - cd ./backend
 before_script:
-  - cd ./backend
   - sleep 15
   - mongo mydb_test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
