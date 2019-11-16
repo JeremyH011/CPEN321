@@ -235,7 +235,7 @@ Alert.alert(
               <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
               <RecommendedListing ref='getRecommendedPopup'/>
-              <AddListingPage ref='addListingPopup' userId = {this.state.userId} addLocalMarker = {this.addLocalMarker} centerMap={this.centerMap} refresh={this.getListings}/>
+              <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </ScrollView>
     );

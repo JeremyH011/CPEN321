@@ -6,13 +6,16 @@ import {View,
     TextInput,
     TouchableOpacity,
     ScrollView,
-    ActivityIndicator } from 'react-native';
+    ActivityIndicator,
+    Button,
+    Image} from 'react-native';
 import { API_KEY, DB_URL } from '../key';
 import { GoogleAutoComplete } from 'react-native-google-autocomplete';
 import LocationItem from './LocationItem';
 import { Dropdown } from 'react-native-material-dropdown';
 import TextInputMask from 'react-native-text-input-mask';
 import Listing from '../classes/Listing';
+import ImagePicker from 'react-native-image-picker';
 
 export default class AddListingPage extends React.Component {
     // @todo: change this so that fields related to listing are
@@ -30,6 +33,8 @@ export default class AddListingPage extends React.Component {
         bed: 0,
         bath: 0,
         maps_url: '',
+        photos: [],
+        latest_photo: null,
     }
 
     setNewListingAddress = addressObject => {
@@ -40,6 +45,37 @@ export default class AddListingPage extends React.Component {
                         scrollViewVisible: false});
     }
 
+    handleChoosePhoto(){
+      const options = {
+        noData: true,
+      }
+      ImagePicker.launchImageLibrary(options, response => {
+        if (response.uri) {
+          this.state.photos.push(response);
+          this.setState({latest_photo:response});
+        }
+      })
+    }
+
+    createFormData(body){
+      let data = new FormData();
+
+      this.state.photos.forEach((photo, i) => {
+        data.append("photo[]", {
+          name: photo.fileName,
+          type: photo.type,
+          uri:
+            Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
+        });
+      });
+
+      Object.keys(body).forEach(key => {
+        data.append(key, body[key]);
+      });
+
+      return data;
+    };
+
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
     }
@@ -49,44 +85,88 @@ export default class AddListingPage extends React.Component {
         this.setState({addressField: address, scrollViewVisible: true});
     }
 
+    resetState = () => {
+      this.setState({
+        addressField: '',
+        title: '',
+        latitude: 0.0,
+        longitude: 0.0,
+        price: 0,
+        bed: 0,
+        bath: 0,
+        maps_url: '',
+        photos: [],
+        latest_photo: null,
+      });
+    }
+
+    ensureFormComplete() {
+      if(this.state.addressField == '')
+      {
+        alert("Address field is empty");
+        return false;
+      }
+      else if(this.state.latitude == 0.0 || this.state.longitude == 0.0)
+      {
+        alert("Please use autocomplete dropdown to fill out form");
+        return false;
+      }
+      else if(this.state.title == '') 
+      {
+        alert("Title field is empty");
+        return false;
+      }
+      else if(this.state.price == 0) 
+      {
+        alert("Price can't be 0");
+        return false;
+      }
+      else if(this.state.photos.length == 0)
+      {
+        alert("Need at least one photo");
+        return false;
+      }
+      return true;
+    }
+
     handleAddingNewListing() {
-      this.createListingInDB();
-      this.props.addLocalMarker(new Listing(
-        {"title" : this.state.title,
-         "latitude" : this.state.latitude,
-         "longitude" : this.state.longitude,
-         "address" : this.state.address,
-         "price" : this.state.price,
-         "numBeds" : this.state.bed,
-         "numBaths" : this.state.bath,
-         "maps_url" : this.state.maps_url}
-      ));
-      this.props.centerMap(this.state.latitude, this.state.longitude);
-      this.setModalVisible(false);
+      if(this.ensureFormComplete())
+      {
+        this.createListingInDB()
+        .then((response) => {
+          // Update Listings from server instead of locally.
+          this.props.getListings();
+          this.props.centerMap(this.state.latitude, this.state.longitude);
+          this.setModalVisible(false);
+          this.resetState();
+        });
+      }
     }
 
     createListingInDB(){
-        fetch(DB_URL+'create_listing/', {
+        let body = {
+            title: this.state.title,
+            address: this.state.addressField,
+            latitude: this.state.latitude,
+            longitude: this.state.longitude,
+            price: this.state.price,
+            numBeds: this.state.bed,
+            numBaths: this.state.bath,
+            maps_url: this.state.maps_url,
+            userId: this.props.userId,
+        };
+        return fetch(DB_URL+'create_listing/', {
             method: 'POST',
             headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
             },
-            body: JSON.stringify({
-                title: this.state.title,
-                address: this.state.addressField,
-                latitude: this.state.latitude,
-                longitude: this.state.longitude,
-                price: this.state.price,
-                numBeds: this.state.bed,
-                numBaths: this.state.bath,
-                maps_url: this.state.maps_url,
-                userId: this.state.userId,
-            }),
+            body: this.createFormData(body),
         });
     }
 
     render() {
+        const {latest_photo} = this.state;
+        const length = this.state.photos.length - 1 < 0 ? 0 : this.state.photos.length - 1;
         return (
             <Modal
             animationType="slide"
@@ -149,13 +229,29 @@ export default class AddListingPage extends React.Component {
                             </React.Fragment>
                         )}
                     </GoogleAutoComplete>
+                  <View style={styles.row}>
+                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
+                          <Text>Add Listing</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
+                          <Text>Cancel</Text>
+                      </TouchableOpacity>
+                  </View>
+                  <View style={styles.row}>
+                    <TouchableOpacity style={styles.modalButton} onPress={() => {this.handleChoosePhoto();}}>
+                      <Text> Choose Photo(s) </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{alignItems: 'center', justifyContent: 'center' }}>
+                  {latest_photo && (
+                    <Image
+                      source={{ uri: latest_photo.uri }}
+                      style={{ width: 150, height: 150 }}
+                    />
+                  )}
+                </View>
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
-                        <Text>Add Listing</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
-                        <Text>Cancel</Text>
-                    </TouchableOpacity>
+                  <Text>and {length} more photos...</Text>
                 </View>
                 </View>
             </Modal>

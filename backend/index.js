@@ -1,11 +1,12 @@
 const express = require('express');
-const app = express();
 const mongoclient = require('mongodb').MongoClient;
+const multer = require('multer')
 const bodyParser = require('body-parser');
 const geolib = require('geolib');
 const admin = require('firebase-admin');
 const serviceAccount = require("./firebase.json");
 
+const app = express();
 var constants = require("./constants");
 
 admin.initializeApp({
@@ -14,10 +15,25 @@ admin.initializeApp({
 });
 
 var jsonParser = bodyParser.json();
+app.use(bodyParser.json())
 
 mongoclient.connect(constants.MONGO_DB_URL,(err,client)=> {db = client.db(constants.MONGO_DB_NAME)});
 
+app.use('/public/images', express.static('public/images'));
+
+const Storage = multer.diskStorage({
+  destination(req, file, callback) {
+    callback(null, './public/images')
+  },
+  filename(req, file, callback) {
+    callback(null, `${file.fieldname}_${Date.now()}_${file.originalname}`)
+  },
+});
+
+const upload = multer({ storage: Storage });
+
 app.post('/signup', jsonParser, (req,res) => {
+	req.body['date'] = new Date(Date.now()).toISOString();
 	console.log(req.body);
 	db.collection("users").find({"email":req.body.email}).count(function (err, count){
 		if(err) {
@@ -101,12 +117,14 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 	});
 });
 
-app.get('/get_user_by_id', jsonParser, (req, res) => {
+app.post('/get_listings_by_usedId', jsonParser, (req, res) => {
 	console.log(req.body);
 
     var o_id = getOIdFromUserId(req.body.userId);
 
-  db.collection("users").find(o_id).toArray((err,result) => {
+  db.collection("listings").find({
+           userId: { $eq : o_id },
+        }).toArray((err,result) => {
 		if(err){
 			res.sendStatus(400);
 		}
@@ -116,19 +134,41 @@ app.get('/get_user_by_id', jsonParser, (req, res) => {
 	});
 });
 
+app.post('/delete_listing', jsonParser, (req, res) => {
+	console.log(req.body);
+
+    var o_id = getOIdFromUserId(req.body.listingId);
+
+  db.collection("listings").remove({
+           _id: { $eq : o_id },
+        });
+
+      res.send(200);
+});
+
 function getOIdFromUserId(userId){
     var mongo = require('mongodb');
+    console.log(userId);
     return new mongo.ObjectID(userId);
 }
 
-app.post('/create_listing', jsonParser, (req,res)=>{
-	console.log("Create listing\n");
+app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>{
+	req.body['date'] = new Date(Date.now()).toISOString();
 	console.log(req.body);
+	var request_body = req.body;
+	request_body['latitude'] = parseFloat(req.body.latitude);
+	request_body['longitude'] = parseFloat(req.body.longitude);
+	request_body['price'] = parseFloat(req.body.price);
+	request_body['numBeds'] = parseInt(req.body.numBeds);
+	request_body['numBaths'] = parseInt(req.body.numBaths);
+	request_body['photos'] = req.files;
+	request_body['userId'] = getOIdFromUserId(req.body.userId);
 
-    req.body.userId = getOIdFromUserId(req.body.userId);
-
-	db.collection("listings").insertOne(req.body, (err, result) => {
-		db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
+	console.log("Create listing\n");
+	console.log(req.files);
+	console.log(request_body);
+  db.collection("listings").insertOne(request_body, (err, result) => {
+	db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
 			var registrationTokens = result.map(user => user.fcmToken);
 			var notificationBody = req.body.address + "\n$" + req.body.price + "/month\n" + req.body.numBeds + " bedrooms";
 			var message = {
@@ -149,21 +189,140 @@ app.post('/create_listing', jsonParser, (req,res)=>{
     				}
   			});
 		});
-		res.send("Saved");
-	});
+  });
+
+  res.send("Saved");
 });
 
+const NUM_LATEST_SEARCHES = 5;
+const NUM_FILTERED_BY_PRICE = 100;
+const FILTER_RADIUS_KM = 10;
+const M_IN_KM = 1000;
+const NUM_RECOMMENDED_USERS = 10;
 app.get('/get_recommended_roommates', jsonParser, (req, res) => {
 	console.log("GETTING USERS WITH QUERY: ");
 	console.log(req.query);
 
-    // not used for now but this is how u will get ur own id
-	/*var mongo = require('mongodb');
-	var o_id = new mongo.ObjectID(req.body.userId);*/
+	var request_body = {};
+	var OId = getOIdFromUserId(req.query.userId);
+	request_body['userId'] = OId;
 
-	db.collection("users").find().toArray((err,result) => {
-		console.log(result);
-		res.send(result);
+  // Find the latest NUM_LATEST_SEARCHES belonging to this user
+	db.collection("searchHistory").find(request_body)
+                                .sort({date: -1})
+                                .limit(NUM_LATEST_SEARCHES)
+                                .toArray((err, result) => {
+		if(err){
+			return res.sendStatus(400);
+		}
+
+    // Find all the searches that have an address
+		var arrayOfLatLong = result.filter(search => doesSearchHaveLocationFilter(search))
+                               .map(function(listing) {
+                                   return {latitude: listing.latitude, longitude: listing.longitude};
+                                 });
+
+    // Get the centroid of the latest searches
+		var center = null;
+		if(arrayOfLatLong.length != 0){
+      center = geolib.getCenterOfBounds(arrayOfLatLong);
+		}
+
+    // Determine the price range to filter recommended users on
+		var min = PRICE_MAX;
+		var max = 0;
+		for(let i = 0; i < result.length; i ++){
+			if(result[i].priceMin < min){
+				min = result[i].priceMin;
+			}
+			if(result[i].priceMax > max){
+				max = result[i].priceMax;
+			}
+		}
+
+		var initial_collection_history = {$and: [
+                                        {$or: [
+                                          {$and: [
+                                            {priceMin: {$gte: min}},
+                                            {priceMin: {$lte: max}}
+                                          ]},
+                                          {$and: [
+                                            {priceMax: {$gte: min}},
+                                            {priceMax: {$lte: max}}
+                                          ]}
+                                        ]},
+                                        {userId: {$ne: OId}
+                                      }]
+                                    };
+
+    // Find all the users with an overlapping price query
+		db.collection("searchHistory").find(initial_collection_history)
+                                  .sort({date : -1})
+                                  .limit(NUM_FILTERED_BY_PRICE)
+                                  .toArray((err, result) => {
+
+      // Filter out irrelevant users based on centroid
+			var addr_filtered = result.filter(function(search) {
+        // If the user has no centroid, then consider all NUM_FILTERED_BY_PRICE users
+				if (center == null) {
+					return true;
+				} else {
+          // If the user did have a centroid, then disregard all searches that did not
+          // search by address, or that are more than FILTER_RADIUS_KM kilometers away
+					if (search.latitude != null && search.longitude != null) {
+						return geolib.isPointWithinRadius({latitude : search.latitude, longitude : search.longitude},
+					                                    {latitude : center.latitude, longitude : center.longitude},
+					                                    FILTER_RADIUS_KM*M_IN_KM);
+					} else {
+						return false;
+					}
+				}
+			});
+
+      // Key: UserId, Value: Score
+      var score_hash = new Map();
+
+      // Stage 1 of scoring: (Score the users based on overlapping price)
+      // min <= priceMin <= max : +1 score
+      // min <= priceMax <= max : +1 score
+			addr_filtered.forEach(function(element) {
+				var score = 0;
+				if (element.priceMin >= min && element.priceMax <= max) {
+					score++;
+				}
+
+				if (element.priceMax >= min && element.priceMax <= max) {
+					score++;
+				}
+
+        // Convert the ObjectId to string, to get correct hash, because
+        // object ids with same string id could have different hashes if in
+        // different ObjectID objects
+				var hash_key = element.userId.toString();
+
+				if (score_hash.has(hash_key)) {
+					score_hash.set(hash_key, score_hash.get(hash_key) + score);
+				} else {
+					score_hash.set(hash_key, score);
+				}
+			});
+
+      // Array.from returns [..., {userId,score} ,...], so sort by score
+      // and return the list of userIds of the first 10 users with the highest score.
+			var score_arr_sorted = Array.from(score_hash).sort(function(a,b) {
+                                                       return b[1] - a[1];
+                                                     })
+			                                             .slice(0,NUM_RECOMMENDED_USERS)
+			                                             .map(user => getOIdFromUserId(user[0]));
+
+			db.collection("users").find({'_id' : {$in : score_arr_sorted}}).toArray((err, result) => {
+				if (err) {
+					return res.send(400);
+				} else {
+					return res.send(result);
+				}
+			});
+		});
 	});
 });
 
@@ -176,6 +335,7 @@ const DEFAULT_LAT_DELTA = 0.0622;
 const DEFAULT_LONG_DELTA = 0.0421;
 const VIEWPORT_BUFFER = 0.005;
 app.post('/save_search_history', jsonParser, (req,res)=>{
+        req.body['date'] = new Date(Date.now()).toISOString();
 	console.log("Save Search History\n");
 	console.log(req.body);
 
@@ -201,9 +361,13 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
 
             if (locationFiltered.length == 0 && hasLocationFilter == true)
             {
-                // return default deltas and centered at passed in address since no results found
-                res.send({latitude: req.body.latitude, longitude: req.body.longitude,
-                          latitudeDelta: DEFAULT_LAT_DELTA, longitudeDelta: DEFAULT_LONG_DELTA, numResults: 0});
+
+								if(saveSearchHistory(req) == -1){
+									return res.sendStatus(400);
+								}
+								// return default deltas and centered at passed in address since no results found
+								res.send({latitude: req.body.latitude, longitude: req.body.longitude,
+													latitudeDelta: DEFAULT_LAT_DELTA, longitudeDelta: DEFAULT_LONG_DELTA, numResults: 0});
             }
             else
             {
@@ -214,6 +378,9 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
                 }
                 if(locationFiltered.length == 0)
                 {
+										if(saveSearchHistory(req) == -1){
+											return res.sendStatus(400);
+										}
                     // return default deltas and centered at passed in address since no results found
                     return res.send({latitude: req.body.latitude, longitude: req.body.longitude,
                               latitudeDelta: DEFAULT_LAT_DELTA, longitudeDelta: DEFAULT_LONG_DELTA, numResults: 0});
@@ -228,14 +395,9 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
 
                 if(!isDefaultSearch(req))
                 {
-
-                    req.body.userId = getOIdFromUserId(req.body.userId);
-                    db.collection("searchHistory").insertOne(req.body, (err, result) => {
-                        if (err)
-                        {
-                            return res.sendStatus(400);
-                        }
-                    });
+                    if(saveSearchHistory(req) == -1){
+											return res.sendStatus(400);
+										}
                 }
 
                 res.send({latitude: center.latitude, longitude: center.longitude,
@@ -245,6 +407,17 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
         }
     });
 });
+
+function saveSearchHistory(req){
+	req.body.userId = getOIdFromUserId(req.body.userId);
+	db.collection("searchHistory").insertOne(req.body, (err, result) => {
+			if (err)
+			{
+					return -1;
+			}
+			return 0;
+	});
+}
 
 function isDefaultSearch(req){
     return req.body.poiRangeMax == POI_RANGE_MAX && req.body.latitude == null && req.body.longitude == null && req.body.bedMin == 0 && req.body.bedMax == BED_MAX &&
@@ -283,6 +456,10 @@ app.post('/get_listings_by_filter', jsonParser, (req, res) => {
         });
 });
 
+function doesSearchHaveLocationFilter(req) {
+    return req.poiRangeMax != POI_RANGE_MAX && req.latitude != null && req.longitude != null;
+}
+
 function doesReqHaveLocationFilter(req) {
     return req.body.poiRangeMax != POI_RANGE_MAX && req.body.latitude != null && req.body.longitude != null;
 }
@@ -303,7 +480,5 @@ function filterForLocations(result, req) {
 }
 
 var server = app.listen(constants.PORT_NUM, ()=> {
-	var host = server.address().address
-	var port = server.address().port
-	console.log("Server running at http://%s:%d", host, port)
+  console.log(server.address());
 });
