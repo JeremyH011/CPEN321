@@ -21,7 +21,7 @@ class LocationItem extends PureComponent {
 
     render() {
         return (
-          <TouchableOpacity style={styles.root} onPress={this._handlePress}>
+          <TouchableOpacity testID={this.props.testID} style={styles.root} onPress={this._handlePress}>
             <Text>{this.props.description}</Text>
           </TouchableOpacity>
         );

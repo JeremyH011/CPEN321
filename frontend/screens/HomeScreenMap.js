@@ -234,9 +234,9 @@ Alert.alert(
               <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
               <SearchFilterPage ref='searchFilterPopup' userId = {this.state.userId} centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
               <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
-              <AddListingButton onAddListing={this.addListingHandler}/>
+              <AddListingButton testID="add_listing_button" onAddListing={this.addListingHandler}/>
               <RecommendedListing ref='getRecommendedPopup'/>
-              <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
+              <AddListingPage testID="add_listing_page" ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </View>
     );

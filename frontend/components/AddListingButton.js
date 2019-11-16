@@ -4,6 +4,7 @@ import { FAB } from 'react-native-paper';
 
 const AddListingButton = props => (
   <FAB
+    testID={props.testID}
     style={styles.fab}
     icon="add"
     onPress={props.onAddListing}
