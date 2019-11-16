@@ -22,12 +22,12 @@ class Welcome extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.buttons} onPress={() => this.props.navigation.navigate('Login')}>
+      <View testID="welcome_screen" style={styles.container}>
+        <TouchableOpacity testID="login_button" style={styles.buttons} onPress={() => this.props.navigation.navigate('Login')}>
           <Text>Login</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.buttons} onPress={() => this.props.navigation.navigate('SignUp')}>
+        <TouchableOpacity testID="signup_button" style={styles.buttons} onPress={() => this.props.navigation.navigate('SignUp')}>
           <Text>Sign Up</Text>
         </TouchableOpacity>
       </View>

@@ -6,6 +6,7 @@ import tabBarIcon from '../components/tabBarIcon';
 
 export default class Profile extends React.Component {
     static navigationOptions = {
+        tabBarTestID: 'profile_tab',
         tabBarIcon: tabBarIcon('md-person'),
     };
 
@@ -17,8 +18,8 @@ export default class Profile extends React.Component {
 
     render() {
         return (
-            <View>
-                <Button title="Logout" onPress={() => this.handleLogOut()}/>
+            <View testID="profile_screen">
+                <Button testID="logout_button" title="Logout" onPress={() => this.handleLogOut()}/>
             </View>
         );
     }

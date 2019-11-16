@@ -52,12 +52,14 @@ class SignUp extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View testID="signup_screen" style={styles.container}>
         <TextInput
+          testID="email_input"
           placeholder="email"
           style={styles.textInput}
           onChangeText={(email) => this.setState({email})}/>
         <TextInput
+          testID="password_input"
           placeholder="password"
           style={styles.textInput}
           onChangeText={(password) => this.setState({password})}/>
@@ -65,7 +67,7 @@ class SignUp extends Component {
           <TouchableOpacity style={styles.buttons} onPress={() => this.props.navigation.navigate('Welcome')}>
             <Text>Go Back</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttons} onPress={() => this.try_signup()}>
+          <TouchableOpacity testID="signup_button" style={styles.buttons} onPress={() => this.try_signup()}>
             <Text>Sign Up!</Text>
           </TouchableOpacity>
         </View>

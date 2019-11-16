@@ -224,7 +224,8 @@ Alert.alert(
 
   render () {
     return (
-          <ScrollView
+          <View
+            testID="map_screen"
             contentInsetAdjustmentBehavior="automatic"
             style={styles.scrollView}>
             <View style={styles.container}>
@@ -237,7 +238,7 @@ Alert.alert(
               <RecommendedListing ref='getRecommendedPopup'/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
-          </ScrollView>
+          </View>
     );
   };
 };
