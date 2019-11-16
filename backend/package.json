@@ -25,5 +25,5 @@
         "coveragePathIgnorePatterns": [
           "/node_modules/", "/public/"
         ]
-   },
+    }
 }
