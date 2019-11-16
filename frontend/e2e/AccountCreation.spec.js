@@ -96,5 +96,15 @@ describe('New account', () => {
 
     await expect(createListingButton).toBeVisible();
     await createListingButton.tap();
+
+    const alert = element(by.text("OK"));
+
+    const startDate = new Date();
+    await expect(alert).toBeVisible();
+    const endDate = new Date();
+    console.log("GOT NOTIFICATION IN " + (endDate.getTime() - startDate.getTime()) / 1000 + " SECONDS");
+
+    await alert.tap();
+    await expect(element(by.id('map_screen'))).toBeVisible();
   });
 });
