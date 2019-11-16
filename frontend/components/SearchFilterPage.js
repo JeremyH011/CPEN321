@@ -73,6 +73,10 @@ export default class SearchFilterPage extends React.Component {
                 this.props.centerMapWithDelta(responseJson.latitude, responseJson.longitude, 
                                                 responseJson.latitudeDelta, responseJson.longitudeDelta);
             }
+            else
+            {
+                this.resetState();
+            }
         })
         .catch((error) => {
             console.error(error);
