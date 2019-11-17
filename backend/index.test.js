@@ -118,6 +118,40 @@ it('Unit Test: Should find specific listing just created.', async done =>{
   done();
 });
 
+it('Unit Test: Find No Listings through invalid filter.', async done =>{
+  body = {userId: tempUserId,
+          bedMin: 3,
+          bedMax: 4,
+          bathMin: 3,
+          bathMax: 4,
+          priceMin: 100,
+          priceMax: 200
+        };
+  const response = await request.post('/get_listings_by_filter')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(0);
+  done();
+});
+
+it('Unit Test: Find Listing through valid filter.', async done =>{
+  body = {userId: tempUserId,
+          bedMin: 1,
+          bedMax: 2,
+          bathMin: 1,
+          bathMax: 2,
+          priceMin: 200,
+          priceMax: 700
+        };
+  const response = await request.post('/get_listings_by_filter')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(1);
+  done();
+});
+
 it('Unit Test: Delete Listing', async done =>{
   body = {listingId: tempListingId};
   const response = await request.post('/delete_listing')
