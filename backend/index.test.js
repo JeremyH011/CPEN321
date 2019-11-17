@@ -152,6 +152,66 @@ it('Unit Test: Find Listing through valid filter.', async done =>{
   done();
 });
 
+it('Unit Test: Find No Listings through invalid filter. Save search history.', async done =>{
+  body = {userId: tempUserId,
+          bedMin: 3,
+          bedMax: 4,
+          bathMin: 3,
+          bathMax: 4,
+          priceMin: 100,
+          priceMax: 200,
+          poiRangeMax: 10,
+          latitude: 0,
+          longitude: 0
+        };
+  const response = await request.post('/save_search_history')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.latitude).toBe(0);
+  done();
+});
+
+it('Unit Test: Find Listing through valid filter. Save search history', async done =>{
+  body = {userId: tempUserId,
+          bedMin: 1,
+          bedMax: 2,
+          bathMin: 1,
+          bathMax: 2,
+          priceMin: 200,
+          priceMax: 700,
+          poiRangeMax: 10,
+          latitude: 0,
+          longitude: 0
+        };
+  const response = await request.post('/save_search_history')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.latitude).toBe(0);
+  done();
+});
+
+it('Unit Test: Find Listing through default filter. Save search history', async done =>{
+  body = {userId: tempUserId,
+          bedMin: 0,
+          bedMax: 5,
+          bathMin: 0,
+          bathMax: 5,
+          priceMin: 0,
+          priceMax: 5000,
+          poiRangeMax: 20,
+          latitude: null,
+          longitude: null
+        };
+  const response = await request.post('/save_search_history')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.latitude).toBe(0);
+  done();
+});
+
 it('Unit Test: Delete Listing', async done =>{
   body = {listingId: tempListingId};
   const response = await request.post('/delete_listing')
