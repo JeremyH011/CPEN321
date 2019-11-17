@@ -71,11 +71,11 @@ it('Unit Test: Empty List returned, user has no listings posted', async done =>{
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(0);
 
-  const response = await request.post('/get_listings_by_id')
+  const response2 = await request.post('/get_listings_by_id')
                                 .send(body)
                                 .set('Accept','application/json');
-  expect(response.status).toBe(200);
-  expect(response.body.length).toBe(0);
+  expect(response2.status).toBe(200);
+  expect(response2.body.length).toBe(0);
   done();
 });
 
