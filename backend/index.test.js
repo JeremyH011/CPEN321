@@ -2,6 +2,8 @@ const app = require('./app'); // Link to your server file
 const supertest = require('supertest');
 const request = supertest(app);
 
+let tempUserId = ''
+
 it('Unit Test: GETS the test endpoint', async done => {
   const response = await request.get('/test')
 
@@ -56,14 +58,22 @@ it('Unit Test: POST new user and POST FCM TOKEN', async done =>{
   const response2 = await request.post('/add_user_fcm_token')
                                  .send({token: response.body.userId})
                                  .set('Accept','application/json');
+  tempUserId = response.body.userId;
   expect(response2.status).toBe(200);
   done();
 });
 
-it('Unit Test: Fail to POST FCM TOKEN for non-existing USER', async done =>{
-  const response2 = await request.post('/add_user_fcm_token')
-                                 .send({token: 'AAAAAAAAAA'})
-                                 .set('Accept','application/json');
-  expect(response2.status).toBe(400);
+it('Unit Test: POST New Listing', async done =>{
+  body = {latitude: 0,
+          longitude: 0,
+          price: 500,
+          numBeds: 1,
+          numBaths: 1,
+          userId: tempUserId};
+  const response = await request.post('/create_listing')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.message).toBe('Saved!');
   done();
 });

@@ -191,7 +191,7 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
     });
   });
 
-  res.send("Saved");
+  res.json({message: 'Saved!'});
 });
 
 const NUM_LATEST_SEARCHES = 5;
