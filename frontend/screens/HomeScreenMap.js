@@ -229,7 +229,7 @@ Alert.alert(
             style={styles.scrollView}>
             <View style={styles.container}>
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
-              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
+              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap} userId={this.state.userId} getListings={this.getListings}/>
               <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
               <SearchFilterPage ref='searchFilterPopup' userId = {this.state.userId} centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
               <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
