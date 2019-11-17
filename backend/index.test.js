@@ -89,6 +89,14 @@ it('Unit Test: POST New Listing', async done =>{
   done();
 });
 
+it('Unit Test: Get ALL listings, should be 1.', async done =>{
+  const response = await request.get('/get_listings');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(1);
+  tempListingId = response.body[0].listingId;
+  done();
+});
+
 it('Unit Test: Should find specific listing just created.', async done =>{
   body = {userId: tempUserId};
   const response = await request.post('/get_listings_by_usedId')
@@ -97,13 +105,6 @@ it('Unit Test: Should find specific listing just created.', async done =>{
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(1);
   tempListingId = response.body.listingId;
-  done();
-});
-
-it('Unit Test: Get ALL listings, should be 1.', async done =>{
-  const response = await request.get('/get_listings');
-  expect(response.status).toBe(200);
-  expect(response.body.length).toBe(1);
   done();
 });
 
