@@ -9,6 +9,7 @@ import {Modal,
         Button} from 'react-native';
 import {DB_URL} from '../key';
 import Carousel from 'react-native-snap-carousel';
+import ViewUserPage from "./ViewUserPage";
 
 const {width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
@@ -31,6 +32,10 @@ export default class ListingPage extends React.Component {
     return (
       <Image source = {url} style = {{height: 300, resizeMode : 'center', margin: 5 }}/>
     );
+  }
+
+  viewProfileHandler = () => {
+    this.refs.viewUserPopup.setModalVisible(true);
   }
 
   deleteListing = () => {
@@ -84,11 +89,17 @@ export default class ListingPage extends React.Component {
               <Text style={styles.text}>Beds : {this.props.numBeds}</Text>
               <Text style={styles.text}>Baths : {this.props.numBaths}</Text>
               <Text style={styles.text}>Maps URL : {this.props.mapsUrl}</Text>
+              {this.props.currentUserId == this.props.userId &&
+                <Button color='#BA55D3' title='Delete' onPress = {() => this.deleteListing()}></Button>
+              }
+              {this.props.currentUserId != this.props.userId &&
+                <Button color='#BA55D3' title="View Landlord's profile" onPress={() => this.viewProfileHandler()}></Button>
+              }
             </ScrollView>
           </View>
-          {this.props.currentUserId == this.props.userId &&
-            <Button color='#BA55D3' title='Delete' onPress = {() => this.deleteListing()}></Button>
-          }
+          <View style={styles.container}>
+            <ViewUserPage ref='viewUserPopup' userId={this.props.userId}/>
+          </View>
         </Modal>
       );
   }
@@ -108,5 +119,10 @@ const styles = StyleSheet.create({
     },
     text: {
       fontSize: 20,
+    },
+    container: {
+      flex:1,
+      alignItems:'center',
+      justifyContent:'center',
     }
 });
