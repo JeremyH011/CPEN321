@@ -105,7 +105,6 @@ it('Unit Test: Should find specific listing just created.', async done =>{
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(1);
-  tempListingId = response.body.listingId;
   done();
 });
 
