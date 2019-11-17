@@ -35,6 +35,49 @@ class SignUp extends Component {
       passErrorMsg: ""
      }
 
+  ensureFormComplete() {
+    if (this.state.nameField == "") {
+      alert("Must include a name!");
+      return false;
+    } else {
+      if (this.state.emailField == "") {
+        alert("Must include an email!");
+        return false;
+      } else {
+        if (this.state.passwordField == "" || this.state.passwordConfirm == "") {
+          alert("Must enter matching password in both boxes!");
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+  }
+
+  handleSignUp() {
+    if (this.ensureFormComplete()) {
+      this.try_signup()
+      .then((response) => {
+        if (response.status == 201) {
+          return response.json();
+        } else if (response.status == 401){
+          alert("An account with that email already exists!");
+        } else {
+          alert("Server error. Try again later!");
+        }
+      })
+      .then((responseJson) => {
+        if (responseJson) {
+          this.handleSuccessfulSignup(responseJson.userId);
+          this.props.navigation.navigate('SignedIn');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+  }
+
   try_signup = () => {
     return fetch(DB_URL+'signup/', {
         method: 'POST',
@@ -50,21 +93,6 @@ class SignUp extends Component {
           password: this.state.passwordField,
           optIn: this.state.optIn,
         }),
-    })
-    .then((response) => {
-      if (response.status == 201) {
-        return response.json();
-      } else if (response.status == 401){
-        alert("An account with that email already exists!");
-      } else {
-        alert("Server error. Try again later!");
-      }
-    })
-    .then((responseJson) => {
-      if (responseJson) {
-        this.handleSuccessfulSignup(responseJson.userId);
-        this.props.navigation.navigate('SignedIn');
-      }
     });
   }
 
@@ -73,7 +101,7 @@ class SignUp extends Component {
       this.setState({passErrorMsg: "Passwords do not match."})
     } else {
       this.setState({passErrorMsg: ""});
-      this.try_signup();
+      this.handleSignUp();
     }
   }
 

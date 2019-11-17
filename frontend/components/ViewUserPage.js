@@ -68,7 +68,7 @@ export default class ViewUserPage extends React.Component {
               <Text style={styles.boxItem}>Age: {this.state.age}</Text>
               <Text style={styles.boxItem}>Job: {this.state.job}</Text>
             </View>
-            <Button style={styles.buttons} color='#BA55D3' title="Chat" onPress={() => ()}/>
+            <Button style={styles.buttons} color='#BA55D3' title="Chat"/>
             <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={() => this.setModalVisible(false)}/>
           </ScrollView>
           </Modal>

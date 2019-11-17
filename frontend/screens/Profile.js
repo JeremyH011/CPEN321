@@ -48,6 +48,7 @@ export default class Profile extends React.Component {
       oldEmail: "",
       oldJob: "",
       oldOptIn: false,
+      emailError: "",
     }
 
 
@@ -96,6 +97,7 @@ export default class Profile extends React.Component {
                     newJob: this.state.oldJob, newEmail: this.state.oldEmail,
                     newOptIn: this.state.oldOptIn});
       this.setState({editViewVisible: viewVisible});
+      this.setState({emailError: ""});
     }
 
     updateFields(viewVisible){
@@ -105,6 +107,40 @@ export default class Profile extends React.Component {
       this.setState({oldJob : this.state.newJob});
       this.setState({oldEmail : this.state.newEmail});
       this.setState({oldOptIn : this.state.newOptIn});
+      this.setState({emailError: ""});
+    }
+
+    ensureFormComplete(){
+      if (this.state.newName == "") {
+        alert("Must include a name!");
+        return false;
+      } else {
+        if (this.state.newEmail == "") {
+          alert("Must include an email!");
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+
+    handle_update_info() {
+      if (this.ensureFormComplete()) {
+        this.try_update_info()
+        .then((response) => {
+          if (response.status == 200) {
+            this.updateFields(false);
+          } else if (response.status == 401) {
+            this.setState({emailError: "Account with this email already exists!"});
+          } else {
+            alert("Server error. Try again later!");
+            this.editFields(false);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      }
     }
 
     try_update_info = () => {
@@ -121,21 +157,7 @@ export default class Profile extends React.Component {
             job: this.state.newJob,
             email: this.state.newEmail,
             optIn: this.state.newOptIn,
-          }),
-      })
-      .then((response) => {
-        if (response.status == 200) {
-          this.updateFields(false);
-          return response.json();
-        } else {
-          alert("Server error. Try again later!");
-          this.editFields(false);
-        }
-      })
-      .then((responseJson) => {
-        if (responseJson) {
-          this.updateFields(false);
-        }
+          })
       });
     }
 
@@ -210,6 +232,7 @@ export default class Profile extends React.Component {
                     blurOnSubmit={false}
                     onChangeText={(email) => this.setState({newEmail: email})}
                   />
+                  <Text style={{color: 'red'}}>{this.state.emailError}</Text>
                 </View>
                 <View style={styles.checkbox} >
                   <CheckboxFormX
@@ -225,7 +248,7 @@ export default class Profile extends React.Component {
                     />
                 </View>
                 <View style={styles.column}>
-                  <Button style={styles.buttons} color='#BA55D3' title="Save Changes" onPress={() => this.try_update_info()} />
+                  <Button style={styles.buttons} color='#BA55D3' title="Save Changes" onPress={() => this.handle_update_info()} />
                   <Button style={styles.buttons} color='#8A2BE2' title="Cancel" onPress={() => this.editFields(false)}/>
                 </View>
               </ScrollView>

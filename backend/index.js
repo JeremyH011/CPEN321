@@ -140,6 +140,47 @@ app.post('/update_user_data', jsonParser, (req,res) => {
 
   var o_id = getOIdFromUserId(req.body.userId);
 
+  db.collection("users").find({"email":req.body.email}).count(function (err, count){
+    if(err) {
+      res.sendStatus(400);
+    }
+    else{
+      if(count == 0) {
+        db.collection("users").updateOne({_id : o_id}, {$set: { name : req.body.name,
+                               age : req.body.age, email : req.body.email,
+                              job : req.body.job, optIn : req.body.optIn }}, function(err,result){
+          if(err){
+            res.sendStatus(400);
+          }
+          else{
+            console.log(req.body);
+            res.sendStatus(200);
+          }
+        });
+      } else {
+        db.collection("users").find({"email":req.body.email}).toArray(function (err, result) {
+          if(err) {
+            res.sendStatus(400);
+          } else if (result[0]._id == req.body.userId) {
+            db.collection("users").updateOne({_id : o_id}, {$set: { name : req.body.name,
+                                   age : req.body.age, email : req.body.email,
+                                  job : req.body.job, optIn : req.body.optIn }}, function(err,result){
+              if(err){
+                res.sendStatus(400);
+              }
+              else{
+                console.log(req.body);
+                res.sendStatus(200);
+              }
+            });
+          } else {
+            res.sendStatus(401);
+          }
+        });
+      }
+    }
+  });
+
   db.collection("users").updateOne({_id : o_id}, {$set: { name : req.body.name,
                          age : req.body.age, email : req.body.email,
                         job : req.body.job, optIn : req.body.optIn }}, function(err,result){
