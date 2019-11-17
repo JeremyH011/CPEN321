@@ -94,7 +94,8 @@ it('Unit Test: Get ALL listings, should be 1.', async done =>{
   const response = await request.get('/get_listings');
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(1);
-  tempListingId = response.body[0].listingId;
+  tempListingId = response.body[0]._id;
+  console.log(`Listing ID: ${tempListingId}`);
   done();
 });
 
