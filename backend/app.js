@@ -102,6 +102,7 @@ app.get('/get_listings', jsonParser, (req, res) => {
   });
 });
 
+/*
 app.get('/get_listing_by_id', jsonParser, (req, res) => {
   console.log(req.body);
 
@@ -115,7 +116,7 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
       res.send(result);
     }
   });
-});
+});*/
 
 app.post('/get_listings_by_usedId', jsonParser, (req, res) => {
   console.log(req.body);

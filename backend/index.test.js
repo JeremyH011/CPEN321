@@ -2,7 +2,8 @@ const app = require('./app'); // Link to your server file
 const supertest = require('supertest');
 const request = supertest(app);
 
-let tempUserId = ''
+let tempUserId = '';
+let tempListingId = '';
 
 it('Unit Test: GETS the test endpoint', async done => {
   const response = await request.get('/test')
@@ -70,12 +71,6 @@ it('Unit Test: Empty List returned, user has no listings posted', async done =>{
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(0);
-
-  const response2 = await request.post('/get_listing_by_id')
-                                .send(body)
-                                .set('Accept','application/json');
-  expect(response2.status).toBe(200);
-  expect(response2.body.length).toBe(0);
   done();
 });
 
@@ -91,5 +86,39 @@ it('Unit Test: POST New Listing', async done =>{
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
   expect(response.body.message).toBe('Saved!');
+  done();
+});
+
+it('Unit Test: Should find specific listing just created.', async done =>{
+  body = {userId: tempUserId};
+  const response = await request.post('/get_listings_by_usedId')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(1);
+  tempListingId = response.body.listingId;
+  done();
+});
+
+it('Unit Test: Get ALL listings, should be 1.', async done =>{
+  const response = await request.get('/get_listings');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(1);
+  done();
+});
+
+it('Unit Test: Delete Listing', async done =>{
+  body = {listingId: tempListingId};
+  const response = await request.post('/delete_listing')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Unit Test: Get ALL listings, should be empty now.', async done =>{
+  const response = await request.get('/get_listings');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(0);
   done();
 });
