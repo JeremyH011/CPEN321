@@ -2,7 +2,7 @@ const app = require('./app'); // Link to your server file
 const supertest = require('supertest');
 const request = supertest(app);
 
-it('GETS the test endpoint', async done => {
+it('Unit Test: GETS the test endpoint', async done => {
   const response = await request.get('/test')
 
   expect(response.status).toBe(200);
@@ -10,7 +10,7 @@ it('GETS the test endpoint', async done => {
   done();
 });
 
-it('POST new user', async done =>{
+it('Unit Test: POST new user', async done =>{
   body = {email: 'test_email@test.com', password: 'test'};
   const response = await request.post('/signup')
                                 .send(body)
@@ -19,7 +19,7 @@ it('POST new user', async done =>{
   done();
 });
 
-it('Cannot use already existing email for new user', async done =>{
+it('Unit Test: Cannot use already existing email for new user', async done =>{
   body = {email: 'test_email@test.com', password: 'test'};
   const response = await request.post('/signup')
                                 .send(body)
@@ -28,11 +28,34 @@ it('Cannot use already existing email for new user', async done =>{
   done();
 });
 
-it('LOGIN user', async done =>{
+it('Unit Test: LOGIN user', async done =>{
   body = {email: 'test_email@test.com', password: 'test'};
   const response = await request.post('/login')
                                 .send(body)
                                 .set('Accept','application/json');
   expect(response.status).toBe(201);
+  done();
+});
+
+it('Unit Test: Fail to LOGIN user, wrong password/user combo', async done =>{
+  body = {email: 'test_email@test.com', password: 'test2'};
+  const response = await request.post('/signup')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(401);
+  done();
+});
+
+it('POST new user and POST FCM TOKEN', async done =>{
+  body = {email: 'test_email2@test.com', password: 'test2'};
+  const response = await request.post('/signup')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(201);
+
+  const response2 = await request.post('/add_user_fcm_token')
+                                 .send({token: response.body.userId})
+                                 .set('Accept','application/json');
+  expect(response2.status).toBe(200);
   done();
 });
