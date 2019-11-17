@@ -178,18 +178,21 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
       }
 
       try{
-      admin.messaging().sendMulticast(message)
-        .then((response) => {
-            if (response.failureCount > 0) {
-                const failedTokens = [];
-                response.responses.forEach((resp, idx) => {
-                  if (!resp.success) {
-                      failedTokens.push(registrationTokens[idx]);
-                  }
-                });
-                console.log('List of tokens that caused failures: ' + failedTokens);
-            }
-        });
+        admin.messaging().sendMulticast(message)
+          .then((response) => {
+              if (response.failureCount > 0) {
+                  const failedTokens = [];
+                  response.responses.forEach((resp, idx) => {
+                    if (!resp.success) {
+                        failedTokens.push(registrationTokens[idx]);
+                    }
+                  });
+                  console.log('List of tokens that caused failures: ' + failedTokens);
+              }
+          });
+      } catch(e){
+        return;
+      }
     });
   });
 
