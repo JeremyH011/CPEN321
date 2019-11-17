@@ -91,7 +91,7 @@ it('Unit Test: POST New Listing', async done =>{
 });
 
 it('Unit Test: Delete Listing for non-existant Listing', async done =>{
-  body = {listingId: 'AAAAAAAAAAAAA'};
+  body = {listingId: tempListingId};
   const response = await request.post('/delete_listing')
                                 .send(body)
                                 .set('Accept','application/json');
@@ -115,15 +115,6 @@ it('Unit Test: Should find specific listing just created.', async done =>{
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(1);
-  done();
-});
-
-it('Unit Test: Delete Listing for non-existant Listing', async done =>{
-  body = {listingId: 'AAAAAAAAAAAAAAA'};
-  const response = await request.post('/delete_listing')
-                                .send(body)
-                                .set('Accept','application/json');
-  expect(response.status).toBe(200);
   done();
 });
 
