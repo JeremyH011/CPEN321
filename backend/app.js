@@ -34,7 +34,7 @@ const upload = multer({ storage: Storage });
 
 app.post('/signup', jsonParser, (req,res) => {
   req.body['date'] = new Date(Date.now()).toISOString();
-  console.log(req.body);
+  //console.log(req.body);
   db.collection("users").find({"email":req.body.email}).count(function (err, count){
     if(err) {
       res.sendStatus(400);
@@ -60,9 +60,9 @@ app.post('/signup', jsonParser, (req,res) => {
 });
 
 app.post('/login', jsonParser, (req,res) => {
-  console.log(req.body);
+  //console.log(req.body);
   db.collection("users").find(req.body).toArray(function (err, result){
-    console.log(result);
+    //console.log(result);
     if(err) {
       res.sendStatus(400);
     } else if (result.length > 0) {
@@ -80,7 +80,7 @@ app.post('/login', jsonParser, (req,res) => {
 });
 
 app.post('/add_user_fcm_token', jsonParser, (req,res) => {
-  console.log("ADDING TOKEN " + req.body.token + " for user " + req.body.userId);
+  //console.log("ADDING TOKEN " + req.body.token + " for user " + req.body.userId);
 
     var o_id = getOIdFromUserId(req.body.userId);
 
@@ -95,8 +95,8 @@ app.post('/add_user_fcm_token', jsonParser, (req,res) => {
 });
 
 app.get('/get_listings', jsonParser, (req, res) => {
-  console.log("GETTING LISTING WITH QUERY: ");
-  console.log(req.body);
+  //console.log("GETTING LISTING WITH QUERY: ");
+  //console.log(req.body);
   db.collection("listings").find(req.body).toArray((err,result) => {
     res.send(result);
   });
@@ -104,7 +104,7 @@ app.get('/get_listings', jsonParser, (req, res) => {
 
 /*
 app.get('/get_listing_by_id', jsonParser, (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
 
     var o_id = getOIdFromUserId(req.body.userId);
 
@@ -119,7 +119,7 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
 });*/
 
 app.post('/get_listings_by_usedId', jsonParser, (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
 
     var o_id = getOIdFromUserId(req.body.userId);
 
@@ -136,7 +136,7 @@ app.post('/get_listings_by_usedId', jsonParser, (req, res) => {
 });
 
 app.post('/delete_listing', jsonParser, (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
 
   try{
     var o_id = getOIdFromUserId(req.body.listingId);
@@ -154,13 +154,13 @@ app.post('/delete_listing', jsonParser, (req, res) => {
 
 function getOIdFromUserId(userId){
     var mongo = require('mongodb');
-    console.log(userId);
+    //console.log(userId);
     return new mongo.ObjectID(userId);
 }
 
 app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>{
   req.body['date'] = new Date(Date.now()).toISOString();
-  console.log(req.body);
+  //console.log(req.body);
   var request_body = req.body;
   request_body['latitude'] = parseFloat(req.body.latitude);
   request_body['longitude'] = parseFloat(req.body.longitude);
@@ -170,9 +170,9 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
   request_body['photos'] = req.files;
   request_body['userId'] = getOIdFromUserId(req.body.userId);
 
-  console.log("Create listing\n");
-  console.log(req.files);
-  console.log(request_body);
+  //console.log("Create listing\n");
+  //console.log(req.files);
+  //console.log(request_body);
   db.collection("listings").insertOne(request_body, (err, result) => {
   db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
       var registrationTokens = result.map(user => user.fcmToken);
@@ -192,7 +192,7 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
                         failedTokens.push(registrationTokens[idx]);
                     }
                   });
-                  console.log('List of tokens that caused failures: ' + failedTokens);
+                  //console.log('List of tokens that caused failures: ' + failedTokens);
               }
           });
       } catch(e){
@@ -210,8 +210,8 @@ const FILTER_RADIUS_KM = 10;
 const M_IN_KM = 1000;
 const NUM_RECOMMENDED_USERS = 10;
 app.get('/get_recommended_roommates', jsonParser, (req, res) => {
-  console.log("GETTING USERS WITH QUERY: ");
-  console.log(req.query);
+  //console.log("GETTING USERS WITH QUERY: ");
+  //console.log(req.query);
 
   var request_body = {};
   var OId = getOIdFromUserId(req.query.userId);
@@ -346,8 +346,8 @@ const DEFAULT_LONG_DELTA = 0.0421;
 const VIEWPORT_BUFFER = 0.005;
 app.post('/save_search_history', jsonParser, (req,res)=>{
         req.body['date'] = new Date(Date.now()).toISOString();
-  console.log("Save Search History\n");
-  console.log(req.body);
+  //console.log("Save Search History\n");
+  //console.log(req.body);
 
     // get all listings that match the criteria
     db.collection("listings").find( {
@@ -435,8 +435,8 @@ function isDefaultSearch(req){
 }
 
 app.post('/get_listings_by_filter', jsonParser, (req, res) => {
-    console.log("GET LISTINGS BY FILTER");
-  console.log(req.body);
+    //console.log("GET LISTINGS BY FILTER");
+  //console.log(req.body);
 
         // get all listings that match the criteria
         db.collection("listings").find( {
@@ -497,5 +497,5 @@ module.exports = app;
 
 /*
 var server = app.listen(constants.PORT_NUM, ()=> {
-  console.log(server.address());
+  //console.log(server.address());
 });*/
