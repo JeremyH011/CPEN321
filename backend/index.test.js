@@ -13,7 +13,7 @@ it('GETS the test endpoint', async done => {
 it('POST new user', async done =>{
   body = {email: 'test_email@test.com', password: 'test'};
   const response = await request.post('/signup')
-                                .send(body).
+                                .send(body)
                                 .set('Accept','application/json');
   expect(response.status).toBe(201);
   done();
