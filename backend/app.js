@@ -177,6 +177,7 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
         tokens: [...new Set(registrationTokens)],
       }
 
+      try{
       admin.messaging().sendMulticast(message)
         .then((response) => {
             if (response.failureCount > 0) {

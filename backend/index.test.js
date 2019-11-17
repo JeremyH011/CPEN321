@@ -55,11 +55,12 @@ it('Unit Test: POST new user and POST FCM TOKEN', async done =>{
                                 .send(body)
                                 .set('Accept','application/json');
   expect(response.status).toBe(201);
-
-  const response2 = await request.post('/add_user_fcm_token')
-                                 .send({token: response.body.userId})
-                                 .set('Accept','application/json');
   tempUserId = response.body.userId;
+  const response2 = await request.post('/add_user_fcm_token')
+                                 .send({userId: tempUserId,
+                                        token: response.body.userId
+                                  })
+                                 .set('Accept','application/json');
   expect(response2.status).toBe(200);
   done();
 });
