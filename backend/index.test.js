@@ -229,11 +229,11 @@ it('Unit Test: Find Listing through valid filter. Save search history', async do
           latitude: 0,
           longitude: 0
         };
-  const response = await request.post('/save_search_history')
+  const response2 = await request.post('/save_search_history')
                                 .send(body)
                                 .set('Accept','application/json');
-  expect(response.status).toBe(200);
-  expect(response.body.latitude).toBe(0);
+  expect(response2.status).toBe(200);
+  expect(response2.body.latitude).toBe(0);
   done();
 });
 
