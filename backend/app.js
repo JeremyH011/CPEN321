@@ -138,15 +138,18 @@ app.post('/get_listings_by_usedId', jsonParser, (req, res) => {
 app.post('/delete_listing', jsonParser, (req, res) => {
   console.log(req.body);
 
-  var o_id = getOIdFromUserId(req.body.listingId);
+  try{
+    var o_id = getOIdFromUserId(req.body.listingId);
 
-  db.collection("listings").remove({_id: { $eq : o_id },}, (err, result)=>{
-    if(err){
-      res.sendStatus(401);
-    }
-    res.sendStatus(200);
-  });
-  res.sendStatus(401);
+    db.collection("listings").remove({_id: { $eq : o_id },}, (err, result)=>{
+      if(err){
+        res.sendStatus(401);
+      }
+      res.sendStatus(200);
+    });
+  }catch{
+    res.sendStatus(401);
+  }
 });
 
 function getOIdFromUserId(userId){
