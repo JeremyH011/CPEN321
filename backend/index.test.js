@@ -14,7 +14,7 @@ it('Unit Test: GETS the test endpoint', async done => {
   done();
 });
 
-it('Unit Test: POST new user', async done =>{
+it('Unit Test: POST new user1', async done =>{
   body = {email: 'test_email@test.com', password: 'test'};
   const response = await request.post('/signup')
                                 .send(body)
@@ -39,7 +39,7 @@ it('Unit Test: Cannot use already existing email for new user', async done =>{
   done();
 });
 
-it('Unit Test: LOGIN user', async done =>{
+it('Unit Test: LOGIN user1', async done =>{
   body = {email: 'test_email@test.com', password: 'test'};
   const response = await request.post('/login')
                                 .send(body)
@@ -48,7 +48,7 @@ it('Unit Test: LOGIN user', async done =>{
   done();
 });
 
-it('Unit Test: Fail to LOGIN user, wrong password/user combo', async done =>{
+it('Unit Test: Fail to LOGIN user1, wrong password/user combo', async done =>{
   body = {email: 'test_email@test.com', password: 'test2'};
   const response = await request.post('/signup')
                                 .send(body)
@@ -57,7 +57,7 @@ it('Unit Test: Fail to LOGIN user, wrong password/user combo', async done =>{
   done();
 });
 
-it('Unit Test: POST new user and POST FCM TOKEN', async done =>{
+it('Unit Test: POST new user2 and POST FCM TOKEN', async done =>{
   body = {email: 'test_email2@test.com', password: 'test2'};
   const response = await request.post('/signup')
                                 .send(body)
@@ -103,7 +103,7 @@ it('Unit Test: Find Listing through default filter. Save search history. No list
   done();
 });
 
-it('Unit Test: POST New Listing', async done =>{
+it('Unit Test: POST New Listing for user 1', async done =>{
   body = {latitude: 0,
           longitude: 0,
           price: 500,
@@ -180,7 +180,7 @@ it('Unit Test: Find Listing through valid filter.', async done =>{
   done();
 });
 
-it('Unit Test: Find No Listings through invalid filter. Save search history.', async done =>{
+it('Unit Test: Find No Listings through invalid filter for User 1. Save search history.', async done =>{
   body = {userId: tempUserId,
           bedMin: 3,
           bedMax: 4,
@@ -200,7 +200,16 @@ it('Unit Test: Find No Listings through invalid filter. Save search history.', a
   done();
 });
 
-it('Unit Test: Find Listing through valid filter. Save search history', async done =>{
+it('Unit Test: Get Recommended Roommate. No match.', async done =>{
+  body = {userId: tempUserId_2};
+  const response = await request.get('/get_recommended_roommates')
+                                .query(body);
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(0);
+  done();
+});
+
+it('Unit Test: Find Listing through valid filter for User 1 and 2. Save search history', async done =>{
   body = {userId: tempUserId,
           bedMin: 1,
           bedMax: 2,
@@ -237,7 +246,7 @@ it('Unit Test: Find Listing through valid filter. Save search history', async do
   done();
 });
 
-it('Unit Test: Get Recommended Roommate. Single match.', async done =>{
+it('Unit Test: Get Recommended Roommate for User 2. Single match.', async done =>{
   body = {userId: tempUserId_2};
   const response = await request.get('/get_recommended_roommates')
                                 .query(body);
@@ -246,7 +255,7 @@ it('Unit Test: Get Recommended Roommate. Single match.', async done =>{
   done();
 });
 
-it('Unit Test: Find Listing through default filter. Save search history', async done =>{
+it('Unit Test: Find Listing through default filter for User 1. Save search history', async done =>{
   body = {userId: tempUserId,
           bedMin: 0,
           bedMax: 5,
@@ -266,7 +275,7 @@ it('Unit Test: Find Listing through default filter. Save search history', async 
   done();
 });
 
-it('Unit Test: Delete Listing', async done =>{
+it('Unit Test: Delete Listing for User 1', async done =>{
   body = {listingId: tempListingId};
   const response = await request.post('/delete_listing')
                                 .send(body)
