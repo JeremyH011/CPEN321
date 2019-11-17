@@ -46,7 +46,7 @@ it('Unit Test: Fail to LOGIN user, wrong password/user combo', async done =>{
   done();
 });
 
-it('POST new user and POST FCM TOKEN', async done =>{
+it('Unit Test: POST new user and POST FCM TOKEN', async done =>{
   body = {email: 'test_email2@test.com', password: 'test2'};
   const response = await request.post('/signup')
                                 .send(body)
@@ -57,5 +57,13 @@ it('POST new user and POST FCM TOKEN', async done =>{
                                  .send({token: response.body.userId})
                                  .set('Accept','application/json');
   expect(response2.status).toBe(200);
+  done();
+});
+
+it('Unit Test: Fail to POST FCM TOKEN for non-existing USER', async done =>{
+  const response2 = await request.post('/add_user_fcm_token')
+                                 .send({token: 'AAAAAAAAAA'})
+                                 .set('Accept','application/json');
+  expect(response2.status).toBe(400);
   done();
 });
