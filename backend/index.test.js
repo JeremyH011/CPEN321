@@ -3,6 +3,7 @@ const supertest = require('supertest');
 const request = supertest(app);
 
 let tempUserId = '';
+let tempUserId_2 = '';
 let tempListingId = '';
 
 it('Unit Test: GETS the test endpoint', async done => {
@@ -19,6 +20,13 @@ it('Unit Test: POST new user', async done =>{
                                 .send(body)
                                 .set('Accept','application/json');
   expect(response.status).toBe(201);
+  tempUserId_2 = response.body.userId;
+  const response2 = await request.post('/add_user_fcm_token')
+                                 .send({userId: tempUserId_2,
+                                        token: response.body.userId
+                                  })
+                                 .set('Accept','application/json');
+  expect(response2.status).toBe(200);
   done();
 });
 
@@ -72,6 +80,26 @@ it('Unit Test: Empty List returned, user has no listings posted', async done =>{
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(0);
+  done();
+});
+
+it('Unit Test: Find Listing through default filter. Save search history. No listings added yet.', async done =>{
+  body = {userId: tempUserId,
+          bedMin: 0,
+          bedMax: 5,
+          bathMin: 0,
+          bathMax: 5,
+          priceMin: 0,
+          priceMax: 5000,
+          poiRangeMax: 20,
+          latitude: null,
+          longitude: null
+        };
+  const response = await request.post('/save_search_history')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.numResults).toBe(0);
   done();
 });
 
@@ -189,6 +217,32 @@ it('Unit Test: Find Listing through valid filter. Save search history', async do
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
   expect(response.body.latitude).toBe(0);
+
+  body = {userId: tempUserId_2,
+          bedMin: 1,
+          bedMax: 2,
+          bathMin: 1,
+          bathMax: 2,
+          priceMin: 200,
+          priceMax: 700,
+          poiRangeMax: 10,
+          latitude: 0,
+          longitude: 0
+        };
+  const response = await request.post('/save_search_history')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.latitude).toBe(0);
+  done();
+});
+
+it('Unit Test: Get Recommended Roommate. Single match.', async done =>{
+  body = {userId: tempUserId_2};
+  const response = await request.get('/get_recommended_roommates')
+                                .query(body);
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(1);
   done();
 });
 
