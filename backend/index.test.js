@@ -95,7 +95,7 @@ it('Unit Test: Delete Listing for non-existant Listing', async done =>{
   const response = await request.post('/delete_listing')
                                 .send(body)
                                 .set('Accept','application/json');
-  expect(response.status).toBe(200);
+  expect(response.status).toBe(401);
   done();
 });
 

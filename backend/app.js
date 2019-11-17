@@ -146,6 +146,7 @@ app.post('/delete_listing', jsonParser, (req, res) => {
     }
     res.sendStatus(200);
   });
+  res.sendStatus(401);
 });
 
 function getOIdFromUserId(userId){
