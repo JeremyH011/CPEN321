@@ -174,34 +174,33 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
   //console.log(req.files);
   //console.log(request_body);
   db.collection("listings").insertOne(request_body, (err, result) => {
-  db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
-      var registrationTokens = result.map(user => user.fcmToken);
-      var notificationBody = req.body.address + "\n$" + req.body.price + "/month\n" + req.body.numBeds + " bedrooms";
-      var message = {
-        notification: {title : 'New Listing', body : notificationBody},
-        tokens: [...new Set(registrationTokens)],
-      }
+    res.json({message: 'Saved!'});
+    db.collection("users").find({ fcmToken : { $exists : true } }).toArray((err, result) => {
+        var registrationTokens = result.map(user => user.fcmToken);
+        var notificationBody = req.body.address + "\n$" + req.body.price + "/month\n" + req.body.numBeds + " bedrooms";
+        var message = {
+          notification: {title : 'New Listing', body : notificationBody},
+          tokens: [...new Set(registrationTokens)],
+        }
 
-      try{
-        admin.messaging().sendMulticast(message)
-          .then((response) => {
-              if (response.failureCount > 0) {
-                  const failedTokens = [];
-                  response.responses.forEach((resp, idx) => {
-                    if (!resp.success) {
-                        failedTokens.push(registrationTokens[idx]);
-                    }
-                  });
-                  //console.log('List of tokens that caused failures: ' + failedTokens);
-              }
-          });
-      } catch(e){
-        return;
-      }
-    });
+        try{
+          admin.messaging().sendMulticast(message)
+            .then((response) => {
+                if (response.failureCount > 0) {
+                    const failedTokens = [];
+                    response.responses.forEach((resp, idx) => {
+                      if (!resp.success) {
+                          failedTokens.push(registrationTokens[idx]);
+                      }
+                    });
+                    //console.log('List of tokens that caused failures: ' + failedTokens);
+                }
+            });
+        } catch(e){
+          return;
+        }
+      });
   });
-
-  res.json({message: 'Saved!'});
 });
 
 const NUM_LATEST_SEARCHES = 5;
@@ -436,7 +435,7 @@ function isDefaultSearch(req){
 
 app.post('/get_listings_by_filter', jsonParser, (req, res) => {
     //console.log("GET LISTINGS BY FILTER");
-  //console.log(req.body);
+    //console.log(req.body);
 
         // get all listings that match the criteria
         db.collection("listings").find( {
