@@ -8,6 +8,7 @@ import { View,
   Modal } from 'react-native';
 import { DB_URL } from "../key";
 import AddReviewPage from "./AddReviewPage";
+import Review from "../classes/Review";
 
 export default class ViewUserPage extends React.Component {
 
@@ -16,12 +17,14 @@ export default class ViewUserPage extends React.Component {
     name: "",
     age: 0,
     email: "",
-    job: ""
+    job: "",
+    reviewList: []
   }
 
   setModalVisible(visible){
     this.getUserInfo();
     this.setState({modalVisible: visible});
+    this.getReviews();
   }
 
   getUserInfo(){
@@ -48,6 +51,28 @@ export default class ViewUserPage extends React.Component {
         });
   }
 
+  getReviews() {
+    fetch(DB_URL+`get_reviews_by_reviewee_id`, {
+      method: "POST",
+      headers: {
+        Accept : 'application/json',
+        'Content-Type' : 'application/json',
+      },
+      body: JSON.stringify({
+        userId: this.props.userId,
+      }),
+    }).then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        reviewList: responseJson.map((reviewJson) => new Review(reviewJson))
+      });
+      console.log(this.state.reviewList);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
   handleAddReview() {
     this.refs.reviewPopup.setModalVisible(true);
   }
@@ -71,6 +96,19 @@ export default class ViewUserPage extends React.Component {
               <Text style={styles.boxItem}>Age: {this.state.age}</Text>
               <Text style={styles.boxItem}>Job: {this.state.job}</Text>
             </View>
+            <ScrollView style={styles.scrollView}>
+            <Text style={styles.boxItem}>Reviews</Text>
+              {
+                this.state.reviewList.map((item)=>(
+                  <Text style={styles.boxItem} key={item.reviewerId}>
+                    Written by: {item.reviewerName}{"\n"}
+                    Relationship to {item.revieweeName}: {item.relationship}{"\n"}
+                    Rating: {item.reviewRating}/5{"\n"}
+                    {item.reviewText}
+                  </Text>
+                ))
+              }
+            </ScrollView>
             <Button style={styles.buttons} color='#BA55D3' title="Chat"/>
             <Button style={styles.buttons} color='#BA55D3' title="Add Review" onPress={() => this.handleAddReview()}/>
             <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={() => this.setModalVisible(false)}/>

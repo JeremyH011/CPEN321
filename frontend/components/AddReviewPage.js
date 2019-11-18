@@ -16,9 +16,9 @@ export default class AddReviewPage extends React.Component {
         modalVisible: false,
         rating: 0,
         relationship: "",
-        text: "",
-        revieweeName: "",
-        reviewerName: "",
+        text: " ",
+        revieweeName: " ",
+        reviewerName: " ",
         reviewerId: ""
     }
 
@@ -41,14 +41,25 @@ export default class AddReviewPage extends React.Component {
         }).then((response) => response.json())
           .then((responseJson) => {
             if (reviewee) {
-              this.setState({ revieweeName: responseJson[0].name });
+              if (responseJson[0].name != "") {
+                this.setState({ revieweeName: responseJson[0].name });
+              }
             } else {
-              this.setState({ reviewerName: responseJson[0].name });
+              if (responseJson[0].name != "") {
+                this.setState({ reviewerName: responseJson[0].name });
+              }
             }
           })
           .catch((error) => {
             console.error(error);
           });
+    }
+
+    resetReviewForm() {
+      this.setState({rating: 0});
+      this.setState({relationship: ""});
+      this.setState({text: " "});
+      this.setModalVisible(false);
     }
 
     setModalVisible(visible) {
@@ -145,7 +156,7 @@ export default class AddReviewPage extends React.Component {
                     onChangeText={(review) => this.setState({text: review})}/>
                 </View>
                 <Button style={styles.buttons} color='#BA55D3' title="Submit Review" onPress={() => this.handleSubmitReview()} />
-                <Button style={styles.buttons} color='#8A2BE2' title="Cancel" onPress={() => this.setModalVisible(false)}/>
+                <Button style={styles.buttons} color='#8A2BE2' title="Cancel" onPress={() => this.resetReviewForm()}/>
               </View>
             </Modal>
         );
@@ -167,8 +178,6 @@ const styles = StyleSheet.create({
     },
     scrollView: {
       flex: 1,
-      height: 250,
-      width: 300,
     },
     row: {
         flexDirection: 'row',

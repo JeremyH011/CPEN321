@@ -189,10 +189,11 @@ app.post('/get_reviews_by_reviewer_id', jsonParser, (req, res) => {
   var o_id = getOIdFromUserId(req.body.userId);
   db.collection("reviews").find({
     reviewerId: { $eq : o_id },
-  }).toArray((err, result) => {
+  }).toArray((err,result) => {
     if(err){
       res.sendStatus(400);
-    } else {
+    }
+    else{
       console.log(result);
       res.send(result);
     }
@@ -213,32 +214,6 @@ app.post('/get_reviews_by_reviewee_id', jsonParser, (req, res) => {
       res.send(result);
     }
   });
-});
-
-app.post('/edit_review', jsonParser, (req, res) => {
-  console.log(req.body);
-
-  var o_id = getOIdFromUserId(req.body.reviewId);
-  db.collection("reviews").updateOne({_id : o_id}, {$set: { reviewRating : req.body.reviewRating ,
-                          relationship : req.body.relationship,
-                          reviewText : req.body.reviewText, date: new Date(Date.now()).toISOString()}}, function(err,result) {
-    if (err) {
-      res.sendStatus(400);
-    } else {
-      res.sendStatus(200);
-    }
-  });
-});
-
-app.post('/delete_review', jsonParser, (req, res) => {
-  console.log(req.body);
-
-  var o_id = getOIdFromUserId(req.body.reviewId);
-
-  db.collection("reviews").remove({
-    _id : { $eq : o_id },
-  });
-  res.sendStatus(200);
 });
 
 app.get('/get_listings', jsonParser, (req, res) => {
@@ -310,6 +285,7 @@ app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>
   request_body['numBaths'] = parseInt(req.body.numBaths);
   request_body['photos'] = req.files;
   request_body['userId'] = getOIdFromUserId(req.body.userId);
+  request_body['date'] = new Date(Date.now()).toISOString();
 
   console.log("Create listing\n");
   console.log(req.files);

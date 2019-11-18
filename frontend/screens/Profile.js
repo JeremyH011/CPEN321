@@ -11,7 +11,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import TextInputMask from 'react-native-text-input-mask';
 import CheckboxFormX from 'react-native-checkbox-form';
-import ViewReviews from '../components/ViewReviews';
+import Review from "../classes/Review";
 import { DB_URL } from "../key";
 
 import tabBarIcon from '../components/tabBarIcon';
@@ -32,8 +32,6 @@ export default class Profile extends React.Component {
       this.setState({newOptIn: true});
     }
 
-
-
     state={
       modalVisible: true,
       loadedData: false,
@@ -50,6 +48,8 @@ export default class Profile extends React.Component {
       oldJob: "",
       oldOptIn: false,
       emailError: "",
+      yourReviewList: [],
+      yourWrittenReviewList: []
     }
 
 
@@ -63,6 +63,7 @@ export default class Profile extends React.Component {
       let id = await AsyncStorage.getItem('userId');
       this.setState({userId: id});
       this.getUserInfo();
+      this.getReviews();
     }
 
     getUserInfo(){
@@ -91,10 +92,6 @@ export default class Profile extends React.Component {
         this.setState({loadedData: true});
         this.setState({modalVisible: false});
         this.editFields(false);
-    }
-    //reviewee means we wish to see reviews we have received. false is reviews we wrote
-    handleViewReviews(reviewee) {
-      this.refs.reviewPopup.setModalVisible(true, reviewee);
     }
 
     editFields(viewVisible){
@@ -148,6 +145,47 @@ export default class Profile extends React.Component {
       }
     }
 
+    getReviews() {
+      fetch(DB_URL+`get_reviews_by_reviewee_id`, {
+        method: "POST",
+        headers: {
+          Accept : 'application/json',
+          'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify({
+          userId: this.state.userId,
+        }),
+      }).then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          yourReviewList: responseJson.map((reviewJson) => new Review(reviewJson))
+        });
+        console.log(this.state.yourReviewList);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+      fetch(DB_URL+`get_reviews_by_reviewer_id`, {
+        method: "POST",
+        headers: {
+          Accept : 'application/json',
+          'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify({
+          userId: this.state.userId,
+        }),
+      }).then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          yourWrittenReviewList: responseJson.map((reviewJson) => new Review(reviewJson))
+        });
+        console.log(this.state.yourWrittenReviewList);
+        })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+
     try_update_info = () => {
       return fetch(DB_URL+'update_user_data/', {
           method: 'POST',
@@ -192,13 +230,32 @@ export default class Profile extends React.Component {
                 <Text style={styles.boxItem}>Age: {this.state.oldAge}</Text>
                 <Text style={styles.boxItem}>Job: {this.state.oldJob}</Text>
               </View>
+              <ScrollView style={styles.scrollView}>
+                <Text style={styles.boxItem}>Your Reviews</Text>
+                {
+                  this.state.yourReviewList.map((item)=>(
+                    <Text style={styles.boxItem} key={item.reviewerId}>
+                      {item.reviewerName}{"\n"}
+                      Relationship to {item.revieweeName}: {item.relationship}{"\n"}
+                      Rating: {item.reviewRating}/5{"\n"}
+                      {item.reviewText}
+                    </Text>
+                  ))
+                }
+                <Text style={styles.boxItem}>Reviews You've Written</Text>
+                {
+                  this.state.yourWrittenReviewList.map((item)=>(
+                    <Text style={styles.boxItem} key={item.reviewerId}>
+                      {item.reviewerName}{"\n"}
+                      Relationship to {item.revieweeName}: {item.relationship}{"\n"}
+                      Rating: {item.reviewRating}/5{"\n"}
+                      {item.reviewText}
+                    </Text>
+                  ))
+                }
+              </ScrollView>
               <Button style={styles.buttons} color='#BA55D3' title="Edit" onPress={() => this.editFields(true)}/>
-              <Button style={styles.buttons} color='#BA55D3' title="View Your Reviews" onPress={() => this.handleViewReviews(true)}/>
-              <Button style={styles.buttons} color='#BA55D3' title="View Reviews You've Written" onPress={() => this.handleViewReviews(false)}/>
               <Button style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
-              <View style={styles.container}>
-                <ViewReviews ref='reviewPopup' reviewerId={this.state.userId} revieweeId={this.state.userId} />
-              </View>
               <Modal
                 animationType="slide"
                 visible={this.state.editViewVisible}
