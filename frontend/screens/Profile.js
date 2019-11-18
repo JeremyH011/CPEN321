@@ -11,6 +11,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import TextInputMask from 'react-native-text-input-mask';
 import CheckboxFormX from 'react-native-checkbox-form';
+import ViewReviews from '../components/ViewReviews';
 import { DB_URL } from "../key";
 
 import tabBarIcon from '../components/tabBarIcon';
@@ -90,6 +91,10 @@ export default class Profile extends React.Component {
         this.setState({loadedData: true});
         this.setState({modalVisible: false});
         this.editFields(false);
+    }
+    //reviewee means we wish to see reviews we have received. false is reviews we wrote
+    handleViewReviews(reviewee) {
+      this.refs.reviewPopup.setModalVisible(true, reviewee);
     }
 
     editFields(viewVisible){
@@ -188,7 +193,12 @@ export default class Profile extends React.Component {
                 <Text style={styles.boxItem}>Job: {this.state.oldJob}</Text>
               </View>
               <Button style={styles.buttons} color='#BA55D3' title="Edit" onPress={() => this.editFields(true)}/>
+              <Button style={styles.buttons} color='#BA55D3' title="View Your Reviews" onPress={() => this.handleViewReviews(true)}/>
+              <Button style={styles.buttons} color='#BA55D3' title="View Reviews You've Written" onPress={() => this.handleViewReviews(false)}/>
               <Button style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
+              <View style={styles.container}>
+                <ViewReviews ref='reviewPopup' reviewerId={this.state.userId} revieweeId={this.state.userId} />
+              </View>
               <Modal
                 animationType="slide"
                 visible={this.state.editViewVisible}

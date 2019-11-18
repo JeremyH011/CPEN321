@@ -94,29 +94,6 @@ app.post('/add_user_fcm_token', jsonParser, (req,res) => {
   });
 });
 
-app.get('/get_listings', jsonParser, (req, res) => {
-  console.log("GETTING LISTING WITH QUERY: ");
-  console.log(req.body);
-  db.collection("listings").find(req.body).toArray((err,result) => {
-    res.send(result);
-  });
-});
-
-app.get('/get_listing_by_id', jsonParser, (req, res) => {
-  console.log(req.body);
-
-  var o_id = getOIdFromUserId(req.body.userId);
-
-  db.collection("listings").find(o_id).toArray((err,result) => {
-    if(err){
-      res.sendStatus(400);
-    }
-    else{
-      res.send(result);
-    }
-  });
-});
-
 app.post('/get_user_by_id', jsonParser, (req, res) => {
   console.log(req.body);
 
@@ -180,16 +157,109 @@ app.post('/update_user_data', jsonParser, (req,res) => {
       }
     }
   });
+});
 
-  db.collection("users").updateOne({_id : o_id}, {$set: { name : req.body.name,
-                         age : req.body.age, email : req.body.email,
-                        job : req.body.job, optIn : req.body.optIn }}, function(err,result){
+app.post('/create_review', jsonParser, (req,res) => {
+  req.body['date'] = new Date(Date.now()).toISOString();
+  console.log("ADDING REVIEW");
+  console.log(req.body);
+  var request_body = req.body;
+  request_body['revieweeId'] = getOIdFromUserId(req.body.revieweeId);
+  request_body['reviewerId'] = getOIdFromUserId(req.body.reviewerId);
+  request_body['reviewerName'] = req.body.reviewerName;
+  request_body['revieweeName'] = req.body.revieweeName;
+  request_body['relationship'] = req.body.relationship;
+  request_body['reviewRating'] = parseInt(req.body.reviewRating);
+  request_body['reviewText'] = req.body.reviewText;
+
+  console.log("Creating review by " + request_body['reviewerId'] + " for " + request_body['revieweeId']);
+  console.log(request_body);
+  db.collection("reviews").insertOne(request_body, (err, result) => {
+    if (err) {
+      res.sendStatus(400);
+    } else {
+      res.sendStatus(200);
+    }
+  });
+});
+
+app.post('/get_reviews_by_reviewer_id', jsonParser, (req, res) => {
+  console.log(req.body);
+
+  var o_id = getOIdFromUserId(req.body.userId);
+  db.collection("reviews").find({
+    reviewerId: { $eq : o_id },
+  }).toArray((err, result) => {
+    if(err){
+      res.sendStatus(400);
+    } else {
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+app.post('/get_reviews_by_reviewee_id', jsonParser, (req, res) => {
+  console.log(req.body);
+
+  var o_id = getOIdFromUserId(req.body.userId);
+  db.collection("reviews").find({
+    revieweeId: { $eq : o_id },
+  }).toArray((err, result) => {
+    if(err){
+      res.sendStatus(400);
+    } else {
+      console.log(result);
+      res.send(result);
+    }
+  });
+});
+
+app.post('/edit_review', jsonParser, (req, res) => {
+  console.log(req.body);
+
+  var o_id = getOIdFromUserId(req.body.reviewId);
+  db.collection("reviews").updateOne({_id : o_id}, {$set: { reviewRating : req.body.reviewRating ,
+                          relationship : req.body.relationship,
+                          reviewText : req.body.reviewText, date: new Date(Date.now()).toISOString()}}, function(err,result) {
+    if (err) {
+      res.sendStatus(400);
+    } else {
+      res.sendStatus(200);
+    }
+  });
+});
+
+app.post('/delete_review', jsonParser, (req, res) => {
+  console.log(req.body);
+
+  var o_id = getOIdFromUserId(req.body.reviewId);
+
+  db.collection("reviews").remove({
+    _id : { $eq : o_id },
+  });
+  res.sendStatus(200);
+});
+
+app.get('/get_listings', jsonParser, (req, res) => {
+  console.log("GETTING LISTING WITH QUERY: ");
+  console.log(req.body);
+  db.collection("listings").find(req.body).toArray((err,result) => {
+    res.send(result);
+  });
+});
+
+app.get('/get_listing_by_id', jsonParser, (req, res) => {
+  console.log(req.body);
+
+  var o_id = getOIdFromUserId(req.body.userId);
+
+  db.collection("listings").find(o_id).toArray((err,result) => {
     if(err){
       res.sendStatus(400);
     }
     else{
-      console.log(req.body);
-      res.sendStatus(200);
+      res.send(result);
     }
   });
 });

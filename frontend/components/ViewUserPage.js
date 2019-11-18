@@ -7,7 +7,7 @@ import { View,
   Image,
   Modal } from 'react-native';
 import { DB_URL } from "../key";
-import Chat from "../screens/Chat"
+import AddReviewPage from "./AddReviewPage";
 
 export default class ViewUserPage extends React.Component {
 
@@ -20,7 +20,6 @@ export default class ViewUserPage extends React.Component {
   }
 
   setModalVisible(visible){
-    this.setState({clicked: true});
     this.getUserInfo();
     this.setState({modalVisible: visible});
   }
@@ -49,6 +48,10 @@ export default class ViewUserPage extends React.Component {
         });
   }
 
+  handleAddReview() {
+    this.refs.reviewPopup.setModalVisible(true);
+  }
+
   render() {
       return (
         <Modal
@@ -69,7 +72,9 @@ export default class ViewUserPage extends React.Component {
               <Text style={styles.boxItem}>Job: {this.state.job}</Text>
             </View>
             <Button style={styles.buttons} color='#BA55D3' title="Chat"/>
+            <Button style={styles.buttons} color='#BA55D3' title="Add Review" onPress={() => this.handleAddReview()}/>
             <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={() => this.setModalVisible(false)}/>
+            <AddReviewPage ref='reviewPopup' revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
           </ScrollView>
           </Modal>
       );

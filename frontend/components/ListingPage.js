@@ -98,7 +98,7 @@ export default class ListingPage extends React.Component {
             </ScrollView>
           </View>
           <View style={styles.container}>
-            <ViewUserPage ref='viewUserPopup' userId={this.props.userId}/>
+            <ViewUserPage ref='viewUserPopup' userId={this.props.userId} currentUserId={this.props.currentUserId}/>
           </View>
         </Modal>
       );
