@@ -32,6 +32,51 @@ const Storage = multer.diskStorage({
 
 const upload = multer({ storage: Storage });
 
+const getOIdFromUserId = (userId)=>{
+    var mongo = require('mongodb');
+    //console.log(userId);
+    return new mongo.ObjectID(userId);
+}
+
+const saveSearchHistory = (req)=>{
+  req.body.userId = getOIdFromUserId(req.body.userId);
+  db.collection("searchHistory").insertOne(req.body, (err, result) => {
+      if (err)
+      {
+          return -1;
+      }
+      return 0;
+  });
+}
+
+const isDefaultSearch = (req)=>{
+    return req.body.poiRangeMax == POI_RANGE_MAX && req.body.latitude == null && req.body.longitude == null && req.body.bedMin == 0 && req.body.bedMax == BED_MAX &&
+           req.body.bathMin == 0 && req.body.bathMax == BATH_MAX && req.body.priceMin == 0 && req.body.priceMax == PRICE_MAX;
+}
+
+const doesSearchHaveLocationFilter = (req)=>{
+    return req.poiRangeMax != POI_RANGE_MAX && req.latitude != null && req.longitude != null;
+}
+
+const doesReqHaveLocationFilter = (req)=>{
+    return req.body.poiRangeMax != POI_RANGE_MAX && req.body.latitude != null && req.body.longitude != null;
+}
+
+// precondition: ONLY CALL IF req.body has a poi range
+const filterForLocations = (result, req)=>{
+    var locationFiltered = [];
+    result.forEach(function(listing){
+        if (geolib.isPointWithinRadius(
+                          { latitude: listing.latitude, longitude: listing.longitude },
+                          { latitude: req.body.latitude, longitude: req.body.longitude },
+                            (req.body.poiRangeMax * 1000))) // * 1000 km -> m
+        {
+            locationFiltered.push(listing);
+        }
+    });
+    return locationFiltered;
+}
+
 app.post('/signup', jsonParser, (req,res) => {
   req.body['date'] = new Date(Date.now()).toISOString();
   //console.log(req.body);
@@ -67,11 +112,10 @@ app.post('/login', jsonParser, (req,res) => {
       res.sendStatus(400);
     } else if (result.length > 0) {
       res.writeHead(201, {'Content-Type': 'application/json'});
-                                                var userIdObj = {
-                                                        userId: result[0]._id
-                                                }
-                                                res.end(JSON.stringify(userIdObj));
-
+      var userIdObj = {
+        userId: result[0]._id
+      }
+      res.end(JSON.stringify(userIdObj));
     } else {
       res.sendStatus(401);
     }
@@ -102,13 +146,12 @@ app.get('/get_listings', jsonParser, (req, res) => {
   });
 });
 
-/*
 app.get('/get_listing_by_id', jsonParser, (req, res) => {
   //console.log(req.body);
 
-    var o_id = getOIdFromUserId(req.body.userId);
+    var o_id = getOIdFromUserId(req.query.userId);
 
-  db.collection("listings").find(o_id).toArray((err,result) => {
+  db.collection("listings").find({_id: { $eq : o_id },}).toArray((err,result) => {
     if(err){
       res.sendStatus(400);
     }
@@ -116,12 +159,12 @@ app.get('/get_listing_by_id', jsonParser, (req, res) => {
       res.send(result);
     }
   });
-});*/
+});
 
 app.post('/get_listings_by_usedId', jsonParser, (req, res) => {
   //console.log(req.body);
 
-    var o_id = getOIdFromUserId(req.body.userId);
+  var o_id = getOIdFromUserId(req.body.userId);
 
   db.collection("listings").find({
            userId: { $eq : o_id },
@@ -151,12 +194,6 @@ app.post('/delete_listing', jsonParser, (req, res) => {
     res.sendStatus(401);
   }
 });
-
-function getOIdFromUserId(userId){
-    var mongo = require('mongodb');
-    //console.log(userId);
-    return new mongo.ObjectID(userId);
-}
 
 app.post('/create_listing', upload.array('photo[]', 99), jsonParser, (req,res)=>{
   req.body['date'] = new Date(Date.now()).toISOString();
@@ -295,6 +332,7 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
       // min <= priceMin <= max : +1 score
       // min <= priceMax <= max : +1 score
       addr_filtered.forEach(function(element) {
+        //console.log(element);
         var score = 0;
         if (element.priceMin >= min && element.priceMax <= max) {
           score++;
@@ -417,22 +455,6 @@ app.post('/save_search_history', jsonParser, (req,res)=>{
     });
 });
 
-function saveSearchHistory(req){
-  req.body.userId = getOIdFromUserId(req.body.userId);
-  db.collection("searchHistory").insertOne(req.body, (err, result) => {
-      if (err)
-      {
-          return -1;
-      }
-      return 0;
-  });
-}
-
-function isDefaultSearch(req){
-    return req.body.poiRangeMax == POI_RANGE_MAX && req.body.latitude == null && req.body.longitude == null && req.body.bedMin == 0 && req.body.bedMax == BED_MAX &&
-           req.body.bathMin == 0 && req.body.bathMax == BATH_MAX && req.body.priceMin == 0 && req.body.priceMax == PRICE_MAX;
-}
-
 app.post('/get_listings_by_filter', jsonParser, (req, res) => {
     //console.log("GET LISTINGS BY FILTER");
     //console.log(req.body);
@@ -465,34 +487,31 @@ app.post('/get_listings_by_filter', jsonParser, (req, res) => {
         });
 });
 
-function doesSearchHaveLocationFilter(req) {
-    return req.poiRangeMax != POI_RANGE_MAX && req.latitude != null && req.longitude != null;
-}
-
-function doesReqHaveLocationFilter(req) {
-    return req.body.poiRangeMax != POI_RANGE_MAX && req.body.latitude != null && req.body.longitude != null;
-}
-
-// precondition: ONLY CALL IF req.body has a poi range
-function filterForLocations(result, req) {
-    var locationFiltered = [];
-    result.forEach(function(listing){
-        if (geolib.isPointWithinRadius(
-                          { latitude: listing.latitude, longitude: listing.longitude },
-                          { latitude: req.body.latitude, longitude: req.body.longitude },
-                            req.body.poiRangeMax == POI_RANGE_MAX ? MAX_NUM : (req.body.poiRangeMax * 1000))) // * 1000 km -> m
-        {
-            locationFiltered.push(listing);
-        }
-    });
-    return locationFiltered;
-}
-
 app.get('/test', (req, res) => {
   res.json({message: 'pass!'});
 });
 
-module.exports = app;
+app.post('/create_review', (req, res) => {
+  res.sendStatus(200);
+});
+
+app.post('/create_message', (req, res)=>{
+  res.sendStatus(200);
+});
+
+app.get('/get_messages', (req,res)=>{
+  res.sendStatus(200);
+});
+
+module.exports = {
+  app: app,
+  getOIdFromUserId: getOIdFromUserId,
+  saveSearchHistory: saveSearchHistory,
+  isDefaultSearch: isDefaultSearch,
+  doesSearchHaveLocationFilter: doesSearchHaveLocationFilter,
+  doesReqHaveLocationFilter: doesReqHaveLocationFilter,
+  filterForLocations: filterForLocations
+};
 
 /*
 var server = app.listen(constants.PORT_NUM, ()=> {
