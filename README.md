@@ -61,6 +61,22 @@ npm install --save @ptomasroos/react-native-multi-slider
 react-native link @ptomasroos/react-native-multi-slider
 ```
 
+for AsyncStorage
+```
+npm install @react-native-community/async-storage
+```
+
+for checkbox on signup and profile pages
+```
+npm install react-native-checkbox-form --save
+```
+
+for stack navigator
+```
+npm install react-navigation-stack
+```
+
+
 for image picker
 ```
 npm install --save image-picker

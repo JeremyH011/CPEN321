@@ -94,7 +94,7 @@ async getToken() {
           await AsyncStorage.setItem('fcmToken', fcmToken);
       }
   }
-  this.setState({userId: await AsyncStorage.getItem('userId')}); 
+  this.setState({userId: await AsyncStorage.getItem('userId')});
   this.addFCMTokenToDB(fcmToken, this.state.userId);
 }
 
