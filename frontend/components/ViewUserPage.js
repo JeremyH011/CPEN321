@@ -109,7 +109,7 @@ export default class ViewUserPage extends React.Component {
                 ))
               }
             </ScrollView>
-            <Button style={styles.buttons} color='#BA55D3' title="Chat"/>
+            <Button style={styles.buttons} color='#8B00C7' title="Chat"/>
             <Button style={styles.buttons} color='#BA55D3' title="Add Review" onPress={() => this.handleAddReview()}/>
             <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={() => this.setModalVisible(false)}/>
             <AddReviewPage ref='reviewPopup' revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
@@ -122,23 +122,27 @@ export default class ViewUserPage extends React.Component {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
+    padding: 10
   },
   text_box: {
     fontSize:20,
     margin: '3%',
     flex: 2,
+    padding: 10
   },
   column: {
     flex: 1,
     justifyContent : 'space-around',
     alignItems: 'center',
-    flexDirection:'column'
+    flexDirection:'column',
+    padding: 10
   },
   profilePic: {
     width: 250,
     height: 250,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    padding: 10
   },
   buttons: {
     alignItems: 'center',
@@ -148,11 +152,12 @@ const styles = StyleSheet.create({
   },
   boxItem:{
     fontSize:20,
-    margin: '3%',
+    margin: '3%'
   },
   container: {
     flex:1,
     alignItems:'center',
     justifyContent:'center',
+    padding: 10
   }
 });

@@ -21,7 +21,11 @@ const data = [
 class SignUp extends Component {
 
   _onSelect = (item) => {
-    this.setState({optIn: true});
+    if (this.state.optIn) {
+      this.setState({optIn: false});
+    } else {
+      this.setState({optIn: true});
+    }
   }
 
   state={

@@ -29,9 +29,12 @@ export default class Profile extends React.Component {
     };
 
     _onSelect = (item) => {
-      this.setState({newOptIn: true});
+      if (this.state.newOptIn) {
+        this.setState({newOptIn: false});
+      } else {
+        this.setState({newOptIn: true});
+      }
     }
-
     state={
       modalVisible: true,
       loadedData: false,
@@ -49,7 +52,7 @@ export default class Profile extends React.Component {
       oldOptIn: false,
       emailError: "",
       yourReviewList: [],
-      yourWrittenReviewList: []
+      yourWrittenReviewList: [],
     }
 
 
@@ -83,7 +86,7 @@ export default class Profile extends React.Component {
               oldAge: responseJson[0].age,
               oldJob: responseJson[0].job,
               oldEmail: responseJson[0].email,
-              oldOptIn: responseJson[0].optIn
+              oldOptIn: responseJson[0].optIn,
             });
           })
           .catch((error) => {
@@ -219,6 +222,10 @@ export default class Profile extends React.Component {
                   <Text>Loading...</Text>
                 </View>
               </Modal>
+              <View style={styles.column}>
+                <Button style={styles.buttons} color='#BA55D3' title="Edit" onPress={() => this.editFields(true)}/>
+                <Button style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
+              </View>
               <View style={styles.container}>
               <View style={styles.profilePic}>
                 <Image source={require('../components/Portrait_Placeholder.png')} />
@@ -254,8 +261,6 @@ export default class Profile extends React.Component {
                   ))
                 }
               </ScrollView>
-              <Button style={styles.buttons} color='#BA55D3' title="Edit" onPress={() => this.editFields(true)}/>
-              <Button style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
               <Modal
                 animationType="slide"
                 visible={this.state.editViewVisible}
@@ -279,7 +284,7 @@ export default class Profile extends React.Component {
                   <TextInputMask
                     keyboardType='numeric'
                     style={styles.textInput}
-                    placeholder={this.state.oldAge.toString()}
+                    placeholder={"Age"}
                     mask={"[99]"}
                     onChangeText={(age) => this.setState({newAge: parseInt(age)})}/>
                   <Text>Job</Text>
@@ -351,8 +356,8 @@ const styles = StyleSheet.create({
   column: {
     flex: 1,
     justifyContent : 'space-around',
-    alignItems: 'center',
-    flexDirection:'column'
+    flexDirection:'column',
+    padding: 10
   },
   profilePic: {
     width: 250,
@@ -364,7 +369,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#DDDDDD',
     margin: 10,
-    padding: 10,
   },
   loading: {
     flex: 1,
