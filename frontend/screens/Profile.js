@@ -25,6 +25,7 @@ const data = [
 
 export default class Profile extends React.Component {
     static navigationOptions = {
+        tabBarTestID: 'profile_tab',
         tabBarIcon: tabBarIcon('md-person'),
     };
 
@@ -209,7 +210,7 @@ export default class Profile extends React.Component {
         this.getUserData();
       }
         return (
-            <ScrollView style={styles.scrollView}>
+            <ScrollView style={styles.scrollView} testID="profile_screen">
               <Modal
                 animationType="slide"
                 visible={this.state.modalVisible}
@@ -255,7 +256,7 @@ export default class Profile extends React.Component {
                 }
               </ScrollView>
               <Button style={styles.buttons} color='#BA55D3' title="Edit" onPress={() => this.editFields(true)}/>
-              <Button style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
+              <Button style={styles.buttons} color='#8A2BE2' testID="logout_button" title="Logout" onPress={() => this.handleLogOut()}/>
               <Modal
                 animationType="slide"
                 visible={this.state.editViewVisible}

@@ -4,6 +4,7 @@ import {Button} from 'react-native-paper';
 
 const RecommendedListingButton = props => (
   <Button
+    testID={props.testID}
     style={styles.fab}
     labelStyle={styles.text}
     icon="check"

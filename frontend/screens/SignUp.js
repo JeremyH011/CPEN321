@@ -113,6 +113,7 @@ class SignUp extends Component {
   render() {
     return (
       <ScrollView
+        testID="signup_screen"
         keyboardShouldPersistTaps='handled'
         contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.title}>
@@ -146,6 +147,7 @@ class SignUp extends Component {
           />
           <Text>Email</Text>
           <TextInput
+            testID="email_input"
             style={styles.textInput}
             placeholder="Email address..."
             returnKeyType={'done'}
@@ -155,6 +157,7 @@ class SignUp extends Component {
           />
           <Text>Password</Text>
           <TextInput secureTextEntry
+            testID="password_input"
             style={styles.textInput}
             placeholder="Enter a password"
             returnKeyType={'done'}
@@ -186,7 +189,7 @@ class SignUp extends Component {
             />
         </View>
         <View style={styles.columncontainer}>
-          <Button style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.checkPasswords(this.state.passwordField, this.state.passwordConfirm)} />
+          <Button style={styles.buttons} color='#BA55D3' testID="signup_button" title="Sign Up!" onPress={() => this.checkPasswords(this.state.passwordField, this.state.passwordConfirm)} />
           <Button style={styles.buttons} color='#8A2BE2' title="Go Back" onPress={() => this.props.navigation.navigate('Welcome')}/>
         </View>
       </ScrollView>

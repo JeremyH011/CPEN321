@@ -374,7 +374,7 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
           {priceMax: {$lte: max}}
         ]}
       ]},
-      {userId: {$ne: OId}
+      {userId: {$ne: OId},
     }]
   };
 

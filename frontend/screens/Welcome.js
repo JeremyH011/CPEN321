@@ -22,16 +22,17 @@ class Welcome extends Component {
 
   render() {
     return (
-      <ScrollView
+      <View
+        testID="welcome_screen" 
         contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.title}>
           <Text style={styles.textTitle}>WELCOME</Text>
         </View>
         <View style={styles.container}>
-          <Button style={styles.buttons} color='#BA55D3' title="Login" onPress={() => this.props.navigation.navigate('Login')}/>
-          <Button style={styles.buttons} color='#8A2BE2' title="Sign Up" onPress={() => this.props.navigation.navigate('SignUp')}/>
+          <Button style={styles.buttons} color='#BA55D3' testID="login_button" title="Login" onPress={() => this.props.navigation.navigate('Login')}/>
+          <Button style={styles.buttons} color='#8A2BE2' testID="signup_button"  title="Sign Up" onPress={() => this.props.navigation.navigate('SignUp')}/>
         </View>
-      </ScrollView>
+      </View>
     );
   }
 }
