@@ -5,11 +5,26 @@ import { View,
   Text,
   StyleSheet,
   Image,
-  Modal } from 'react-native';
+  Modal,
+  Dimensions } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
+import Carousel from 'react-native-snap-carousel';
 import { DB_URL } from "../key";
 import AddReviewPage from "./AddReviewPage";
 import Review from "../classes/Review";
+
+const {width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+
+function wp (percentage) {
+  const value = (percentage * viewportWidth) / 100;
+  return Math.round(value);
+}
+
+const slideHeight = viewportHeight * 0.36;
+const slideWidth = wp(75);
+const itemHorizontalMargin = wp(2);
+const sliderWidth = viewportWidth;
+const itemWidth = slideWidth + itemHorizontalMargin * 2;
 
 export default class ViewUserPage extends React.Component {
 
@@ -19,7 +34,15 @@ export default class ViewUserPage extends React.Component {
     age: 0,
     email: "",
     job: "",
+    photo: null,
     reviewList: []
+  }
+
+  _renderItem({item, index}) {
+    const url ={ uri: DB_URL + item.path.replace(/\\/g, "/")};
+    return (
+      <Image source = {url} style={{height: 300, resizeMode : 'center', margin: 5}}/>
+    );
   }
 
   setModalVisible(visible){
@@ -49,7 +72,8 @@ export default class ViewUserPage extends React.Component {
             name: responseJson[0].name,
             age: responseJson[0].age,
             job: responseJson[0].job,
-            email: responseJson[0].email
+            email: responseJson[0].email,
+            photo: responseJson[0].photo
           });
         })
         .catch((error) => {
@@ -84,6 +108,10 @@ export default class ViewUserPage extends React.Component {
   }
 
   render() {
+    const item = this.state.photo;
+    if(item != null){
+      console.log(item);
+    }
       return (
         <Modal
           animationType="slide"
@@ -91,16 +119,39 @@ export default class ViewUserPage extends React.Component {
           onRequestClose={() => { this.setModalVisible(false)}}
           >
           <NavigationEvents
+            onDidFocus={payload => {
+              console.log("did focus", payload);
+              this.onTabPressed();
+            }}
             onWillFocus={payload => {
               console.log("will focus", payload);
+              this.onTabPressed();
+            }}
+            onWillBlur={payload => {
+              console.log("will blur", payload);
+              this.onTabPressed();
+            }}
+            onDidBlur={payload => {
+              console.log("did blur", payload);
               this.onTabPressed();
             }}
           />
           <ScrollView style={styles.scrollView}>
             <View style={styles.container}>
-            <View style={styles.profilePic}>
-              <Image source={require('../components/Portrait_Placeholder.png')} />
-            </View>
+              <View style={styles.profilePic}>
+                {item != null && (<Carousel
+                  ref={(c) => { this._carousel = c; }}
+                  data={Array.from(item)}
+                  renderItem={this._renderItem}
+                  sliderWidth={sliderWidth}
+                  itemWidth={itemWidth}
+                  />
+                )}
+                {item == null && (<Image
+                  source={require('../components/Portrait_Placeholder.png')}
+                  />
+                )}
+              </View>
             </View>
             <View style={styles.text_box}>
               <Text style={styles.boxItem}>Name: {this.state.name}</Text>

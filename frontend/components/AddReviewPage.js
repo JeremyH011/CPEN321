@@ -75,7 +75,7 @@ export default class AddReviewPage extends React.Component {
           if (response.status == 200) {
             this.setModalVisible(false);
           } else {
-            alert("Server error. Try agian later!");
+            alert("Server error. Try again later!");
             this.setModalVisible(false);
           }
         })
@@ -125,6 +125,9 @@ export default class AddReviewPage extends React.Component {
               transparent={false}
               visible={this.state.modalVisible}
               onRequestClose={() => { this.setModalVisible(false); } }>
+              <View style={styles.title}>
+                <Text style={styles.textTitle}>WRITE A REVIEW</Text>
+              </View>
               <View style={styles.modal}>
                 <View style={styles.row}>
                   <View style={styles.dropdown}>
@@ -165,7 +168,7 @@ export default class AddReviewPage extends React.Component {
 
 const styles = StyleSheet.create({
     modal: {
-      flex: 1,
+      flex: 10,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -177,7 +180,7 @@ const styles = StyleSheet.create({
       padding: 10,
     },
     scrollView: {
-      flex: 1,
+      flex: 10,
     },
     row: {
         flexDirection: 'row',
@@ -191,10 +194,20 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     container: {
-      flex:1,
+      flex:10,
       alignItems:'center',
       justifyContent:'center',
-    }
+    },
+    title: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#8A2BE2'
+    },
+    textTitle: {
+      fontSize:15,
+      color:'white'
+    },
 });
 
 const ratingList = [
