@@ -6,6 +6,7 @@ import { View,
   StyleSheet,
   Image,
   Modal } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
 import { DB_URL } from "../key";
 import AddReviewPage from "./AddReviewPage";
 import Review from "../classes/Review";
@@ -24,6 +25,11 @@ export default class ViewUserPage extends React.Component {
   setModalVisible(visible){
     this.getUserInfo();
     this.setState({modalVisible: visible});
+    this.getReviews();
+  }
+
+  onTabPressed() {
+    this.getUserInfo();
     this.getReviews();
   }
 
@@ -84,6 +90,12 @@ export default class ViewUserPage extends React.Component {
           visible={this.state.modalVisible}
           onRequestClose={() => { this.setModalVisible(false)}}
           >
+          <NavigationEvents
+            onWillFocus={payload => {
+              console.log("will focus", payload);
+              this.onTabPressed();
+            }}
+          />
           <ScrollView style={styles.scrollView}>
             <View style={styles.container}>
             <View style={styles.profilePic}>

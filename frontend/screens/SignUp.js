@@ -5,11 +5,13 @@ import {
   StyleSheet,
   Button,
   TextInput,
-  ScrollView } from "react-native";
+  ScrollView,
+  Image } from "react-native";
 import { DB_URL } from '../key';
 import AsyncStorage from '@react-native-community/async-storage';
 import TextInputMask from 'react-native-text-input-mask';
 import CheckboxFormX from 'react-native-checkbox-form';
+import ImagePicker from 'react-native-image-picker';
 
 const data = [
   {
@@ -36,8 +38,36 @@ class SignUp extends Component {
       passwordField: "",
       passwordConfirm: "",
       optIn: false,
-      passErrorMsg: ""
+      passErrorMsg: "",
+      photo: null,
      }
+
+  handleChoosePhoto() {
+    const options= {
+      noData: true,
+    }
+    ImagePicker.launchImageLibrary(options, response => {
+      if (response.uri) {
+        this.setState({photo:response});
+      }
+    })
+  }
+
+  createFormData(body) {
+    let data = new FormData();
+
+    data.append("photo", {
+      name: this.state.photo.fileName,
+      type: this.state.photo.type,
+      uri:
+        Platform.OS === "android" ? this.state.photo.uri : this.state.photo.uri.replace("file://", "")
+    });
+
+    Object.keys(body).forEach(key => {
+      data.append(key, body[key])
+    });
+    return data;
+  }
 
   ensureFormComplete() {
     if (this.state.nameField == "") {
@@ -82,21 +112,21 @@ class SignUp extends Component {
     }
   }
 
-  try_signup = () => {
+  try_signup() {
+    let body = {
+      name: this.state.nameField,
+      age: this.state.ageField,
+      job: this.state.jobField,
+      email: this.state.emailField,
+      password: this.state.passwordField,
+      optIn: this.state.optIn,
+    };
     return fetch(DB_URL+'signup/', {
         method: 'POST',
         headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify({
-          name: this.state.nameField,
-          age: this.state.ageField,
-          job: this.state.jobField,
-          email: this.state.emailField,
-          password: this.state.passwordField,
-          optIn: this.state.optIn,
-        }),
+        body: this.createFormData(body),
     });
   }
 
@@ -115,6 +145,7 @@ class SignUp extends Component {
   }
 
   render() {
+    const {photo} = this.state;
     return (
       <ScrollView
         keyboardShouldPersistTaps='handled'
@@ -189,6 +220,17 @@ class SignUp extends Component {
             onChecked={(item) => this._onSelect(item)}
             />
         </View>
+        <View style={styles.column}>
+          <Button style={styles.buttons} color='#A80097' title="Choose a Profile Photo" onPress={() => {this.handleChoosePhoto()}}/>
+        </View>
+        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+          {photo && (
+            <Image
+              source={{ uri: photo.uri }}
+              style={{ width: 150, height: 150 }}
+            />
+          )}
+        </View>
         <View style={styles.columncontainer}>
           <Button style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.checkPasswords(this.state.passwordField, this.state.passwordConfirm)} />
           <Button style={styles.buttons} color='#8A2BE2' title="Go Back" onPress={() => this.props.navigation.navigate('Welcome')}/>
@@ -205,13 +247,11 @@ const styles = StyleSheet.create({
     alignItems:'center',
     justifyContent:'center',
   },
-
   columncontainer: {
     flex:2,
     flexDirection: 'column',
     justifyContent:"center"
   },
-
   checkbox: {
     flex:2,
     alignItems: 'center',
@@ -219,25 +259,27 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     marginHorizontal: 10
   },
-
+  row: {
+      flexDirection: 'row',
+      width: 300,
+      alignItems: 'center',
+      justifyContent: 'center',
+  },
   buttons: {
       backgroundColor: '#DDDDDD',
       margin: 10,
       padding: 10,
   },
-
   title: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#8A2BE2'
   },
-
   textTitle: {
     fontSize:15,
     color:'white'
   },
-
   textInput: {
     height: 40,
     width: 300,
@@ -245,4 +287,10 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
   },
+  column: {
+    flex: 1,
+    justifyContent : 'space-around',
+    flexDirection:'column',
+    padding: 10
+  }
 })
