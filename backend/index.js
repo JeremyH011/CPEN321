@@ -592,6 +592,175 @@ function filterForLocations(result, req) {
   return locationFiltered;
 }
 
+app.post('/get_chat_room_by_user_ids', jsonParser, (req, res) => {
+    console.log("get_chat_room_by_user_ids");
+    console.log(req.body);
+
+  var currentUserId = getOIdFromUserId(req.body.currentUserId);
+  var otherUserId = getOIdFromUserId(req.body.otherUserId);
+  
+  //https://stackoverflow.com/questions/2008032/mongodb-query-with-an-or-condition
+  db.collection("chatRooms").find({
+    $or:[{$and:[{userId1: { $eq : otherUserId }},{userId2: { $eq : currentUserId}}]},
+            {$and:[{userId2: { $eq : otherUserId }}, {userId1: { $eq : currentUserId}}]},]
+  }).toArray((err,result) => {
+    if(err){
+      res.sendStatus(400);
+    }
+    else{
+       if(result.length == 0)
+       {
+            res.sendStatus(401);
+       }
+       else
+       {
+          res.writeHead(200, {'Content-Type': 'application/json'});
+          var chatRoomIdObj = {
+            chatRoomId: result[0]._id
+          }
+          res.end(JSON.stringify(chatRoomIdObj));
+       }
+    }
+  });
+});
+
+app.post('/create_chat_room', jsonParser, (req, res) => {
+    console.log("create_chat_room");
+    console.log(req.body);
+
+    req.body.userId1 = getOIdFromUserId(req.body.userId1);
+    req.body.userId2 = getOIdFromUserId(req.body.userId2);
+  
+    db.collection("chatRooms").insertOne(req.body, (err, result) => {
+      if (err) {
+            res.sendStatus(400);
+      }
+      else 
+      {
+        res.writeHead(201, {'Content-Type': 'application/json'});
+        var chatRoomIdObj = {
+          chatRoomId: result.insertedId
+        }
+        res.end(JSON.stringify(chatRoomIdObj));
+      }
+    });
+});
+
+app.post('/get_chat_rooms_by_user_id', jsonParser, (req, res) => {
+    console.log("get_chat_room_by_id");
+    console.log(req.body);
+
+  var userId = getOIdFromUserId(req.body.userId);
+  
+  //https://stackoverflow.com/questions/2008032/mongodb-query-with-an-or-condition
+  db.collection("chatrooms").find({
+    $or: [{userId1: { $eq : userId }}, {userId2: { $eq : userId }}]
+  }).toArray((err,result) => {
+    if(err){
+      res.sendStatus(400);
+    }
+    else{
+       if(result.length == 0)
+       {
+           res.sendStatus(null);
+       }
+       else
+       {
+           var chatRooms = getChatRoomWithNames(result);
+           res.sendStatus(chatRooms);
+       }
+    }
+  });
+});
+
+app.post('/create_message', jsonParser, (req, res) => {
+    console.log("create_message");
+    console.log(req.body);
+
+    req.body['date'] = new Date(Date.now()).toISOString();
+    req.body.senderId = getOIdFromUserId(req.body.senderId);
+    req.body.receiverId = getOIdFromUserId(req.body.receiverId);
+    req.body.chatRoomId = getOIdFromUserId(req.body.chatRoomId);
+    db.collection("messages").insertOne(req.body, (err, result) => {
+      if (err) {
+            res.sendStatus(400);
+      }
+      else 
+      {
+        res.writeHead(201, {'Content-Type': 'application/json'});
+        var messageObjId = {
+          messageId: result.insertedId
+        }
+        res.end(JSON.stringify(messageObjId));
+      }
+    });
+});
+
+app.post('/get_messages_by_chatroom_id', jsonParser, (req, res) => {
+    console.log("get_messages_by_chatroom_id");
+    console.log(req.query);
+  
+  var request_body = {};
+  var chatRoomId = getOIdFromUserId(req.query.chatRoomId);
+  request_body['chatRoomId'] = chatRoomId;
+  
+  //https://stackoverflow.com/questions/13847766/how-to-sort-a-collection-by-date-in-mongodb
+  db.collection("messages").find(request_body)
+  .sort({date: 1})
+  .toArray((err,result) => {
+    if(err){
+      res.sendStatus(400);
+    }
+    else{
+       res.writeHead(200, {'Content-Type': 'application/json'});
+       var messages = getMessagesWithNames(result);
+       res.end(JSON.stringify(messages));
+    }
+  });
+});
+
+function getMessagesWithNames(result) {
+  var messages = [];
+  result.forEach(function(message){
+      var messageObj = {
+          messageId: message._id,
+          senderId: message.senderId,
+          receiverId: message.receiverId,
+          content: message.content,
+          date: message.date,
+      }
+      messages.push(messageObj);
+  });
+  return messages;
+}
+
+function getChatRoomWithNames(result) {
+  var chatRooms = [];
+  result.forEach(function(chatRoom){
+      var currentUserName = getNameByUserId(chatRoom.currentUserId);
+      var otherUserName = getNameByUserId(chatRoom.otherUserId);
+      var chatRoomObj = {
+          chatRoomId: chatRoom._id,
+          currentUserId: chatRoom.currentUserId,
+          otherUserId: chatRoom.otherUserId,
+          currentUserName: currentUserName,
+          otherUserName: otherUserName
+      }
+      chatRooms.push(chatRoomObj);
+  });
+  return chatRooms;
+}
+
+async function getNameByUserId(userId) {
+  db.collection("users").findOne({
+    _id: { $eq : userId },
+  }, (err,result) => {
+    if(!err){
+      return result.name;
+    }
+  });
+}
+
 var server = app.listen(constants.PORT_NUM, ()=> {
   console.log(server.address());
 });

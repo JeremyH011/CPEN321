@@ -9,6 +9,7 @@ import { View,
 import { DB_URL } from "../key";
 import AddReviewPage from "./AddReviewPage";
 import Review from "../classes/Review";
+import ChatWindow from "./ChatWindow";
 
 export default class ViewUserPage extends React.Component {
 
@@ -18,7 +19,8 @@ export default class ViewUserPage extends React.Component {
     age: 0,
     email: "",
     job: "",
-    reviewList: []
+    reviewList: [],
+    chatRoomId: null,
   }
 
   setModalVisible(visible){
@@ -77,6 +79,75 @@ export default class ViewUserPage extends React.Component {
     this.refs.reviewPopup.setModalVisible(true);
   }
 
+  getChatRoomByUserIds(){
+    fetch(DB_URL+`get_chat_room_by_user_ids`, {
+      method: "POST",
+      headers: {
+        Accept : 'application/json',
+        'Content-Type' : 'application/json',
+      },
+      body: JSON.stringify({
+        otherUserId: this.props.userId,
+        currentUserId: this.props.currentUserId,
+      }),
+    })
+    .then((response) => {
+      if (response.status == 200) {
+        return response.json();
+      } else if (response.status == 401){
+        this.createChatRoom();
+      } else {
+        alert("Server error. Try again later!");
+      }
+    })
+    .then((responseJson) => {
+      if (responseJson) {
+        this.setState({
+          chatRoomId: responseJson.chatRoomId
+        });
+        this.refs.chatWindowPopup.getMessagesByChatRoomID({"chatRoomId":this.state.chatRoomId});
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  createChatRoom(){
+    fetch(DB_URL+`create_chat_room`, {
+      method: "POST",
+      headers: {
+        Accept : 'application/json',
+        'Content-Type' : 'application/json',
+      },
+      body: JSON.stringify({
+        userId1: this.props.userId,
+        userId2: this.props.currentUserId,
+      }),
+    }).then((response) => response.json())
+    .then((responseJson) => {
+      if (responseJson) {
+        this.setState({
+          chatRoomId: responseJson.chatRoomId
+        });
+        this.refs.chatWindowPopup.getMessagesByChatRoomID({chatRoomId:this.state.chatRoomId});
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  openChatHandler(){
+    // search for a chat room by curr User Id and other user ID
+      // return chat room ID if found or null if not
+      // if null then call create chat room api (return chat room ID)
+    // call get messagesByChatRoomID on the chat window
+    // open the chat window
+    this.getChatRoomByUserIds();
+    this.refs.chatWindowPopup.setModalVisible(true);
+  }
+
   render() {
       return (
         <Modal
@@ -109,9 +180,10 @@ export default class ViewUserPage extends React.Component {
                 ))
               }
             </ScrollView>
-            <Button style={styles.buttons} color='#BA55D3' title="Chat"/>
+            <Button style={styles.buttons} color='#BA55D3' title="Chat" onPress={() => this.openChatHandler()}/>
             <Button style={styles.buttons} color='#BA55D3' title="Add Review" onPress={() => this.handleAddReview()}/>
             <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={() => this.setModalVisible(false)}/>
+            <ChatWindow ref='chatWindowPopup' chatteeName={this.state.name} chatRoomId={this.state.chatRoomId} currentUserId={this.props.currentUserId} otherUserId={this.props.userId}/>
             <AddReviewPage ref='reviewPopup' revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
           </ScrollView>
           </Modal>

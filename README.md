@@ -85,6 +85,7 @@ npm install --save image-picker
 for some random ui elements
 ```
 npm install react-native-elements --save
+npm install react-native-autogrow-input
 ```
 
 if an error similar to below is seen when running ```react-native run-android```
