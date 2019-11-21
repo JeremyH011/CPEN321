@@ -14,6 +14,7 @@ import MaterialIcons from 'react-native-vector-icons/Ionicons';
 import Message from "../classes/Message";
 import InputBar from "./InputBar";
 import MessageBubble from './MessageBubble';
+import { EventRegister } from 'react-native-event-listeners';
 
 export default class ChatWindow extends React.Component {
     // https://www.npmjs.com/package/react-chat-bubble
@@ -22,6 +23,23 @@ export default class ChatWindow extends React.Component {
         modalVisible: false,
         messages: [],
         currMsgContent: "",
+    }
+
+    componentWillMount() {
+        this.listener = EventRegister.addEventListener('messageMade', (data) => {
+            if(data.chatRoomId == this.props.chatRoomId)
+            {
+                this.getMessagesByChatRoomID({"chatRoomId": data.chatRoomId});
+            }
+            else
+            {
+                alert(data.title, data.body);
+            }
+        })
+    }
+
+    componentWillUnmount() {
+        EventRegister.removeEventListener(this.listener);
     }
 
     setModalVisible(visible, chatRoomId) {
@@ -96,7 +114,10 @@ export default class ChatWindow extends React.Component {
             />
 
             <View style={styles.outer}>
-                  <ScrollView ref={(ref) => { this.scrollView = ref }} style={styles.messages}>
+                  <ScrollView ref={(ref) => { this.scrollView = ref }} style={styles.messages}
+                    onContentSizeChange={(contentWidth, contentHeight)=>{        
+                        this.scrollView.scrollToEnd({animated: true});
+                    }}>
                     {
                         this.state.messages.map((msg)=>(
                             <MessageBubble 

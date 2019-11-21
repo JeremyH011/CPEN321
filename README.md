@@ -88,6 +88,11 @@ npm install react-native-elements --save
 npm install react-native-autogrow-input
 ```
 
+for event-listener
+```
+npm install react-native-event-listeners
+```
+
 if an error similar to below is seen when running ```react-native run-android```
 ```
 FAILURE: Build failed with an exception.

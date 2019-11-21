@@ -32,6 +32,7 @@ import { AsyncStorage } from 'react-native';
 import firebase from 'react-native-firebase';
 import SearchFilterButton from '../components/SearchFilterButton';
 import SearchFilterPage from '../components/SearchFilterPage';
+import { EventRegister } from 'react-native-event-listeners';
 
 export default class HomeScreenMap extends React.Component {
   static navigationOptions = {
@@ -136,7 +137,14 @@ async createNotificationListeners() {
 * */
 this.notificationListener = firebase.notifications().onNotification((notification) => {
     const { title, body } = notification;
-    this.showAlert(title, body);
+    if(title.includes("Message"))
+    {
+      EventRegister.emit('messageMade', {chatRoomId: null, title: title, body: body});
+    }
+    else
+    {
+      this.showAlert(title, body);
+    }
 });
 
 /*
@@ -158,9 +166,10 @@ if (notificationOpen) {
 /*
 * Triggered for data only payload in foreground
 * */
-this.messageListener = firebase.messaging().onMessage((message) => {
-  //process data message
-  console.log(JSON.stringify(message));
+this.messageListener  = firebase.messaging().onMessage((notification) => {
+  const { title, body, type, chatRoomId } = notification.data;
+  
+  EventRegister.emit('messageMade', {chatRoomId: chatRoomId, title: title, body: body});
 });
 }
 

@@ -731,7 +731,8 @@ function read_all_rooms(collection, query, cb) {
 app.post('/create_message', jsonParser, (req, res) => {
     console.log("create_message");
     console.log(req.body);
-
+    
+    var chatRoomId = req.body.chatRoomId;
     req.body['date'] = new Date(Date.now()).toISOString();
     req.body.senderId = getOIdFromUserId(req.body.senderId);
     req.body.receiverId = getOIdFromUserId(req.body.receiverId);
@@ -754,7 +755,15 @@ app.post('/create_message', jsonParser, (req, res) => {
           var registrationToken = receiver.fcmToken;
           var notificationBody = req.body.content;
           var message = {
-            notification: {title : 'New Message from: ' + sender.name, body : notificationBody},
+            data: { title : 'New Message from: ' + sender.name, 
+                            body : notificationBody, 
+                            type: "message", 
+                            chatRoomId: chatRoomId},
+            token: registrationToken,
+          }
+          var notification = {
+            notification: { title : 'New Message from: ' + sender.name, 
+                            body : notificationBody},
             token: registrationToken,
           }
 
@@ -765,6 +774,15 @@ app.post('/create_message', jsonParser, (req, res) => {
               })
               .catch((error) => {
                 console.log('Error sending message:', error);
+              });
+              
+          admin.messaging().send(notification)
+          .then((response) => {
+                // Response is a message ID string.
+                console.log('Successfully sent notification:', response);
+              })
+              .catch((error) => {
+                console.log('Error sending messanotificationge:', error);
               });
         });
       if (err) {
