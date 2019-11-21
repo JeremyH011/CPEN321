@@ -43,6 +43,7 @@ export default class HomeScreenMap extends React.Component {
     userLocation: null,
     userId: null,
     listingLocations: [],
+    notifChatRoomId: null,
   }
 
   getUserLocationHandler = () => {
@@ -139,7 +140,7 @@ this.notificationListener = firebase.notifications().onNotification((notificatio
     const { title, body } = notification;
     if(title.includes("Message"))
     {
-      EventRegister.emit('messageMade', {chatRoomId: null, title: title, body: body});
+      EventRegister.emit('msgNotifMade', {chatRoomId: this.state.notifChatRoomId, title: title, body: body});
     }
     else
     {
@@ -152,7 +153,7 @@ this.notificationListener = firebase.notifications().onNotification((notificatio
 * */
 this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
     const { title, body } = notificationOpen.notification;
-    this.showAlert(title, body);
+    //this.showAlert(title, body);
 });
 
 /*
@@ -161,14 +162,14 @@ this.notificationOpenedListener = firebase.notifications().onNotificationOpened(
 const notificationOpen = await firebase.notifications().getInitialNotification();
 if (notificationOpen) {
     const { title, body } = notificationOpen.notification;
-    this.showAlert(title, body);
+    //this.showAlert(title, body);
 }
 /*
 * Triggered for data only payload in foreground
 * */
 this.messageListener  = firebase.messaging().onMessage((notification) => {
   const { title, body, type, chatRoomId } = notification.data;
-  
+  this.setState({notifChatRoomId: chatRoomId});
   EventRegister.emit('messageMade', {chatRoomId: chatRoomId, title: title, body: body});
 });
 }

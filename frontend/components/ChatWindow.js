@@ -23,15 +23,19 @@ export default class ChatWindow extends React.Component {
         modalVisible: false,
         messages: [],
         currMsgContent: "",
+        chatRoomId: null,
     }
 
     componentWillMount() {
-        this.listener = EventRegister.addEventListener('messageMade', (data) => {
+        this.listenerMsg = EventRegister.addEventListener('messageMade', (data) => {
             if(data.chatRoomId == this.props.chatRoomId)
             {
                 this.getMessagesByChatRoomID({"chatRoomId": data.chatRoomId});
             }
-            else
+        })
+        
+        this.listenerNotification = EventRegister.addEventListener('msgNotifMade', (data) => {
+            if(data.chatRoomId != this.state.chatRoomId)
             {
                 alert(data.title, data.body);
             }
@@ -39,13 +43,19 @@ export default class ChatWindow extends React.Component {
     }
 
     componentWillUnmount() {
-        EventRegister.removeEventListener(this.listener);
+        EventRegister.removeEventListener(this.listenerMsg);
+        EventRegister.removeEventListener(this.listenerNotification);
     }
 
     setModalVisible(visible, chatRoomId) {
       if(visible)
       {
+        this.setState({chatRoomId: chatRoomId});
         this.getMessagesByChatRoomID({"chatRoomId":chatRoomId});
+      }
+      else
+      {
+          this.setState({chatRoomId: null});
       }
       this.setState({modalVisible: visible});
     }
