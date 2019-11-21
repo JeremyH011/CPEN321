@@ -107,7 +107,7 @@ export default class ChatWindow extends React.Component {
                   </ScrollView>
                   <InputBar onSendPressed={() => this.createMessage()}
                       onChangeText={(text) => this.setState({currMsgContent: text})}
-                      text={this.state.currMsgContent}/>            
+                      text={this.state.currMsgContent}/>                   
               </View>
           </Modal>
         );

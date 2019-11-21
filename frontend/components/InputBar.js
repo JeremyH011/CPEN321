@@ -24,7 +24,7 @@ class InputBar extends PureComponent {
                           multiline={true}
                           defaultHeight={30}
                           onChangeText={(text) => this.props.onChangeText(text)}
-                          
+                          placeholder="Enter Message"
                           value={this.props.text}/>
               <TouchableHighlight style={styles.sendButton} onPress={() => this.props.onSendPressed()}>
                   <Text style={{color: 'white'}}>Send</Text>
@@ -48,6 +48,7 @@ class InputBar extends PureComponent {
       borderColor: 'gray',
       flex: 1,
       fontSize: 16,
+      minHeight: 50,
       paddingHorizontal: 10
     },
   
