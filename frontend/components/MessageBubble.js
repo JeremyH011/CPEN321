@@ -45,7 +45,7 @@ class MessageBubble extends PureComponent {
     },
   
     messageBubbleLeft: {
-      backgroundColor: '#d5d8d4',
+      backgroundColor: '#DDA0DD',
     },
   
     messageBubbleTextLeft: {
@@ -53,7 +53,7 @@ class MessageBubble extends PureComponent {
     },
   
     messageBubbleRight: {
-      backgroundColor: '#66db30'
+      backgroundColor: '#9932CC'
     },
   
     messageBubbleTextRight: {

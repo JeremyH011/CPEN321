@@ -737,6 +737,36 @@ app.post('/create_message', jsonParser, (req, res) => {
     req.body.receiverId = getOIdFromUserId(req.body.receiverId);
     req.body.chatRoomId = getOIdFromUserId(req.body.chatRoomId);
     db.collection("messages").insertOne(req.body, (err, result) => {
+        db.collection("users").find({$or:[{ _id : { $eq : req.body.receiverId } }, { _id : { $eq : req.body.senderId } }]}).toArray((err, result) => {
+          console.log(result);
+          var receiver;
+          var sender;
+          if(result[0]._id.equals(req.body.receiverId))
+          {
+              receiver = result[0];
+              sender = result[1];
+          }
+          else
+          {
+              receiver = result[1];
+              sender = result[0];
+          }
+          var registrationToken = receiver.fcmToken;
+          var notificationBody = req.body.content;
+          var message = {
+            notification: {title : 'New Message from: ' + sender.name, body : notificationBody},
+            token: registrationToken,
+          }
+
+          admin.messaging().send(message)
+          .then((response) => {
+                // Response is a message ID string.
+                console.log('Successfully sent message:', response);
+              })
+              .catch((error) => {
+                console.log('Error sending message:', error);
+              });
+        });
       if (err) {
             res.sendStatus(400);
       }
