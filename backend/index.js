@@ -647,31 +647,86 @@ app.post('/create_chat_room', jsonParser, (req, res) => {
 });
 
 app.post('/get_chat_rooms_by_user_id', jsonParser, (req, res) => {
-    console.log("get_chat_room_by_id");
+    console.log("get_chat_rooms_by_user_id");
     console.log(req.body);
+  var numberOfRooms = 0;
+  var count = 0;   
+  var rooms_with_names = [];
 
   var userId = getOIdFromUserId(req.body.userId);
+  console.log("USER ID: " + userId);
   
-  //https://stackoverflow.com/questions/2008032/mongodb-query-with-an-or-condition
-  db.collection("chatrooms").find({
-    $or: [{userId1: { $eq : userId }}, {userId2: { $eq : userId }}]
-  }).toArray((err,result) => {
-    if(err){
-      res.sendStatus(400);
-    }
-    else{
-       if(result.length == 0)
-       {
-           res.sendStatus(null);
-       }
-       else
-       {
-           var chatRooms = getChatRoomWithNames(result);
-           res.sendStatus(chatRooms);
-       }
-    }
+  get_chat_rooms(function(err, collection) {
+      function processRooms(err, rooms) {
+          rooms.toArray(function(err, roomsArray) {
+              console.log(roomsArray.length);
+              numberOfRooms = roomsArray.length;
+              count = 0;
+              for(const room of roomsArray) {
+                  console.log(room);
+                  
+                  populateNames(room, userId, function updateRoomsWithNames(newRoom) {
+                      rooms_with_names.push(newRoom);
+                      console.log(rooms_with_names);
+                      count++;
+                      if (count == numberOfRooms) {
+                          finallyReturn();
+                      }
+                  });
+
+                  console.log("ROOMS WITH NAMES:");
+                  console.log(rooms_with_names);
+              }
+              
+          });
+      }
+      
+      function finallyReturn() {
+              res.writeHead(200, {'Content-Type': 'application/json'});
+              console.log("executing finally return");
+              console.log(rooms_with_names);
+              res.end(JSON.stringify(rooms_with_names));
+      }
+      
+      var query = {$or: [{userId1: { $eq : userId }}, {userId2: { $eq : userId }}]};
+      
+      read_all_rooms(collection, query, processRooms);
   });
+  
+  function populateNames(room, userId, cb) {
+      var chatteeId;
+      if (userId.equals(room.userId1)) {
+          chatteeId = room.userId2;
+      } else {
+          chatteeId = room.userId1;
+      }
+      
+      var otherName;
+      
+      db.collection("users").findOne({
+            _id: { $eq : chatteeId }}, (err,result) => {
+                console.log("USER NAME: " + result.name);
+                
+                var chatRoomObj = {
+                      chatRoomId: room._id,
+                      currentUserId: userId,
+                      chatteeId: chatteeId,
+                      chatteeName: result.name
+                  }
+                  
+                cb(chatRoomObj);
+      });
+  }
 });
+
+function get_chat_rooms(cb) {
+    var chat_rooms = db.collection("chatRooms");
+    cb(null, chat_rooms);
+}
+
+function read_all_rooms(collection, query, cb) {
+    collection.find(query, cb);
+}
 
 app.post('/create_message', jsonParser, (req, res) => {
     console.log("create_message");
@@ -732,33 +787,6 @@ function getMessagesWithNames(result) {
       messages.push(messageObj);
   });
   return messages;
-}
-
-function getChatRoomWithNames(result) {
-  var chatRooms = [];
-  result.forEach(function(chatRoom){
-      var currentUserName = getNameByUserId(chatRoom.currentUserId);
-      var otherUserName = getNameByUserId(chatRoom.otherUserId);
-      var chatRoomObj = {
-          chatRoomId: chatRoom._id,
-          currentUserId: chatRoom.currentUserId,
-          otherUserId: chatRoom.otherUserId,
-          currentUserName: currentUserName,
-          otherUserName: otherUserName
-      }
-      chatRooms.push(chatRoomObj);
-  });
-  return chatRooms;
-}
-
-async function getNameByUserId(userId) {
-  db.collection("users").findOne({
-    _id: { $eq : userId },
-  }, (err,result) => {
-    if(!err){
-      return result.name;
-    }
-  });
 }
 
 var server = app.listen(constants.PORT_NUM, ()=> {

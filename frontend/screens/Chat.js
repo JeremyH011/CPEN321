@@ -7,6 +7,7 @@ import { DB_URL } from '../key';
 
 import tabBarIcon from '../components/tabBarIcon';
 import ChatWindow from '../components/ChatWindow';
+import ChatPreview from '../components/ChatPreview';
 
 export default class Chat extends React.Component {
     static navigationOptions = {
@@ -17,9 +18,15 @@ export default class Chat extends React.Component {
         selectedChatteeName: null,
         selectedChatRoomId: null,
         selectedChatteeId: null,
-        chatWindowVisible: false,
         userId: null,
         chatRooms: []
+    }
+
+    handleChatSelect = (chatteeName, chatRoomId, chatteeId, displayModal) => {
+        this.setState({selectedChatteeName: chatteeName,
+                       selectedChatteeId: chatteeId,
+                       selectedChatRoomId: chatRoomId});
+        this.refs.chatWindowPopup.setModalVisible(displayModal, chatRoomId);
     }
 
     onTabPressed(){
@@ -79,17 +86,18 @@ export default class Chat extends React.Component {
                 <ScrollView style={styles.scrollView}>
                 {
                     this.state.chatRooms.map((item)=>(
-                        <MyListing 
+                        <ChatPreview 
                           chatRoomId={item.chatRoomId}
-                          chatteeName={item.chatteeName}>
-                        </MyListing>
+                          chatteeName={item.chatteeName}
+                          chatteeId={item.chatteeId}
+                          handleChatSelect={this.handleChatSelect}/>
                       ))
                   }
                 </ScrollView>
                 <ChatWindow 
                     ref='chatWindowPopup' 
                     chatteeName={this.state.selectedChatteeName} 
-                    chatRoomId={this.state.chatRoomId} 
+                    chatRoomId={this.state.selectedChatRoomId} 
                     currentUserId={this.state.userId} 
                     otherUserId={this.state.selectedChatteeId}
                 />

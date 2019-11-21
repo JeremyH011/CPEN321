@@ -24,7 +24,11 @@ export default class ChatWindow extends React.Component {
         currMsgContent: "",
     }
 
-    setModalVisible(visible) {
+    setModalVisible(visible, chatRoomId) {
+      if(visible)
+      {
+        this.getMessagesByChatRoomID({"chatRoomId":chatRoomId});
+      }
       this.setState({modalVisible: visible});
     }
 

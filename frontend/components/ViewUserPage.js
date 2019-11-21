@@ -105,7 +105,7 @@ export default class ViewUserPage extends React.Component {
         this.setState({
           chatRoomId: responseJson.chatRoomId
         });
-        this.refs.chatWindowPopup.getMessagesByChatRoomID({"chatRoomId":this.state.chatRoomId});
+        this.refs.chatWindowPopup.setModalVisible(true, responseJson.chatRoomId);
       }
     })
     .catch((error) => {
@@ -130,7 +130,7 @@ export default class ViewUserPage extends React.Component {
         this.setState({
           chatRoomId: responseJson.chatRoomId
         });
-        this.refs.chatWindowPopup.getMessagesByChatRoomID({chatRoomId:this.state.chatRoomId});
+        this.refs.chatWindowPopup.setModalVisible(true, responseJson.chatRoomId);
       }
     })
     .catch((error) => {
@@ -145,7 +145,6 @@ export default class ViewUserPage extends React.Component {
     // call get messagesByChatRoomID on the chat window
     // open the chat window
     this.getChatRoomByUserIds();
-    this.refs.chatWindowPopup.setModalVisible(true);
   }
 
   render() {
