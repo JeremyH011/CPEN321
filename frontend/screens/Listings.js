@@ -13,7 +13,6 @@ import MyListing from '../components/MyListing';
 export default class Listings extends React.Component {
     static navigationOptions = {
         tabBarIcon: tabBarIcon('md-list-box'),
-        title: "Your Listings"
     };
 
     state = {
