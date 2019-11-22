@@ -12,7 +12,7 @@ import {
 import { NavigationEvents } from 'react-navigation';
 import AsyncStorage from '@react-native-community/async-storage';
 import TextInputMask from 'react-native-text-input-mask';
-import CheckboxFormX from 'react-native-checkbox-form';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import Carousel from 'react-native-snap-carousel';
 import ImagePicker from 'react-native-image-picker';
 import Review from "../classes/Review";
@@ -21,11 +21,9 @@ import { DB_URL } from "../key";
 
 import tabBarIcon from '../components/tabBarIcon';
 
-const data = [
-  {
-    label: 'Opt-in to Roommate Recommendation',
-    RNchecked: false
-  }
+const radio_props = [
+  {label: 'Yes', value: true},
+  {label: 'No', value: false}
 ];
 
 const {width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
@@ -53,13 +51,6 @@ export default class Profile extends React.Component {
       );
     }
 
-    _onSelect = (item) => {
-      if (this.state.newOptIn) {
-        this.setState({newOptIn: false});
-      } else {
-        this.setState({newOptIn: true});
-      }
-    }
     state={
       modalVisible: true,
       loadedData: false,
@@ -82,7 +73,6 @@ export default class Profile extends React.Component {
       newPhoto: null,
       photoChanged: false
     }
-
 
     async handleLogOut(){
         await AsyncStorage.setItem('loggedIn', "false");
@@ -419,19 +409,17 @@ export default class Profile extends React.Component {
                     onChangeText={(email) => this.setState({newEmail: email})}
                   />
                   <Text style={{color: 'red'}}>{this.state.emailError}</Text>
-                </View>
-                <View style={styles.checkbox} >
-                  <CheckboxFormX
-                    style={{ width: 300 }}
-                    dataSource={data}
-                    itemShowKey="label"
-                    itemCheckedKey="RNchecked"
-                    iconColor={"#BA55D3"}
-                    iconSize={32}
-                    formHorizontal={false}
-                    labelHorizontal={true}
-                    onChecked={(item) => this._onSelect(item)}
-                    />
+                  <Text>Opt-in to Roommate Recommendation feature</Text>
+                  <RadioForm
+                    radio_props={radio_props}
+                    initial={0}
+                    formHorizontal={true}
+                    labelHorizontal={false}
+                    buttonColor={'#8A2BE2'}
+                    selectedButtonColor={'#8A2BE2'}
+                    animation={true}
+                    onPress={(value) => {this.setState({newOptIn:value})}}
+                  />
                 </View>
                 <View style={{alignItems: 'center', justifyContent: 'center'}}>
                   {newPhoto && (
@@ -469,13 +457,6 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
   },
-  checkbox: {
-    flex:2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection:'row',
-    marginHorizontal: 10
-  },
   column: {
     flex: 1,
     justifyContent : 'space-around',
@@ -491,6 +472,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#DDDDDD',
     margin: 10,
+    padding: 10
   },
   loading: {
     flex: 1,

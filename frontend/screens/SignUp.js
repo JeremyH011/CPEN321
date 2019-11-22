@@ -10,25 +10,15 @@ import {
 import { DB_URL } from '../key';
 import AsyncStorage from '@react-native-community/async-storage';
 import TextInputMask from 'react-native-text-input-mask';
-import CheckboxFormX from 'react-native-checkbox-form';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import ImagePicker from 'react-native-image-picker';
 
-const data = [
-  {
-    label: 'Opt-in to Roommate Recommendation',
-    RNchecked: false
-  }
+const radio_props = [
+  {label: 'Yes', value: true},
+  {label: 'No', value: false}
 ];
 
 class SignUp extends Component {
-
-  _onSelect = (item) => {
-    if (this.state.optIn) {
-      this.setState({optIn: false});
-    } else {
-      this.setState({optIn: true});
-    }
-  }
 
   state={
       nameField: '',
@@ -39,7 +29,7 @@ class SignUp extends Component {
       passwordConfirm: "",
       optIn: false,
       passErrorMsg: "",
-      photo: null,
+      photo: null
      }
 
   handleChoosePhoto() {
@@ -82,7 +72,12 @@ class SignUp extends Component {
           alert("Must enter matching password in both boxes!");
           return false;
         } else {
-          return true;
+          if (this.state.photo == null) {
+            alert("Must include a profile photo!");
+            return false;
+          } else {
+            return true;
+          }
         }
       }
     }
@@ -206,22 +201,17 @@ class SignUp extends Component {
             blurOnSubmit={false}
             onChangeText={(confirm) => this.setState({passwordConfirm: confirm})} />
           <Text style={{color: 'red'}}>{this.state.passErrorMsg}</Text>
-        </View>
-        <View style={styles.checkbox} >
-          <CheckboxFormX
-            style={{ width: 300}}
-            dataSource={data}
-            itemShowKey="label"
-            itemCheckedKey="RNchecked"
-            iconColor={"#BA55D3"}
-            iconSize={32}
-            formHorizontal={false}
-            labelHorizontal={true}
-            onChecked={(item) => this._onSelect(item)}
-            />
-        </View>
-        <View style={styles.column}>
-          <Button style={styles.buttons} color='#A80097' title="Choose a Profile Photo" onPress={() => {this.handleChoosePhoto()}}/>
+          <Text>Opt-in to Roommate Recommendation feature</Text>
+          <RadioForm
+            radio_props={radio_props}
+            initial={0}
+            formHorizontal={true}
+            labelHorizontal={false}
+            buttonColor={'#8A2BE2'}
+            selectedButtonColor={'#8A2BE2'}
+            animation={true}
+            onPress={(value) => {this.setState({optIn:value})}}
+          />
         </View>
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
           {photo && (
@@ -232,6 +222,7 @@ class SignUp extends Component {
           )}
         </View>
         <View style={styles.columncontainer}>
+        <Button style={styles.buttons} color='#A80097' title="Choose a Profile Photo" onPress={() => {this.handleChoosePhoto()}}/>
           <Button style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.checkPasswords(this.state.passwordField, this.state.passwordConfirm)} />
           <Button style={styles.buttons} color='#8A2BE2' title="Go Back" onPress={() => this.props.navigation.navigate('Welcome')}/>
         </View>
@@ -250,14 +241,8 @@ const styles = StyleSheet.create({
   columncontainer: {
     flex:2,
     flexDirection: 'column',
-    justifyContent:"center"
-  },
-  checkbox: {
-    flex:2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection:'row',
-    marginHorizontal: 10
+    justifyContent:"center",
+    padding: 10
   },
   row: {
       flexDirection: 'row',
@@ -271,7 +256,7 @@ const styles = StyleSheet.create({
       padding: 10,
   },
   title: {
-    flex: 1,
+    flex: 2,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#8A2BE2'
