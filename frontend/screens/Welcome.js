@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   Button,
-  ScrollView } from "react-native";
+  ScrollView,
+  Image } from "react-native";
 import AsyncStorage from '@react-native-community/async-storage';
 
 class Welcome extends Component {
@@ -24,10 +25,12 @@ class Welcome extends Component {
     return (
       <ScrollView
         contentContainerStyle={{flexGrow: 1}}>
-        <View style={styles.title}>
-          <Text style={styles.textTitle}>WELCOME</Text>
-        </View>
         <View style={styles.container}>
+          <View style={styles.logo}>
+            <Image style={{height: 350, resizeMode : 'center', margin:5}} source={require('../components/Rent_Easy_logo.png')} />
+          </View>
+        </View>
+        <View style={styles.column}>
           <Button style={styles.buttons} color='#BA55D3' title="Login" onPress={() => this.props.navigation.navigate('Login')}/>
           <Button style={styles.buttons} color='#8A2BE2' title="Sign Up" onPress={() => this.props.navigation.navigate('SignUp')}/>
         </View>
@@ -42,23 +45,21 @@ const styles = StyleSheet.create({
     flex:24,
     justifyContent:'center',
   },
-
   buttons: {
       alignItems: 'center',
       backgroundColor: '#DDDDDD',
       margin: 10,
       padding: 10,
   },
-
-  title: {
-    flex: 1,
-    alignItems: 'center',
+  logo: {
+    flex: 4,
     justifyContent: 'center',
-    backgroundColor: '#8A2BE2'
+    alignItems: 'center'
   },
-
-  textTitle: {
-    fontSize:15,
-    color:'white'
-  },
+  column: {
+    flex: 1,
+    justifyContent : 'space-around',
+    flexDirection:'column',
+    padding: 10
+  }
 })
