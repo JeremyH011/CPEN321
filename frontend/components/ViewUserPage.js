@@ -7,7 +7,6 @@ import { View,
   Image,
   Modal,
   Dimensions } from 'react-native';
-import { NavigationEvents } from 'react-navigation';
 import Carousel from 'react-native-snap-carousel';
 import { DB_URL } from "../key";
 import AddReviewPage from "./AddReviewPage";
@@ -35,7 +34,8 @@ export default class ViewUserPage extends React.Component {
     email: "",
     job: "",
     photo: null,
-    reviewList: []
+    reviewList: [],
+    loaded: false
   }
 
   _renderItem({item, index}) {
@@ -45,13 +45,13 @@ export default class ViewUserPage extends React.Component {
     );
   }
 
-  setModalVisible(visible){
+  getInfo() {
     this.getUserInfo();
-    this.setState({modalVisible: visible});
     this.getReviews();
+    this.setState({loaded: true});
   }
 
-  onTabPressed() {
+  refreshReviews = () => {
     this.getUserInfo();
     this.getReviews();
   }
@@ -112,30 +112,16 @@ export default class ViewUserPage extends React.Component {
     if(item != null){
       console.log(item);
     }
+    if(this.props.visible && !this.state.loaded) {
+      this.getInfo();
+    }
       return (
         <Modal
           animationType="slide"
-          visible={this.state.modalVisible}
-          onRequestClose={() => { this.setModalVisible(false)}}
+          visible={this.props.visible}
+          onRequestClose={this.props.close}
+          style={{flex: 1}}
           >
-          <NavigationEvents
-            onDidFocus={payload => {
-              console.log("did focus", payload);
-              this.onTabPressed();
-            }}
-            onWillFocus={payload => {
-              console.log("will focus", payload);
-              this.onTabPressed();
-            }}
-            onWillBlur={payload => {
-              console.log("will blur", payload);
-              this.onTabPressed();
-            }}
-            onDidBlur={payload => {
-              console.log("did blur", payload);
-              this.onTabPressed();
-            }}
-          />
           <ScrollView style={styles.scrollView}>
             <View style={styles.container}>
               <View style={styles.profilePic}>
@@ -174,8 +160,8 @@ export default class ViewUserPage extends React.Component {
             </ScrollView>
             <Button style={styles.buttons} color='#8B00C7' title="Chat"/>
             <Button style={styles.buttons} color='#BA55D3' title="Add Review" onPress={() => this.handleAddReview()}/>
-            <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={() => this.setModalVisible(false)}/>
-            <AddReviewPage ref='reviewPopup' revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
+            <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={this.props.close}/>
+            <AddReviewPage ref='reviewPopup' refreshReviews={this.refreshReviews} revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
           </ScrollView>
           </Modal>
       );

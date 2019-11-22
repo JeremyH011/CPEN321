@@ -34,8 +34,16 @@ export default class ListingPage extends React.Component {
     );
   }
 
-  viewProfileHandler = () => {
-    this.refs.viewUserPopup.setModalVisible(true);
+  state = {
+    userModalVisible: false,
+  }
+
+  viewProfileHandler = (userId, displayModal) => {
+    this.setState({userModalVisible: true});
+  }
+
+  handleCloseModal = () => {
+    this.setState({userModalVisible: false});
   }
 
   deleteListing = () => {
@@ -98,7 +106,11 @@ export default class ListingPage extends React.Component {
             </ScrollView>
           </View>
           <View style={styles.container}>
-            <ViewUserPage ref='viewUserPopup' userId={this.props.userId} currentUserId={this.props.currentUserId}/>
+            <ViewUserPage ref='viewUserPopup'
+              visible={this.state.userModalVisible}
+              close={this.handleCloseModal}
+              userId={this.props.userId}
+              currentUserId={this.props.currentUserId}/>
           </View>
         </Modal>
       );

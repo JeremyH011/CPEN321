@@ -74,6 +74,7 @@ export default class AddReviewPage extends React.Component {
         .then((response) => {
           if (response.status == 200) {
             this.setModalVisible(false);
+            this.props.refreshReviews();
           } else {
             alert("Server error. Try again later!");
             this.setModalVisible(false);
@@ -128,39 +129,45 @@ export default class AddReviewPage extends React.Component {
               <View style={styles.title}>
                 <Text style={styles.textTitle}>WRITE A REVIEW</Text>
               </View>
-              <View style={styles.modal}>
-                <View style={styles.row}>
-                  <View style={styles.dropdown}>
-                    <Dropdown
-                      label='Rating'
-                      data={ratingList}
-                      onChangeText={(text) => this.setState({rating: parseInt(text)})}
-                    />
-                  </View>
-                  <View style={styles.dropdown}>
-                    <Dropdown
-                      label='Relationship'
-                      data={relationshipList}
-                      onChangeText={(text) => this.setState({relationship: text})}
-                    />
-                  </View>
-                </View>
+              <ScrollView
+                keyboardShouldPersistTaps='handled'
+                contentContainerStyle={{flexGrow: 1}}>
                 <View style={styles.container}>
-                  <Text>Let others know what you think of {this.state.revieweeName} (Max. 1000 characters)</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder={"Review (optional)"}
-                    editable={true}
-                    autoCapitalize={'sentences'}
-                    textAlignVertical={'top'}
-                    maxLength={1000}
-                    multiline
-                    numberOfLines={10}
-                    onChangeText={(review) => this.setState({text: review})}/>
+                  <View style={styles.form}>
+                    <View style={styles.row}>
+                      <View style={styles.dropdown}>
+                        <Dropdown
+                          label='Rating'
+                          data={ratingList}
+                          onChangeText={(text) => this.setState({rating: parseInt(text)})}
+                        />
+                      </View>
+                      <View style={styles.dropdown}>
+                        <Dropdown
+                          label='Relationship'
+                          data={relationshipList}
+                          onChangeText={(text) => this.setState({relationship: text})}
+                        />
+                      </View>
+                    </View>
+                    <Text>Let others know what you think of {this.state.revieweeName} (Max. 1000 characters)</Text>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder={"Review (optional)"}
+                      editable={true}
+                      autoCapitalize={'sentences'}
+                      textAlignVertical={'top'}
+                      maxLength={1000}
+                      multiline
+                      numberOfLines={10}
+                      onChangeText={(review) => this.setState({text: review})}/>
+                  </View>
+                  <View style={styles.column}>
+                    <Button style={styles.buttons} color='#BA55D3' title="Submit Review" onPress={() => this.handleSubmitReview()} />
+                    <Button style={styles.buttons} color='#8A2BE2' title="Cancel" onPress={() => this.resetReviewForm()}/>
+                  </View>
                 </View>
-                <Button style={styles.buttons} color='#BA55D3' title="Submit Review" onPress={() => this.handleSubmitReview()} />
-                <Button style={styles.buttons} color='#8A2BE2' title="Cancel" onPress={() => this.resetReviewForm()}/>
-              </View>
+              </ScrollView>
             </Modal>
         );
     }
@@ -172,8 +179,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
-    modalTextInput: {
-      height: 40,
+    textInput: {
+      height: 300,
       width: 300,
       borderWidth: 1,
       margin: 10,
@@ -194,9 +201,13 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     container: {
-      flex:10,
-      alignItems:'center',
+      flex:8,
       justifyContent:'center',
+    },
+    form: {
+      flex:8,
+      justifyContent: 'center',
+      alignItems:'center'
     },
     title: {
       flex: 1,
@@ -208,6 +219,17 @@ const styles = StyleSheet.create({
       fontSize:15,
       color:'white'
     },
+    column: {
+      flex: 1,
+      justifyContent : 'space-around',
+      flexDirection:'column',
+      padding: 10
+    },
+    buttons: {
+      alignItems: 'center',
+      backgroundColor: '#DDDDDD',
+      margin: 10,
+    }
 });
 
 const ratingList = [

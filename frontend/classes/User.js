@@ -6,5 +6,6 @@ export default class User {
     this.job = json["job"];
     this.optIn = json["optIn"];
     this.photo = json["photo"];
+    this.userId = json["_id"];
   }
 }
