@@ -100,7 +100,7 @@ export default class ListingPage extends React.Component {
               {this.props.currentUserId == this.props.userId &&
                 <Button color='#BA55D3' title='Delete' onPress = {() => this.deleteListing()}></Button>
               }
-              {this.props.currentUserId != this.props.userId &&
+              {(this.props.currentUserId != this.props.userId) && this.props.allowViewProfile &&
                 <Button color='#BA55D3' title="View Landlord's profile" onPress={() => this.viewProfileHandler()}></Button>
               }
             </ScrollView>

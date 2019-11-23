@@ -53,7 +53,7 @@ export default class Listings extends React.Component {
     }
 
     getAddedListings(){
-        fetch(DB_URL+`get_listings_by_usedId/`, {
+        fetch(DB_URL+`get_listings_by_userId/`, {
             method: "POST",
             headers: {
                 Accept: 'application/json',
@@ -105,6 +105,7 @@ export default class Listings extends React.Component {
               visible={this.state.selectedListingModalVisible}
               close={this.handleCloseModal}
               currentUserId = {this.state.userId}
+              allowViewProfile = {true}
               />
             </View>
           );
