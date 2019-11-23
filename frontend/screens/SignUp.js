@@ -102,7 +102,7 @@ class SignUp extends Component {
         }
       })
       .catch((error) => {
-        console.error(error);
+        alert(error);
       });
     }
   }

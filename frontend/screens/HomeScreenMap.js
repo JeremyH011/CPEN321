@@ -230,7 +230,7 @@ Alert.alert(
       })
       .catch((error) => {
         alert(error);
-        //console.error(error);
+        alert(error);
       });
     }
 

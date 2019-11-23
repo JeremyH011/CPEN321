@@ -79,7 +79,7 @@ export default class SearchFilterPage extends React.Component {
             }
         })
         .catch((error) => {
-            console.error(error);
+            alert(error);
         });
     }
 
@@ -109,7 +109,7 @@ export default class SearchFilterPage extends React.Component {
         this.resetState();
         })
         .catch((error) => {
-        console.error(error);
+        alert(error);
         });
     }
 

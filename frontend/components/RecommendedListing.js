@@ -46,7 +46,7 @@ export default class Recommended extends React.Component {
             console.log(this.state.recommended);
           })
           .catch((error) => {
-            console.error(error);
+            alert(error);
           });
     }
 

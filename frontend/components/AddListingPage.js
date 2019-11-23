@@ -111,12 +111,12 @@ export default class AddListingPage extends React.Component {
         alert("Please use autocomplete dropdown to fill out form");
         return false;
       }
-      else if(this.state.title == '') 
+      else if(this.state.title == '')
       {
         alert("Title field is empty");
         return false;
       }
-      else if(this.state.price == 0) 
+      else if(this.state.price == 0)
       {
         alert("Price can't be 0");
         return false;
@@ -173,11 +173,30 @@ export default class AddListingPage extends React.Component {
             transparent={false}
             visible={this.state.modalVisible}
             onRequestClose={() => { this.setModalVisible(false); } }>
+                <View style={styles.title}>
+                  <Text style={styles.textTitle}>ADD NEW LISTING</Text>
+                </View>
                 <View style={styles.modal}>
                     <TextInput
                         style={styles.modalTextInput}
                         placeholder="Title"
                         onChangeText={(text) => this.setState({title: text})}/>
+                    <View style={{alignItems: 'center', justifyContent: 'center' }}>
+                      {latest_photo && (
+                        <Image
+                          source={{ uri: latest_photo.uri }}
+                          style={{ width: 150, height: 150 , marginTop: 10}}
+                        />
+                      )}
+                    </View>
+                    <View style={styles.row}>
+                      <TouchableOpacity style={styles.modalButton} onPress={() => {this.handleChoosePhoto();}}>
+                        <Text style={styles.textTitle}> Choose Photo(s) </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.row}>
+                      <Text>{length} photos chosen.</Text>
+                    </View>
                     <View style={styles.row}>
                         <View style={styles.dropdown}>
                             <Dropdown
@@ -231,28 +250,12 @@ export default class AddListingPage extends React.Component {
                     </GoogleAutoComplete>
                   <View style={styles.row}>
                       <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
-                          <Text>Add Listing</Text>
+                          <Text style={styles.textTitle}>Add Listing</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
-                          <Text>Cancel</Text>
+                          <Text style={styles.textTitle}>Cancel</Text>
                       </TouchableOpacity>
                   </View>
-                  <View style={styles.row}>
-                    <TouchableOpacity style={styles.modalButton} onPress={() => {this.handleChoosePhoto();}}>
-                      <Text> Choose Photo(s) </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{alignItems: 'center', justifyContent: 'center' }}>
-                  {latest_photo && (
-                    <Image
-                      source={{ uri: latest_photo.uri }}
-                      style={{ width: 150, height: 150 }}
-                    />
-                  )}
-                </View>
-                <View style={styles.row}>
-                  <Text>and {length} more photos...</Text>
-                </View>
                 </View>
             </Modal>
         );
@@ -261,9 +264,20 @@ export default class AddListingPage extends React.Component {
 
 const styles = StyleSheet.create({
     modal: {
+      flex: 9,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    title: {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
+      backgroundColor: '#8A2BE2',
+      maxHeight:35
+    },
+    textTitle: {
+        fontSize:15,
+        color:'white'
     },
     modalTextInput: {
       height: 40,
@@ -274,7 +288,7 @@ const styles = StyleSheet.create({
     },
     modalButton: {
       alignItems: 'center',
-      backgroundColor: '#DDDDDD',
+      backgroundColor: '#8A2BE2',
       margin: 10,
       padding: 10,
     },

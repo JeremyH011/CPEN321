@@ -15,24 +15,24 @@ class MyRoommates extends PureComponent {
         const item = this.props.user.photo;
         var photo = null;
         if(item != null){
+          console.log(item);
           photo = { uri: DB_URL + item[0].path.replace(/\\/g, "/")};
         }
         return (
             <TouchableOpacity style={styles.user_card} onPress={() => this._handlePress(this.props.user.userId, true)}>
-              {this.photo &&
+              {photo &&
                 <Image
                   source = {photo}
                   style = {styles.thumbnail}
                 />
               }
-              {!this.photo &&
+              {!photo &&
                 <Image
                   source = {require('./Portrait_Placeholder.png')}
                   style = {styles.thumbnail}
                 />
               }
               <View style={styles.boxItem}>
-                <Text style={styles.internal_text}></Text>
                 <Text style={styles.internal_text}>Name: {this.props.user.name}</Text>
               </View>
             </TouchableOpacity>
@@ -53,14 +53,16 @@ const styles = StyleSheet.create({
     },
     boxItem:{
       flex: 6,
-      marginTop: 5
+      alignItems:'center',
+      justifyContent: 'center'
     },
     thumbnail:{
-      height: 75,
-      resizeMode : 'center',
+      height: 80,
+      width: 80,
+      borderRadius: 80/2,
+      //resizeMode : 'center',
       flex: 2,
-      margin: 5,
-      borderRadius: 75/2,
+      padding: 20
     },
     internal_text:{
       fontSize: 20,

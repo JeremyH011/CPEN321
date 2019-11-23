@@ -47,7 +47,10 @@ export default class Profile extends React.Component {
     _renderItem({item, index}) {
       const url ={ uri: DB_URL + item.path.replace(/\\/g, "/")};
       return (
-        <Image source = {url} style={{height: 300, resizeMode : 'center', margin: 5}}/>
+        <Image
+          source = {url}
+          style={{height: 300, width: 300, borderRadius: 300/2, resizeMode : 'center', margin: 5}}
+        />
       );
     }
 
@@ -113,7 +116,7 @@ export default class Profile extends React.Component {
             });
           })
           .catch((error) => {
-            console.error(error);
+            alert(error);
           });
         this.setState({loadedData: true});
         this.setState({modalVisible: false});
@@ -174,7 +177,7 @@ export default class Profile extends React.Component {
                 }
               })
               .catch((error) => {
-                console.error(error);
+                alert(error);
               });
               this.resetPhotos();
             }
@@ -187,17 +190,10 @@ export default class Profile extends React.Component {
           }
         })
         .catch((error) => {
-          console.error(error);
+          alert(error);
         });
         this.onTabPressed();
       }
-    }
-
-    _renderItem ({item, index}) {
-      const url = { uri: DB_URL + item.path.replace(/\\/g, "/")};
-      return (
-        <Image source = {url} style = {{height: 300, resizeMode : 'center', margin: 5 }}/>
-      );
     }
 
     getReviews() {
@@ -218,7 +214,7 @@ export default class Profile extends React.Component {
         console.log(this.state.yourReviewList);
       })
       .catch((error) => {
-        console.error(error);
+        alert(error);
       });
       fetch(DB_URL+`get_reviews_by_reviewer_id`, {
         method: "POST",
@@ -237,7 +233,7 @@ export default class Profile extends React.Component {
         console.log(this.state.yourWrittenReviewList);
         })
       .catch((error) => {
-        console.error(error);
+        alert(error);
       });
     }
 
@@ -330,18 +326,30 @@ export default class Profile extends React.Component {
                       />
                     )}
                   {item == null && (<Image
-                    source={require('../components/Portrait_Placeholder.png')}
+                      source={require('../components/Portrait_Placeholder.png')}
+                      style={{height: 300, width: 300, borderRadius: 300/2, resizeMode : 'center', margin: 5}}
                     />
                   )}
                 </View>
               </View>
-              <View style={styles.text_box}>
-                <Text style={styles.boxItem}>Name: {this.state.oldName}</Text>
+              <View style={styles.text_box_prof}>
+                <Text style={styles.boxItem_h1}>{this.state.oldName}</Text>
                 <Text style={styles.boxItem}>Email: {this.state.oldEmail}</Text>
                 <Text style={styles.boxItem}>Age: {this.state.oldAge}</Text>
                 <Text style={styles.boxItem}>Job: {this.state.oldJob}</Text>
               </View>
-                <Text style={styles.boxItem}>Your Reviews</Text>
+              <View style={styles.text_box}>
+                <Text style={styles.boxItem_h2}>Your Reviews</Text>
+                <View
+                  style={{
+                    borderBottomWidth: 5,
+                    borderColor:'#DDDDDD',
+                    marginTop: 10,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginBottom: 20
+                  }}
+                />
                 {
                   this.state.yourReviewList.map((item)=>(
                     <Text style={styles.boxItem} key={item.reviewerId}>
@@ -356,7 +364,17 @@ export default class Profile extends React.Component {
                   this.state.yourReviewList.length == 0 &&
                   <Text style={styles.boxItem}>You have no reviews!</Text>
                 }
-                <Text style={styles.boxItem}>Reviews You've Written</Text>
+                <Text style={styles.boxItem_h2}>Reviews You've Written</Text>
+                <View
+                  style={{
+                    borderBottomWidth: 5,
+                    borderColor:'#DDDDDD',
+                    marginTop: 10,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginBottom: 20
+                  }}
+                />
                 {
                   this.state.yourWrittenReviewList.map((item)=>(
                     <Text style={styles.boxItem} key={item.reviewerId}>
@@ -371,6 +389,7 @@ export default class Profile extends React.Component {
                   this.state.yourWrittenReviewList.length == 0 &&
                   <Text style={styles.boxItem}>You've written no reviews!</Text>
                 }
+              </View>
               <Modal
                 animationType="slide"
                 visible={this.state.editViewVisible}
@@ -463,6 +482,15 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
   },
+  text_box_prof: {
+    fontSize:20,
+    flex: 2,
+    padding: 10,
+    justifyContent:'center',
+    alignItems:'center',
+    //borderWidth:1,
+    //borderColor:'black'
+  },
   column: {
     flex: 1,
     justifyContent : 'space-around',
@@ -486,8 +514,17 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   boxItem:{
-    fontSize:20,
+    fontSize:15,
+    margin: '3%'
+  },
+  boxItem_h1:{
+    fontSize:40,
+    margin: '3%'
+  },
+  boxItem_h2:{
+    fontSize:30,
     margin: '3%',
+    textAlign:'center'
   },
   container: {
     flex:1,

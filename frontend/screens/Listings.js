@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ImageBackground} from 'react-native';
 import { Header } from 'react-native-elements';
 import {NavigationEvents} from 'react-navigation';
 
@@ -26,11 +26,11 @@ export default class Listings extends React.Component {
       if (this.state.selectedListing) {
         this.state.selectedListing.tapped = false;
       }
-  
+
       this.setState({selectedListing:listing,
                      selectedListingModalVisible: displayModal});
     }
-  
+
     handleCloseModal = () => {
       this.setState({selectedListingModalVisible: false});
       this.state.addedListings = [];
@@ -67,25 +67,29 @@ export default class Listings extends React.Component {
               this.populateAddedListings(responseJson);
             })
             .catch((error) => {
-              console.error(error);
+              alert(error);
             });
       }
 
     render() {
         return (
+          <ImageBackground
+            source={require('../components/background_2.png')}
+            style={{width: '100%', height: '100%'}}
+          >
             <View>
               <NavigationEvents
                 onWillFocus={payload => {
                   console.log("will focus", payload);
                   this.onTabPressed();
                 }}
-              />    
+              />
               <Header
                 placement="left"
                 containerStyle={styles.title}
                 centerComponent={{ text: 'YOUR LISTINGS', style: { color: '#FFF', fontSize: 25 } }}
               />
-              {this.state.addedListings.length == 0 && 
+              {this.state.addedListings.length == 0 &&
                     <View style={styles.noAddedListing}>
                         <Text style={styles.noAddedListingText}>Your Added Listings Will be Here</Text>
                     </View>
@@ -93,7 +97,7 @@ export default class Listings extends React.Component {
               <ScrollView style={styles.scrollView}>
               {
                   this.state.addedListings.map((item)=>(
-                    <MyListing 
+                    <MyListing
                       listing={item}
                       handleListingSelect={this.handleListingSelect}>
                     </MyListing>
@@ -108,6 +112,7 @@ export default class Listings extends React.Component {
               allowViewProfile = {true}
               />
             </View>
+          </ImageBackground>
           );
     }
 }
@@ -126,10 +131,12 @@ const styles = StyleSheet.create({
       fontSize: 28,
       textAlign: 'center',
       justifyContent: 'center',
-      margin: 15
+      margin: 15,
+      color:'white'
     },
     scrollView: {
-      margin:'10%',
+      width: '95%',
+      margin: '2.5%'
     },
     row: {
         flexDirection: 'row',

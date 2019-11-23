@@ -60,7 +60,7 @@ export default class Chat extends React.Component {
           this.populateChatRooms(responseJson);
         })
         .catch((error) => {
-          console.error(error);
+          alert(error);
         });
       }
 
