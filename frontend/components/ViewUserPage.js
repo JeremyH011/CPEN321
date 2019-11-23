@@ -204,7 +204,7 @@ export default class ViewUserPage extends React.Component {
 
   handleSelectedListingModalClose = () => {
       this.setState({selectedListingModalVisible: false});
-      this.state.listingListing = [];
+      this.state.listingList = [];
       this.getListings();
     }
 
