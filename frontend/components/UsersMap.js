@@ -52,6 +52,7 @@ export default class UserMap extends PureComponent {
             visible={this.state.selectedListingModalVisible}
             close={this.handleCloseModal}
             currentUserId={this.props.userId}
+            allowViewProfile={true}
             />
         </View>
     );
