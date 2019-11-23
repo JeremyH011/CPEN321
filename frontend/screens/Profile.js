@@ -7,29 +7,48 @@ import {
   StyleSheet,
   Image,
   Modal,
-  TextInput } from 'react-native';
+  TextInput,
+  Dimensions } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
 import AsyncStorage from '@react-native-community/async-storage';
 import TextInputMask from 'react-native-text-input-mask';
-import CheckboxFormX from 'react-native-checkbox-form';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import Carousel from 'react-native-snap-carousel';
+import ImagePicker from 'react-native-image-picker';
 import Review from "../classes/Review";
+import User from "../classes/User";
 import { DB_URL } from "../key";
 
 import tabBarIcon from '../components/tabBarIcon';
 
-const data = [
-  {
-    label: 'Opt-in to Roommate Recommendation',
-    RNchecked: false
-  }
+const radio_props = [
+  {label: 'Yes', value: true},
+  {label: 'No', value: false}
 ];
+
+const {width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
+
+function wp (percentage) {
+  const value = (percentage * viewportWidth) / 100;
+  return Math.round(value);
+}
+
+const slideHeight = viewportHeight * 0.36;
+const slideWidth = wp(75);
+const itemHorizontalMargin = wp(2);
+const sliderWidth = viewportWidth;
+const itemWidth = slideWidth + itemHorizontalMargin * 2;
 
 export default class Profile extends React.Component {
     static navigationOptions = {
         tabBarIcon: tabBarIcon('md-person'),
     };
 
-    _onSelect = (item) => {
-      this.setState({newOptIn: true});
+    _renderItem({item, index}) {
+      const url ={ uri: DB_URL + item.path.replace(/\\/g, "/")};
+      return (
+        <Image source = {url} style={{height: 300, resizeMode : 'center', margin: 5}}/>
+      );
     }
 
     state={
@@ -49,9 +68,11 @@ export default class Profile extends React.Component {
       oldOptIn: false,
       emailError: "",
       yourReviewList: [],
-      yourWrittenReviewList: []
+      yourWrittenReviewList: [],
+      oldPhoto: [],
+      newPhoto: null,
+      photoChanged: false
     }
-
 
     async handleLogOut(){
         await AsyncStorage.setItem('loggedIn', "false");
@@ -64,6 +85,10 @@ export default class Profile extends React.Component {
       this.setState({userId: id});
       this.getUserInfo();
       this.getReviews();
+    }
+
+    onTabPressed() {
+      this.getUserData();
     }
 
     getUserInfo(){
@@ -83,7 +108,8 @@ export default class Profile extends React.Component {
               oldAge: responseJson[0].age,
               oldJob: responseJson[0].job,
               oldEmail: responseJson[0].email,
-              oldOptIn: responseJson[0].optIn
+              oldOptIn: responseJson[0].optIn,
+              oldPhoto: responseJson[0].photo
             });
           })
           .catch((error) => {
@@ -102,16 +128,6 @@ export default class Profile extends React.Component {
       this.setState({emailError: ""});
     }
 
-    updateFields(viewVisible){
-      this.setState({editViewVisible : viewVisible});
-      this.setState({oldName : this.state.newName});
-      this.setState({oldAge : this.state.newAge});
-      this.setState({oldJob : this.state.newJob});
-      this.setState({oldEmail : this.state.newEmail});
-      this.setState({oldOptIn : this.state.newOptIn});
-      this.setState({emailError: ""});
-    }
-
     ensureFormComplete(){
       if (this.state.newName == "") {
         alert("Must include a name!");
@@ -126,23 +142,62 @@ export default class Profile extends React.Component {
       }
     }
 
+    createFormData(body){
+      let data = new FormData();
+
+      data.append("photo", {
+        name: this.state.newPhoto.fileName,
+        type: this.state.newPhoto.type,
+        uri:
+          Platform.OS === "android" ? this.state.newPhoto.uri : photo.uri.replace("file://", "")
+      });
+      Object.keys(body).forEach(key => {
+        data.append(key, body[key]);
+      });
+
+      return data;
+    }
+
     handle_update_info() {
       if (this.ensureFormComplete()) {
         this.try_update_info()
         .then((response) => {
           if (response.status == 200) {
-            this.updateFields(false);
+            if (this.state.photoChanged) {
+              this.try_update_photo()
+              .then((response) => {
+                if (response.status == 200) {
+                  this.onTabPressed();
+                } else {
+                  alert("Server error. Try again later!");
+                  this.editFields(false);
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+              this.resetPhotos();
+            }
           } else if (response.status == 401) {
             this.setState({emailError: "Account with this email already exists!"});
           } else {
             alert("Server error. Try again later!");
             this.editFields(false);
+            this.resetPhotos();
           }
         })
         .catch((error) => {
           console.error(error);
         });
+        this.onTabPressed();
       }
+    }
+
+    _renderItem ({item, index}) {
+      const url = { uri: DB_URL + item.path.replace(/\\/g, "/")};
+      return (
+        <Image source = {url} style = {{height: 300, resizeMode : 'center', margin: 5 }}/>
+      );
     }
 
     getReviews() {
@@ -186,7 +241,19 @@ export default class Profile extends React.Component {
       });
     }
 
-    try_update_info = () => {
+    handleChoosePhoto() {
+      const options = {
+        noData: true,
+      }
+      ImagePicker.launchImageLibrary(options, response => {
+        if (response.uri) {
+          this.setState({newPhoto:response});
+          this.setState({photoChanged: true});
+        }
+      });
+    }
+
+    try_update_info() {
       return fetch(DB_URL+'update_user_data/', {
           method: 'POST',
           headers: {
@@ -204,12 +271,41 @@ export default class Profile extends React.Component {
       });
     }
 
+    try_update_photo() {
+      let body = {
+        userId: this.state.userId,
+      };
+      return fetch(DB_URL+'update_user_photo/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'multipart/form-data',
+          },
+          body: this.createFormData(body),
+      });
+    }
+
+    resetPhotos(){
+      this.setState({photoChanged: false});
+      this.setState({newPhoto: []});
+    }
+
     render() {
       if (!this.state.loadedData) {
         this.getUserData();
       }
+      const item = this.state.oldPhoto;
+      if(item != null){
+        console.log("this is oldPhoto data:" + item);
+      }
+      const {newPhoto} = this.state;
         return (
             <ScrollView style={styles.scrollView}>
+            <NavigationEvents
+              onWillFocus={payload => {
+                console.log("will focus", payload);
+                this.onTabPressed();
+              }}
+            />
               <Modal
                 animationType="slide"
                 visible={this.state.modalVisible}
@@ -219,10 +315,25 @@ export default class Profile extends React.Component {
                   <Text>Loading...</Text>
                 </View>
               </Modal>
-              <View style={styles.container}>
-              <View style={styles.profilePic}>
-                <Image source={require('../components/Portrait_Placeholder.png')} />
+              <View style={styles.column}>
+                <Button style={styles.buttons} color='#BA55D3' title="Edit" onPress={() => this.editFields(true)}/>
+                <Button style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
               </View>
+              <View style={styles.container}>
+                <View style={styles.profilePic}>
+                  {item != null && (<Carousel
+                        ref={(c) => { this._carousel = c; }}
+                        data={Array.from(item)}
+                        renderItem={this._renderItem}
+                        sliderWidth={sliderWidth}
+                        itemWidth={itemWidth}
+                      />
+                    )}
+                  {item == null && (<Image
+                    source={require('../components/Portrait_Placeholder.png')}
+                    />
+                  )}
+                </View>
               </View>
               <View style={styles.text_box}>
                 <Text style={styles.boxItem}>Name: {this.state.oldName}</Text>
@@ -230,7 +341,6 @@ export default class Profile extends React.Component {
                 <Text style={styles.boxItem}>Age: {this.state.oldAge}</Text>
                 <Text style={styles.boxItem}>Job: {this.state.oldJob}</Text>
               </View>
-              <ScrollView style={styles.scrollView}>
                 <Text style={styles.boxItem}>Your Reviews</Text>
                 {
                   this.state.yourReviewList.map((item)=>(
@@ -253,9 +363,6 @@ export default class Profile extends React.Component {
                     </Text>
                   ))
                 }
-              </ScrollView>
-              <Button style={styles.buttons} color='#BA55D3' title="Edit" onPress={() => this.editFields(true)}/>
-              <Button style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
               <Modal
                 animationType="slide"
                 visible={this.state.editViewVisible}
@@ -279,7 +386,7 @@ export default class Profile extends React.Component {
                   <TextInputMask
                     keyboardType='numeric'
                     style={styles.textInput}
-                    placeholder={this.state.oldAge.toString()}
+                    placeholder={"Age"}
                     mask={"[99]"}
                     onChangeText={(age) => this.setState({newAge: parseInt(age)})}/>
                   <Text>Job</Text>
@@ -300,21 +407,28 @@ export default class Profile extends React.Component {
                     onChangeText={(email) => this.setState({newEmail: email})}
                   />
                   <Text style={{color: 'red'}}>{this.state.emailError}</Text>
+                  <Text>Opt-in to Roommate Recommendation feature</Text>
+                  <RadioForm
+                    radio_props={radio_props}
+                    initial={0}
+                    formHorizontal={true}
+                    labelHorizontal={false}
+                    buttonColor={'#8A2BE2'}
+                    selectedButtonColor={'#8A2BE2'}
+                    animation={true}
+                    onPress={(value) => {this.setState({newOptIn:value})}}
+                  />
                 </View>
-                <View style={styles.checkbox} >
-                  <CheckboxFormX
-                    style={{ width: 300 }}
-                    dataSource={data}
-                    itemShowKey="label"
-                    itemCheckedKey="RNchecked"
-                    iconColor={"#BA55D3"}
-                    iconSize={32}
-                    formHorizontal={false}
-                    labelHorizontal={true}
-                    onChecked={(item) => this._onSelect(item)}
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                  {newPhoto && (
+                    <Image
+                      source={{ uri: newPhoto.uri }}
+                      style={{ width: 150, height: 150 }}
                     />
+                  )}
                 </View>
                 <View style={styles.column}>
+                  <Button style={styles.buttons} color='#A80097' title="Choose a Profile Photo" onPress={() => {this.handleChoosePhoto()}}/>
                   <Button style={styles.buttons} color='#BA55D3' title="Save Changes" onPress={() => this.handle_update_info()} />
                   <Button style={styles.buttons} color='#8A2BE2' title="Cancel" onPress={() => this.editFields(false)}/>
                 </View>
@@ -332,7 +446,7 @@ const styles = StyleSheet.create({
   text_box: {
     fontSize:20,
     margin: '3%',
-    flex: 2,
+    flex: 6,
   },
   textInput: {
     height: 40,
@@ -341,22 +455,14 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
   },
-  checkbox: {
-    flex:2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection:'row',
-    marginHorizontal: 10
-  },
   column: {
     flex: 1,
     justifyContent : 'space-around',
-    alignItems: 'center',
-    flexDirection:'column'
+    flexDirection:'column',
+    padding: 10
   },
   profilePic: {
-    width: 250,
-    height: 250,
+    flex: 4,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -364,7 +470,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#DDDDDD',
     margin: 10,
-    padding: 10,
+    padding: 10
   },
   loading: {
     flex: 1,

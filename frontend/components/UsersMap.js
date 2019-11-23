@@ -1,8 +1,9 @@
 import React, {PureComponent} from 'react'
-import {View, StyleSheet, Modal } from 'react-native';
+import {View, StyleSheet, Dimensions } from 'react-native';
 import MapView from 'react-native-maps';
 import ListingMarker from '../components/ListingMarker';
 import ListingPage from '../components/ListingPage';
+const {width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
 export default class UserMap extends PureComponent {
 
@@ -60,7 +61,7 @@ export default class UserMap extends PureComponent {
 const styles = StyleSheet.create({
     mapContainer: {
         width: '100%',
-        height: 600
+        height: viewportHeight-0.12*viewportHeight,
     },
     map: {
         width: '100%',

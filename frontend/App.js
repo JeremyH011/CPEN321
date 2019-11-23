@@ -42,7 +42,7 @@ const createRootNavigator = (signedIn = false) => {
 };
 
 const AppTabNavigator = createMaterialBottomTabNavigator({
-  HomeScreenMap: {screen: HomeScreenMap},
+  Home: {screen: HomeScreenMap},
   Listings: {screen: Listings},
   Profile: {screen: Profile},
   Chat: {screen: Chat},
