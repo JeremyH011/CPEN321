@@ -110,7 +110,8 @@ export default class ListingPage extends React.Component {
               visible={this.state.userModalVisible}
               close={this.handleCloseModal}
               userId={this.props.userId}
-              currentUserId={this.props.currentUserId}/>
+              currentUserId={this.props.currentUserId}
+              allowChat={true}/>
           </View>
         </Modal>
       );

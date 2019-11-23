@@ -229,7 +229,9 @@ export default class ViewUserPage extends React.Component {
             <AddReviewPage ref='reviewPopup' refreshReviews={this.refreshReviews} revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
             <ChatWindow ref='chatWindowPopup' chatteeName={this.state.name} chatRoomId={this.state.chatRoomId} currentUserId={this.props.currentUserId} otherUserId={this.props.userId}/>
           </ScrollView>
-            <Button style={styles.buttons} color='#8B00C7' title="Chat" onPress={() => this.openChatHandler()}/>
+            { this.props.allowChat && 
+              <Button style={styles.buttons} color='#8B00C7' title="Chat" onPress={() => this.openChatHandler()}/>
+            }
             <Button style={styles.buttons} color='#BA55D3' title="Add Review" onPress={() => this.handleAddReview()}/>
             <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={this.props.close}/>
           </Modal>
