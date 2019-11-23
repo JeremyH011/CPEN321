@@ -7,19 +7,31 @@ import {
   TouchableOpacity,
   ScrollView} from 'react-native';
 
-import { API_KEY, DB_URL } from '../key';
+import { DB_URL } from '../key';
 import User from '../classes/User';
+import MyRoommates from './MyRoommates';
+import ViewUserPage from './ViewUserPage';
 
 export default class Recommended extends React.Component {
 
     state = {
         modalVisible: false,
         scrollViewVisible: false,
-        recommended: []
+        recommended: [],
+        selectedUser: null,
+        selectedUserModalVisible: false
     }
 
     setModalVisible(visible) {
       this.setState({modalVisible: visible});
+    }
+
+    handleUserSelect = (userId, displayModal) => {
+      this.setState({selectedUser:userId, selectedUserModalVisible: displayModal});
+    }
+
+    handleCloseModal = () => {
+      this.setState({selectedUserModalVisible: false});
     }
 
     getRecommendedUsers(body){
@@ -51,10 +63,10 @@ export default class Recommended extends React.Component {
               <ScrollView style={styles.scrollView}>
                 {
                   this.state.recommended.map((item)=>(
-                    <Text style={styles.boxItem} key={item.email}>
-                      Name: {item.name}{"\n"}
-                      Email: {item.email}
-                    </Text>
+                    <MyRoommates
+                      user={item}
+                      handleUserSelect={this.handleUserSelect}>
+                    </MyRoommates>
                   ))
                 }
               </ScrollView>
@@ -64,6 +76,13 @@ export default class Recommended extends React.Component {
                     <Text style={styles.text}>Back</Text>
                 </TouchableOpacity>
             </View>
+            <ViewUserPage
+              ref="viewUserPopup"
+              visible={this.state.selectedUserModalVisible}
+              close={this.handleCloseModal}
+              userId = {this.state.selectedUser}
+              currentUserId = {this.props.currentUserId}
+            />
           </Modal>
         );
     }
