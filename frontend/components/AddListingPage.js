@@ -121,11 +121,6 @@ export default class AddListingPage extends React.Component {
         alert("Price can't be 0");
         return false;
       }
-      else if(this.state.photos.length == 0)
-      {
-        alert("Need at least one photo");
-        return false;
-      }
       return true;
     }
 
@@ -173,8 +168,9 @@ export default class AddListingPage extends React.Component {
             transparent={false}
             visible={this.state.modalVisible}
             onRequestClose={() => { this.setModalVisible(false); } }>
-                <View style={styles.modal}>
+                <View testID={this.props.testID} style={styles.modal}>
                     <TextInput
+                        testID="title_input"
                         style={styles.modalTextInput}
                         placeholder="Title"
                         onChangeText={(text) => this.setState({title: text})}/>
@@ -195,6 +191,7 @@ export default class AddListingPage extends React.Component {
                         </View>
                         <View>
                             <TextInputMask
+                                testID="price_input"
                                 style={styles.priceTextInput}
                                 placeholder="$/month"
                                 mask={"$[99990]"}
@@ -206,6 +203,7 @@ export default class AddListingPage extends React.Component {
                             <React.Fragment>
                             {this.setState()}
                                 <TextInput ref='addressTextInput'
+                                    testID="address_input"
                                     value={this.state.addressField}
                                     style={styles.modalTextInput}
                                     placeholder="Address"
@@ -214,9 +212,11 @@ export default class AddListingPage extends React.Component {
 
                                 { this.state.scrollViewVisible == true &&
                                 <ScrollView
+                                    testID="address_scrollview"
                                     style={styles.scrollView}>
                                     {locationResults.map(element => (
                                         <LocationItem
+                                        testID={"location_item"}
                                         setNewListingAddress={this.setNewListingAddress}
                                         {...element}
                                         key={element.id}
@@ -230,7 +230,7 @@ export default class AddListingPage extends React.Component {
                         )}
                     </GoogleAutoComplete>
                   <View style={styles.row}>
-                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
+                      <TouchableOpacity testID="create_listing_button" style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
                           <Text>Add Listing</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>

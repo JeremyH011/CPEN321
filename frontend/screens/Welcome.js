@@ -24,6 +24,7 @@ class Welcome extends Component {
   render() {
     return (
       <ScrollView
+        testID="welcome_screen"
         contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.container}>
           <View style={styles.logo}>
@@ -31,8 +32,8 @@ class Welcome extends Component {
           </View>
         </View>
         <View style={styles.column}>
-          <Button style={styles.buttons} color='#BA55D3' title="Login" onPress={() => this.props.navigation.navigate('Login')}/>
-          <Button style={styles.buttons} color='#8A2BE2' title="Sign Up" onPress={() => this.props.navigation.navigate('SignUp')}/>
+          <Button style={styles.buttons} testID="login_button" color='#BA55D3' title="Login" onPress={() => this.props.navigation.navigate('Login')}/>
+          <Button style={styles.buttons} testID="signup_button" color='#8A2BE2' title="Sign Up" onPress={() => this.props.navigation.navigate('SignUp')}/>
         </View>
       </ScrollView>
     );

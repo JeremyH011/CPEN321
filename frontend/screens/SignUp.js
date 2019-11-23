@@ -143,6 +143,7 @@ class SignUp extends Component {
     const {photo} = this.state;
     return (
       <ScrollView
+        testID="signup_screen"
         keyboardShouldPersistTaps='handled'
         contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.title}>
@@ -151,16 +152,18 @@ class SignUp extends Component {
         <View style={styles.container}>
           <Text>Name</Text>
           <TextInput
+            testId="name_input_really_long"
             style={styles.textInput}
             placeholder="Enter your first and last name"
             editable={true}
-            autoCapitalize={'words'}
+            autoCapitalize={'none'}
             blurOnSubmit={false}
-            returnKeyType={'next'}
+            returnKeyType={'done'}
             onChangeText={(name) => this.setState({nameField: name})}
           />
           <Text>Age</Text>
           <TextInputMask
+            testID="age_input"
             keyboardType='numeric'
             style={styles.textInput}
             placeholder="Age"
@@ -168,14 +171,17 @@ class SignUp extends Component {
             onChangeText={(age) => this.setState({ageField: parseInt(age)})}/>
           <Text>Job</Text>
           <TextInput
+            testId="job_input_really_long"
             style={styles.textInput}
             placeholder="Enter your current occupation..."
             returnKeyType={'done'}
+            autoCapitalize={'none'}
             blurOnSubmit={false}
             onChangeText={(job) => this.setState({jobField: job})}
           />
           <Text>Email</Text>
           <TextInput
+            testID="email_input"
             style={styles.textInput}
             placeholder="Email address..."
             returnKeyType={'done'}
@@ -185,6 +191,7 @@ class SignUp extends Component {
           />
           <Text>Password</Text>
           <TextInput secureTextEntry
+            testID="password_input_really_long"
             style={styles.textInput}
             placeholder="Enter a password"
             returnKeyType={'done'}
@@ -194,6 +201,7 @@ class SignUp extends Component {
           />
           <Text>Confirm Password</Text>
           <TextInput secureTextEntry
+            testID="confirm_password_input"
             style={styles.textInput}
             placeholder="Confirm Password..."
             returnKeyType={'done'}
@@ -223,7 +231,7 @@ class SignUp extends Component {
         </View>
         <View style={styles.columncontainer}>
         <Button style={styles.buttons} color='#A80097' title="Choose a Profile Photo" onPress={() => {this.handleChoosePhoto()}}/>
-          <Button style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.checkPasswords(this.state.passwordField, this.state.passwordConfirm)} />
+          <Button testID="signup_button" style={styles.buttons} color='#BA55D3' title="Sign Up!" onPress={() => this.checkPasswords(this.state.passwordField, this.state.passwordConfirm)} />
           <Button style={styles.buttons} color='#8A2BE2' title="Go Back" onPress={() => this.props.navigation.navigate('Welcome')}/>
         </View>
       </ScrollView>

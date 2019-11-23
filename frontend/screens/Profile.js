@@ -41,6 +41,7 @@ const itemWidth = slideWidth + itemHorizontalMargin * 2;
 
 export default class Profile extends React.Component {
     static navigationOptions = {
+        tabBarTestID: 'profile_tab',
         tabBarIcon: tabBarIcon('md-person'),
     };
 
@@ -299,7 +300,7 @@ export default class Profile extends React.Component {
       }
       const {newPhoto} = this.state;
         return (
-            <ScrollView style={styles.scrollView}>
+            <ScrollView style={styles.scrollView} testID="profile_screen">
             <NavigationEvents
               onWillFocus={payload => {
                 console.log("will focus", payload);
@@ -317,7 +318,7 @@ export default class Profile extends React.Component {
               </Modal>
               <View style={styles.column}>
                 <Button style={styles.buttons} color='#BA55D3' title="Edit" onPress={() => this.editFields(true)}/>
-                <Button style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
+                <Button testID="logout_button" style={styles.buttons} color='#8A2BE2' title="Logout" onPress={() => this.handleLogOut()}/>
               </View>
               <View style={styles.container}>
                 <View style={styles.profilePic}>

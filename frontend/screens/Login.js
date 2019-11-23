@@ -53,6 +53,7 @@ class Login extends Component {
   render() {
     return (
           <ScrollView
+            testID="login_screen"
             keyboardShouldPersistTaps='handled'
             contentContainerStyle={{flexGrow: 1}}>
             <View style={styles.title}>
@@ -60,6 +61,7 @@ class Login extends Component {
             </View>
             <View style={styles.container}>
               <TextInput
+                testID="email_input"
                 style={styles.textInput}
                 placeholder="Email address..."
                 returnKeyType={'done'}
@@ -68,6 +70,7 @@ class Login extends Component {
                 onChangeText={(email) => this.setState({email})}
               />
               <TextInput secureTextEntry
+                testID="password_input"
                 style={styles.textInput}
                 placeholder="Password"
                 returnKeyType={'done'}
