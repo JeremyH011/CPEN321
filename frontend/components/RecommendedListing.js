@@ -100,9 +100,13 @@ const styles = StyleSheet.create({
       flex: 14,
       alignItems: 'flex-start',
       justifyContent: 'center',
+      width: '100%',
+      borderColor:'red',
+      borderWidth:1
     },
     scrollView: {
       margin:'5%',
+      width: '95%',
     },
     modalButton: {
       alignItems: 'center',
@@ -123,7 +127,7 @@ const styles = StyleSheet.create({
       color:'white'
     },
     text: {
-      color:'rgba(0,0,0,0.5)',
+      color:'white',
       fontSize:15
     },
     boxItem:{

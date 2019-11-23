@@ -245,15 +245,17 @@ Alert.alert(
                   console.log("will focus", payload);
                   this.getListings();
                 }}
-              /> 
+              />
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap} userId={this.state.userId} getListings={this.getListings}/>
-              <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
               <SearchFilterPage ref='searchFilterPopup' userId = {this.state.userId} centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
-              <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
-              <AddListingButton onAddListing={this.addListingHandler}/>
-              <RecommendedListing ref='getRecommendedPopup' currentUserId={this.state.userId}/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
+              <RecommendedListing ref='getRecommendedPopup' currentUserId={this.state.userId}/>
+              <View style={styles.button_container}>
+                <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
+                <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
+                <AddListingButton onAddListing={this.addListingHandler}/>
+              </View>
             </View>
           </ScrollView>
     );
@@ -296,5 +298,11 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingRight: 12,
     textAlign: 'right',
+  },
+  button_container:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 140,
   }
 });

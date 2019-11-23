@@ -181,7 +181,8 @@ const styles = StyleSheet.create({
     text_box: {
       marginLeft: 10,
       marginRight: 10,
-      padding: 10,
+      paddingLeft: 10,
+      paddingRight: 10,
       flex: 3,
       //borderColor:'#BA55D3',
       //borderWidth:5,
