@@ -228,7 +228,8 @@ Alert.alert(
         this.populateListingLocations(responseJson);
       })
       .catch((error) => {
-        console.error(error);
+        alert(error);
+        //console.error(error);
       });
     }
 
@@ -244,7 +245,7 @@ Alert.alert(
               <SearchFilterPage ref='searchFilterPopup' userId = {this.state.userId} centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
               <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
               <AddListingButton onAddListing={this.addListingHandler}/>
-              <RecommendedListing ref='getRecommendedPopup'/>
+              <RecommendedListing ref='getRecommendedPopup' currentUserId={this.state.userId}/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
             </View>
           </ScrollView>
