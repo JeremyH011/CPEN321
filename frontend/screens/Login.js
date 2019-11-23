@@ -106,8 +106,10 @@ const styles = StyleSheet.create({
   },
 
   buttoncontainer: {
-    flex:7,
-    justifyContent:'center'
+    flex:3,
+    flexDirection: 'column',
+    justifyContent:"center",
+    padding: 10
   },
 
   buttons: {

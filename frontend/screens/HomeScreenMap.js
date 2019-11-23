@@ -33,6 +33,7 @@ import firebase from 'react-native-firebase';
 import SearchFilterButton from '../components/SearchFilterButton';
 import SearchFilterPage from '../components/SearchFilterPage';
 import { EventRegister } from 'react-native-event-listeners';
+import {NavigationEvents} from 'react-navigation';
 
 export default class HomeScreenMap extends React.Component {
   static navigationOptions = {
@@ -239,6 +240,12 @@ Alert.alert(
             contentInsetAdjustmentBehavior="automatic"
             style={styles.scrollView}>
             <View style={styles.container}>
+              <NavigationEvents
+                onWillFocus={payload => {
+                  console.log("will focus", payload);
+                  this.getListings();
+                }}
+              /> 
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap} userId={this.state.userId} getListings={this.getListings}/>
               <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>

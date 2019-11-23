@@ -352,6 +352,10 @@ export default class Profile extends React.Component {
                     </Text>
                   ))
                 }
+                {
+                  this.state.yourReviewList.length == 0 &&
+                  <Text style={styles.boxItem}>You have no reviews!</Text>
+                }
                 <Text style={styles.boxItem}>Reviews You've Written</Text>
                 {
                   this.state.yourWrittenReviewList.map((item)=>(
@@ -362,6 +366,10 @@ export default class Profile extends React.Component {
                       {item.reviewText}
                     </Text>
                   ))
+                }
+                {
+                  this.state.yourWrittenReviewList.length == 0 &&
+                  <Text style={styles.boxItem}>You've written no reviews!</Text>
                 }
               <Modal
                 animationType="slide"

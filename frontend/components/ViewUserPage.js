@@ -266,6 +266,10 @@ export default class ViewUserPage extends React.Component {
                   </Text>
                 ))
               }
+              {
+                this.state.reviewList.length == 0 &&
+                <Text style={styles.boxItem}>This user has no reviews!</Text>
+              }
             <Text style={styles.boxItem}>Listings</Text>
               {
                 this.state.listingList.map((item)=>(
@@ -274,6 +278,10 @@ export default class ViewUserPage extends React.Component {
                       handleListingSelect={this.handleListingSelect}>
                   </MyListing>
                 ))
+              }
+              {
+                this.state.listingList.length == 0 &&
+                <Text style={styles.boxItem}>This user has created no listings!</Text>
               }
             <AddReviewPage ref='reviewPopup' refreshReviews={this.refreshReviews} revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
             <ChatWindow ref='chatWindowPopup' chatteeName={this.state.name} chatRoomId={this.state.chatRoomId} currentUserId={this.props.currentUserId} otherUserId={this.props.userId}/>

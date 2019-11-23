@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     },
     noAddedListing: {
         flex: 1,
-        marginTop: 30,
+        marginTop: 50,
         marginBottom: 30,
         justifyContent: 'center',
     },
