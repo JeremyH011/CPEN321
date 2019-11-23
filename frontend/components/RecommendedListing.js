@@ -82,6 +82,7 @@ export default class Recommended extends React.Component {
               close={this.handleCloseModal}
               userId = {this.state.selectedUser}
               currentUserId = {this.props.currentUserId}
+              allowChat = {true}
             />
           </Modal>
         );

@@ -11,6 +11,9 @@ import Carousel from 'react-native-snap-carousel';
 import { DB_URL } from "../key";
 import AddReviewPage from "./AddReviewPage";
 import Review from "../classes/Review";
+import Listing from "../classes/Listing";
+import MyListing from "../components/MyListing";
+import ListingPage from "../components/ListingPage";
 import ChatWindow from "./ChatWindow";
 
 const {width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
@@ -38,6 +41,9 @@ export default class ViewUserPage extends React.Component {
     loaded: false,
     reviewList: [],
     chatRoomId: null,
+    listingList: [],
+    selectedListing: null,
+    selectedListingModalVisible: false,
   }
 
   _renderItem({item, index}) {
@@ -50,6 +56,7 @@ export default class ViewUserPage extends React.Component {
   getInfo() {
     this.getUserInfo();
     this.getReviews();
+    this.getListings();
     this.setState({loaded: true});
   }
 
@@ -99,6 +106,28 @@ export default class ViewUserPage extends React.Component {
         reviewList: responseJson.map((reviewJson) => new Review(reviewJson))
       });
       console.log(this.state.reviewList);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  getListings() {
+    fetch(DB_URL+`get_listings_by_userId`, {
+      method: "POST",
+      headers: {
+        Accept : 'application/json',
+        'Content-Type' : 'application/json',
+      },
+      body: JSON.stringify({
+        userId: this.props.userId,
+      }),
+    }).then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        listingList: responseJson.map((listingsJson) => new Listing(listingsJson))
+      });
+      console.log(this.state.listingList);
     })
     .catch((error) => {
       console.error(error);
@@ -168,6 +197,17 @@ export default class ViewUserPage extends React.Component {
     });
   }
 
+  handleListingSelect = (listing, displayModal) => {
+      this.setState({selectedListing:listing,
+                     selectedListingModalVisible: displayModal});
+  }
+
+  handleSelectedListingModalClose = () => {
+      this.setState({selectedListingModalVisible: false});
+      this.state.listingList = [];
+      this.getListings();
+    }
+
   openChatHandler(){
     // search for a chat room by curr User Id and other user ID
       // return chat room ID if found or null if not
@@ -226,10 +266,36 @@ export default class ViewUserPage extends React.Component {
                   </Text>
                 ))
               }
+              {
+                this.state.reviewList.length == 0 &&
+                <Text style={styles.boxItem}>This user has no reviews!</Text>
+              }
+            <Text style={styles.boxItem}>Listings</Text>
+              {
+                this.state.listingList.map((item)=>(
+                  <MyListing 
+                      listing={item}
+                      handleListingSelect={this.handleListingSelect}>
+                  </MyListing>
+                ))
+              }
+              {
+                this.state.listingList.length == 0 &&
+                <Text style={styles.boxItem}>This user has created no listings!</Text>
+              }
             <AddReviewPage ref='reviewPopup' refreshReviews={this.refreshReviews} revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
             <ChatWindow ref='chatWindowPopup' chatteeName={this.state.name} chatRoomId={this.state.chatRoomId} currentUserId={this.props.currentUserId} otherUserId={this.props.userId}/>
+            <ListingPage
+              {...this.state.selectedListing}
+              visible={this.state.selectedListingModalVisible}
+              close={this.handleSelectedListingModalClose}
+              currentUserId = {this.props.currentUserId}
+              allowViewProfile = {false}
+            />
           </ScrollView>
-            <Button style={styles.buttons} color='#8B00C7' title="Chat" onPress={() => this.openChatHandler()}/>
+            { this.props.allowChat && 
+              <Button style={styles.buttons} color='#8B00C7' title="Chat" onPress={() => this.openChatHandler()}/>
+            }
             <Button style={styles.buttons} color='#BA55D3' title="Add Review" onPress={() => this.handleAddReview()}/>
             <Button style={styles.buttons} color='#8A2BE2' title="Close" onPress={this.props.close}/>
           </Modal>
