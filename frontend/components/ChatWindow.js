@@ -5,6 +5,7 @@ import {
   Text,
   Modal,
   TouchableOpacity,
+  TouchableHighlight,
   ScrollView} from 'react-native';
 
 import { API_KEY, DB_URL } from '../key';
@@ -15,6 +16,7 @@ import Message from "../classes/Message";
 import InputBar from "./InputBar";
 import MessageBubble from './MessageBubble';
 import { EventRegister } from 'react-native-event-listeners';
+import ViewUserPage from "./ViewUserPage";
 
 export default class ChatWindow extends React.Component {
     // https://www.npmjs.com/package/react-chat-bubble
@@ -24,6 +26,7 @@ export default class ChatWindow extends React.Component {
         messages: [],
         currMsgContent: "",
         chatRoomId: null,
+        userModalVisible: false,
     }
 
     componentWillMount() {
@@ -58,6 +61,14 @@ export default class ChatWindow extends React.Component {
           this.setState({chatRoomId: null});
       }
       this.setState({modalVisible: visible});
+    }
+
+    handleLoadChatteeProfile() {
+      this.setState({userModalVisible: true});
+    }
+
+    handleCloseChatteeProfile = () => {
+      this.setState({userModalVisible: false});
     }
 
     createMessage(){
@@ -120,7 +131,9 @@ export default class ChatWindow extends React.Component {
                                 size={30}
                                 onPress={() => {this.setModalVisible(false);}}
                             />}
-            centerComponent={{ text: this.props.chatteeName, style: { color: '#FFF', fontSize: 25 } }}
+            centerComponent={ <TouchableHighlight onPress={() => {this.handleLoadChatteeProfile()}}>
+                                <Text style={styles.chatteeName}>{this.props.chatteeName}</Text>
+                              </TouchableHighlight>}
             />
 
             <View style={styles.outer}>
@@ -140,6 +153,12 @@ export default class ChatWindow extends React.Component {
                       onChangeText={(text) => this.setState({currMsgContent: text})}
                       text={this.state.currMsgContent}/>                   
               </View>
+              <ViewUserPage ref='viewUserPopup'
+                visible={this.state.userModalVisible}
+                close={this.handleCloseChatteeProfile}
+                userId={this.props.otherUserId}
+                currentUserId={this.props.currentUserId}
+                allowChat={false}/>
           </Modal>
         );
     }
@@ -161,6 +180,10 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#8A2BE2'
+    },
+    chatteeName: {
+      color: '#FFF',
+      fontSize: 25
     },
     modal: {
       flex: 14,
