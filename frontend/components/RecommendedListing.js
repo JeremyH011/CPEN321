@@ -5,7 +5,8 @@ import {
   Text,
   Modal,
   TouchableOpacity,
-  ScrollView} from 'react-native';
+  ScrollView,
+  ImageBackground} from 'react-native';
 
 import { DB_URL } from '../key';
 import User from '../classes/User';
@@ -56,34 +57,39 @@ export default class Recommended extends React.Component {
           visible={this.state.modalVisible}
           onRequestClose={() => { this.setModalVisible(false);}}
           >
-            <View style={styles.title}>
-              <Text style={styles.textTitle}>RECOMMENDED</Text>
-            </View>
-            <View style={styles.modal}>
-              <ScrollView style={styles.scrollView}>
-                {
-                  this.state.recommended.map((item)=>(
-                    <MyRoommates
-                      user={item}
-                      handleUserSelect={this.handleUserSelect}>
-                    </MyRoommates>
-                  ))
-                }
-              </ScrollView>
-            </View>
-            <View style={styles.row}>
-                <TouchableOpacity style={styles.modalButton} onPress={() => {this.setModalVisible(false);}}>
-                    <Text style={styles.text}>Back</Text>
-                </TouchableOpacity>
-            </View>
-            <ViewUserPage
-              ref="viewUserPopup"
-              visible={this.state.selectedUserModalVisible}
-              close={this.handleCloseModal}
-              userId = {this.state.selectedUser}
-              currentUserId = {this.props.currentUserId}
-              allowChat = {true}
-            />
+            <ImageBackground
+              source={require('./background_2.png')}
+              style={{width: '100%', height: '100%'}}
+            >
+              <View style={styles.title}>
+                <Text style={styles.textTitle}>RECOMMENDED ROOMMATES</Text>
+              </View>
+              <View style={styles.modal}>
+                <ScrollView style={styles.scrollView}>
+                  {
+                    this.state.recommended.map((item)=>(
+                      <MyRoommates
+                        user={item}
+                        handleUserSelect={this.handleUserSelect}>
+                      </MyRoommates>
+                    ))
+                  }
+                </ScrollView>
+              </View>
+              <View style={styles.row}>
+                  <TouchableOpacity style={styles.modalButton} onPress={() => {this.setModalVisible(false);}}>
+                      <Text style={styles.text}>Back</Text>
+                  </TouchableOpacity>
+              </View>
+              <ViewUserPage
+                ref="viewUserPopup"
+                visible={this.state.selectedUserModalVisible}
+                close={this.handleCloseModal}
+                userId = {this.state.selectedUser}
+                currentUserId = {this.props.currentUserId}
+                allowChat = {true}
+              />
+            </ImageBackground>
           </Modal>
         );
     }
@@ -101,20 +107,18 @@ const styles = StyleSheet.create({
       alignItems: 'flex-start',
       justifyContent: 'center',
       width: '100%',
-      borderColor:'red',
-      borderWidth:1
     },
     scrollView: {
-      margin:'5%',
       width: '95%',
+      marginLeft: '2.5%',
+      marginRight: '2.5%',
+      marginBottom: '2.5%',
     },
     modalButton: {
       alignItems: 'center',
-      margin: 10,
       padding: 10,
-      width: '80%',
-      borderRadius: 150 / 2,
-      backgroundColor:'#BA55D3',
+      width: '100%',
+      backgroundColor:'#8A2BE2',
     },
     row: {
         flexDirection: 'row',
