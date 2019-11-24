@@ -3,5 +3,6 @@ export default class ChatRoom {
         this.chatRoomId = json["chatRoomId"];
         this.chatteeName = json["chatteeName"];
         this.chatteeId = json["chatteeId"];
+        this.chatteePhoto = json["chatteePhoto"];
     }
   }

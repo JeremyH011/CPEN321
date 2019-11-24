@@ -33,7 +33,7 @@ class MyRoommates extends PureComponent {
                 />
               }
               <View style={styles.boxItem}>
-                <Text style={styles.internal_text}>Name: {this.props.user.name}</Text>
+                <Text style={styles.internal_text}>{this.props.user.name}</Text>
               </View>
             </TouchableOpacity>
         );
