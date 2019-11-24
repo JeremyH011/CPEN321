@@ -447,14 +447,18 @@ it('Integration Test: Get ALL listings, should be empty now.', async done =>{
 
 it('Integration Test: Get Chat Room by User IDs', async done =>{
   body = {userId1: tempUserId_2, userId2: tempUserId_3};
-  const response = await request.get('/get_chat_room_by_user_ids');
+  const response = await request.post('/get_chat_room_by_user_ids')
+                                .send(body)
+                                .set('Accept','application/json');
   expect(response.status).toBe(401);
   done();
 });
 
 it('Integration Test: Create Chat Room', async done =>{
   body = {userId1: tempUserId_2, userId2: tempUserId_3};
-  const response = await request.get('/create_chat_room');
+  const response = await request.post('/create_chat_room')
+                                .send(body)
+                                .set('Accept','application/json');
   expect(response.status).toBe(201);
   tempChatRoomID = response.body.chatRoomId;
   done();
@@ -462,7 +466,9 @@ it('Integration Test: Create Chat Room', async done =>{
 
 it('Integration Test: Get Chat Rooms by User ID', async done =>{
   body = {userId: tempUserId_2};
-  const response = await request.get('/get_chat_rooms_by_user_id');
+  const response = await request.post('/get_chat_rooms_by_user_id')
+                                .send(body)
+                                .set('Accept','application/json');
   expect(response.status).toBe(200);
   done();
 });
@@ -473,14 +479,18 @@ it('Integration Test: Create Message', async done =>{
           chatRoomId: tempChatRoomID,
           content: 'hi'
         };
-  const response = await request.get('/create_message');
+  const response = await request.post('/create_message')
+                                .send(body)
+                                .set('Accept','application/json');
   expect(response.status).toBe(201);
   done();
 });
 
 it('Integration Test: Get messages by chat room ID.', async done =>{
   body = {chatRoomId: tempChatRoomID};
-  const response = await request.get('/get_messages_by_chatroom_id');
+  const response = await request.post('/get_messages_by_chatroom_id')
+                                .send(body)
+                                .set('Accept','application/json');
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(1);
   done();
