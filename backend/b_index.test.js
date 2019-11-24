@@ -551,7 +551,7 @@ it('Integration Test: Create Review for User', async done=>{
 });
 
 
-it('Integration Test: Create Review for User', async done=>{
+it('Integration Test: Get Reviews by Reviewer ID', async done=>{
   body = {userId: tempUserId};
   const response = await request.post('/get_reviews_by_reviewer_id')
                                 .send(body)
@@ -561,7 +561,7 @@ it('Integration Test: Create Review for User', async done=>{
 });
 
 
-it('Integration Test: Create Review for User', async done=>{
+it('Integration Test: Get Reviews by Reviewee ID', async done=>{
   body = {userId: tempUserId_2};
   const response = await request.post('/get_reviews_by_reviewee_id')
                                 .send(body)
