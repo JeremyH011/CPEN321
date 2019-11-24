@@ -78,6 +78,7 @@ export default class AddListingPage extends React.Component {
 
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
+        this.resetState();
     }
 
     handleAddressChange(address, handleTextChange) {
@@ -166,7 +167,7 @@ export default class AddListingPage extends React.Component {
 
     render() {
         const {latest_photo} = this.state;
-        const length = this.state.photos.length - 1 < 0 ? 0 : this.state.photos.length - 1;
+        const length = this.state.photos.length;
         return (
             <Modal
             animationType="slide"
@@ -176,87 +177,86 @@ export default class AddListingPage extends React.Component {
                 <View style={styles.title}>
                   <Text style={styles.textTitle}>ADD NEW LISTING</Text>
                 </View>
-                <View style={styles.modal}>
-                    <TextInput
-                        style={styles.modalTextInput}
-                        placeholder="Title"
-                        onChangeText={(text) => this.setState({title: text})}/>
-                    <View style={{alignItems: 'center', justifyContent: 'center' }}>
-                      {latest_photo && (
-                        <Image
-                          source={{ uri: latest_photo.uri }}
-                          style={{ width: 150, height: 150 , marginTop: 10}}
-                        />
-                      )}
-                    </View>
-                    <View style={styles.row}>
-                      <TouchableOpacity style={styles.modalButton} onPress={() => {this.handleChoosePhoto();}}>
-                        <Text style={styles.textTitle}> Choose Photo(s) </Text>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.row}>
-                      <Text>{length} photos chosen.</Text>
-                    </View>
-                    <View style={styles.row}>
-                        <View style={styles.dropdown}>
-                            <Dropdown
-                            label='Bed'
-                            data={numberOfRooms}
-                            onChangeText={(text) => this.setState({bed: parseInt(text)})}
-                            />
-                        </View>
-                        <View style={styles.dropdown}>
-                            <Dropdown
-                            label='Bath'
-                            data={numberOfRooms}
-                            onChangeText={(text) => this.setState({bath: parseInt(text)})}
-                            />
-                        </View>
-                        <View>
-                            <TextInputMask
-                                style={styles.priceTextInput}
-                                placeholder="$/month"
-                                mask={"$[99990]"}
-                                onChangeText={(text) => this.setState({price: parseInt(text.split('$')[1])})}/>
-                        </View>
-                    </View>
-                    <GoogleAutoComplete apiKey={API_KEY} debounce={500} minLength={4} components={"country:ca"}>
-                        {({ handleTextChange, locationResults, fetchDetails, isSearching, clearSearchs }) => (
-                            <React.Fragment>
-                            {this.setState()}
-                                <TextInput ref='addressTextInput'
-                                    value={this.state.addressField}
-                                    style={styles.modalTextInput}
-                                    placeholder="Address"
-                                    onChangeText={(text) => this.handleAddressChange(text, handleTextChange)}/>
-                                {isSearching && <ActivityIndicator/>}
+                <ScrollView
+                  keyboardShouldPersistTaps='handled'
+                  contentContainerStyle={{flexGrow: 1}}>
+                    <View style={styles.modal}>
+                      <TextInput
+                          style={styles.modalTextInput}
+                          placeholder="Title"
+                          onChangeText={(text) => this.setState({title: text})}/>
+                      <GoogleAutoComplete apiKey={API_KEY} debounce={500} minLength={4} components={"country:ca"}>
+                          {({ handleTextChange, locationResults, fetchDetails, isSearching, clearSearchs }) => (
+                              <React.Fragment>
+                              {this.setState()}
+                                  <TextInput ref='addressTextInput'
+                                      value={this.state.addressField}
+                                      style={styles.modalTextInput}
+                                      placeholder="Address"
+                                      onChangeText={(text) => this.handleAddressChange(text, handleTextChange)}/>
+                                  {isSearching && <ActivityIndicator/>}
 
-                                { this.state.scrollViewVisible == true &&
-                                <ScrollView
-                                    style={styles.scrollView}>
-                                    {locationResults.map(element => (
-                                        <LocationItem
-                                        setNewListingAddress={this.setNewListingAddress}
-                                        {...element}
-                                        key={element.id}
-                                        fetchDetails={fetchDetails}
-                                        clearSearchs={clearSearchs}
-                                        />
-                                    ))}
-                                </ScrollView>
-                                }
-                            </React.Fragment>
+                                  { this.state.scrollViewVisible == true &&
+                                  <ScrollView
+                                      style={styles.scrollView}>
+                                      {locationResults.map(element => (
+                                          <LocationItem
+                                          setNewListingAddress={this.setNewListingAddress}
+                                          {...element}
+                                          key={element.id}
+                                          fetchDetails={fetchDetails}
+                                          clearSearchs={clearSearchs}
+                                          />
+                                      ))}
+                                  </ScrollView>
+                                  }
+                              </React.Fragment>
+                          )}
+                      </GoogleAutoComplete>
+                      <View style={styles.row}>
+                          <View style={styles.dropdown}>
+                              <Dropdown
+                              label='Bed'
+                              data={numberOfRooms}
+                              onChangeText={(text) => this.setState({bed: parseInt(text)})}
+                              />
+                          </View>
+                          <View style={styles.dropdown}>
+                              <Dropdown
+                              label='Bath'
+                              data={numberOfRooms}
+                              onChangeText={(text) => this.setState({bath: parseInt(text)})}
+                              />
+                          </View>
+                          <View>
+                              <TextInputMask
+                                  keyboardType='numeric'
+                                  style={styles.priceTextInput}
+                                  placeholder="$/month"
+                                  mask={"$[99990]"}
+                                  onChangeText={(text) => this.setState({price: parseInt(text.split('$')[1])})}/>
+                          </View>
+                      </View>
+                      <View style={{alignItems: 'center', justifyContent: 'center' }}>
+                        {latest_photo && (
+                          <Image
+                            source={{ uri: latest_photo.uri }}
+                            style={{ width: 150, height: 150 , marginTop: 10}}
+                          />
                         )}
-                    </GoogleAutoComplete>
-                  <View style={styles.row}>
-                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
-                          <Text style={styles.textTitle}>Add Listing</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
-                          <Text style={styles.textTitle}>Cancel</Text>
-                      </TouchableOpacity>
+                      </View>
+                      <View style={styles.row}>
+                        <TouchableOpacity style={styles.photoButton} onPress={() => {this.handleChoosePhoto();}}>
+                          <Text style={styles.textTitle}> Choose Photo(s) </Text>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.row}>
+                        <Text>{length} photos chosen.</Text>
+                      </View>
                   </View>
-                </View>
+                </ScrollView>
+                <Button title='Add Listing' color='#BA55D3' style={styles.modalButton} onPress={() => { this.handleAddingNewListing()}}/>
+                <Button title='Cancel' color='#8A2BE2' style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }/>
             </Modal>
         );
     }
@@ -286,9 +286,15 @@ const styles = StyleSheet.create({
       margin: 10,
       padding: 10,
     },
-    modalButton: {
+    photoButton: {
       alignItems: 'center',
       backgroundColor: '#8A2BE2',
+      margin: 10,
+      padding: 10,
+    },
+    modalButton: {
+      alignItems: 'center',
+      backgroundColor: '#DDDDDD',
       margin: 10,
       padding: 10,
     },
