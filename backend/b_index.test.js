@@ -6,6 +6,7 @@ let tempUserId = '';
 let tempUserId_2 = '';
 let tempUserId_3 = '';
 let tempListingId = '';
+let tempChatRoomID = '';
 
 it('Integration Test: GETS the test endpoint', async done => {
   const response = await request.get('/test')
@@ -177,33 +178,6 @@ it('Integration Test: Get ALL listings, should be 1.', async done =>{
   done();
 });
 
-it('Integration Test: Create Review for Listing Found by ID', async done=>{
-  body = {};
-  const response = await request.post('/create_review')
-                                .send(body)
-                                .set('Accept','application/json');
-  expect(response.status).toBe(200);
-  done();
-});
-
-/*
-it('Integration Test: Create Message with ID', async done=>{
-  body = {};
-  const response = await request.post('/create_message')
-                                .send(body)
-                                .set('Accept','application/json');
-  expect(response.status).toBe(201);
-  done();
-});
-
-it('Integration Test: Get Messages with ID', async done=>{
-  body = {};
-  const response = await request.get('/get_messages_by_chatroom_id')
-                                .query(body)
-  expect(response.status).toBe(200);
-  done();
-});
-*/
 it('Integration Test: GET Listing by listing_id.', async done =>{
   body = {userId: tempListingId};
   const response = await request.get('/get_listing_by_id')
@@ -441,5 +415,139 @@ it('Integration Test: Get ALL listings, should be empty now.', async done =>{
   const response = await request.get('/get_listings');
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(0);
+  done();
+});
+
+it('Integration Test: Get Chat Room by User IDs no room', async done =>{
+  body = {userId1: tempUserId_2, userId2: tempUserId_3};
+  const response = await request.post('/get_chat_room_by_user_ids')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(401);
+  done();
+});
+
+it('Integration Test: Create Chat Room', async done =>{
+  body = {userId1: tempUserId_2, userId2: tempUserId_3};
+  const response = await request.post('/create_chat_room')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(201);
+  tempChatRoomID = response.body.chatRoomId;
+  done();
+});
+
+it('Integration Test: Get Chat Rooms by User ID room exists', async done =>{
+  body = {userId: tempUserId_2};
+  const response = await request.post('/get_chat_rooms_by_user_id')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Integration Test: Create Message', async done =>{
+  body = {senderId: tempUserId_3,
+          receiverId: tempUserId_2,
+          chatRoomId: tempChatRoomID,
+          content: 'hi'
+        };
+  const response = await request.post('/create_message')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(201);
+  done();
+});
+
+it('Integration Test: Get messages by chat room ID.', async done =>{
+  body = {chatRoomId: tempChatRoomID};
+  const response = await request.post('/get_messages_by_chatroom_id')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(0);
+  done();
+});
+
+it('Integration Test: Get user by id.', async done =>{
+  body = {userId: tempUserId_2};
+  const response = await request.post('/get_user_by_id')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(1);
+  done();
+});
+
+it('Integration Test: Update User Data. expect count > 0', async done =>{
+  body = {userId: tempUserId_3,
+          name: 'test three', 
+          age: '69', 
+          job: 'random house',
+          email: 'test_email3@test.com',
+          optIn : false};
+  const response = await request.post('/update_user_data')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Integration Test: Update User Data. expect count == 0', async done =>{
+  body = {userId: tempUserId_3,
+          name: 'test three', 
+          age: '69', 
+          job: 'random house',
+          email: 'dontexist@email.com',
+          optIn : false};
+  const response = await request.post('/update_user_data')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Integration Test: Update User Photo', async done =>{
+  body = {userId: tempUserId_3,
+          photo: 'random_string_photo'};
+  const response = await request.post('/update_user_photo')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Integration Test: Create Review for User', async done=>{
+  body = {revieweeId: tempUserId,
+          reviewerId: tempUserId_2,
+          reviewerName: 'my man',
+          revieweeName: 'nice apple',
+          relationship: 'landlord',
+          reviewRating: 5,
+          reviewText: 'good experience'};
+  const response = await request.post('/create_review')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+
+it('Integration Test: Get Reviews by Reviewer ID', async done=>{
+  body = {userId: tempUserId};
+  const response = await request.post('/get_reviews_by_reviewer_id')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+
+it('Integration Test: Get Reviews by Reviewee ID', async done=>{
+  body = {userId: tempUserId_2};
+  const response = await request.post('/get_reviews_by_reviewee_id')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
   done();
 });
