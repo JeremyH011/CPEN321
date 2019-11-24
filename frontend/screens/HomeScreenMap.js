@@ -236,9 +236,6 @@ Alert.alert(
 
   render () {
     return (
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
             <View style={styles.container}>
               <NavigationEvents
                 onWillFocus={payload => {
@@ -257,7 +254,6 @@ Alert.alert(
                 <AddListingButton onAddListing={this.addListingHandler}/>
               </View>
             </View>
-          </ScrollView>
     );
   };
 };
