@@ -196,8 +196,9 @@ export default class SearchFilterPage extends React.Component {
                         changeParentSliderState={this.bathSliderChange}/>  
                 </View>  
                 <FilterSliderOneVal
+                    minRangeVal={1}
                     maxRangeVal={20}
-                    step={2}
+                    step={1}
                     endRangeMarker={'20+'}
                     startText={'Within: '}
                     endText={ 'km of below address'}
