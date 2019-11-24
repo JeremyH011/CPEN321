@@ -32,6 +32,8 @@ import { AsyncStorage } from 'react-native';
 import firebase from 'react-native-firebase';
 import SearchFilterButton from '../components/SearchFilterButton';
 import SearchFilterPage from '../components/SearchFilterPage';
+import { EventRegister } from 'react-native-event-listeners';
+import {NavigationEvents} from 'react-navigation';
 
 export default class HomeScreenMap extends React.Component {
   static navigationOptions = {
@@ -42,6 +44,7 @@ export default class HomeScreenMap extends React.Component {
     userLocation: null,
     userId: null,
     listingLocations: [],
+    notifChatRoomId: null,
   }
 
   getUserLocationHandler = () => {
@@ -94,7 +97,7 @@ async getToken() {
           await AsyncStorage.setItem('fcmToken', fcmToken);
       }
   }
-  this.setState({userId: await AsyncStorage.getItem('userId')}); 
+  this.setState({userId: await AsyncStorage.getItem('userId')});
   this.addFCMTokenToDB(fcmToken, this.state.userId);
 }
 
@@ -136,7 +139,15 @@ async createNotificationListeners() {
 * */
 this.notificationListener = firebase.notifications().onNotification((notification) => {
     const { title, body } = notification;
-    this.showAlert(title, body);
+    if(title.includes("Message"))
+    {
+      EventRegister.emit('msgNotifMade', {chatRoomId: this.state.notifChatRoomId, title: title, body: body});
+    }
+    else
+    {
+      this.showAlert(title, body);
+      this.getListings();
+    }
 });
 
 /*
@@ -144,7 +155,7 @@ this.notificationListener = firebase.notifications().onNotification((notificatio
 * */
 this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
     const { title, body } = notificationOpen.notification;
-    this.showAlert(title, body);
+    //this.showAlert(title, body);
 });
 
 /*
@@ -153,14 +164,15 @@ this.notificationOpenedListener = firebase.notifications().onNotificationOpened(
 const notificationOpen = await firebase.notifications().getInitialNotification();
 if (notificationOpen) {
     const { title, body } = notificationOpen.notification;
-    this.showAlert(title, body);
+    //this.showAlert(title, body);
 }
 /*
 * Triggered for data only payload in foreground
 * */
-this.messageListener = firebase.messaging().onMessage((message) => {
-  //process data message
-  console.log(JSON.stringify(message));
+this.messageListener  = firebase.messaging().onMessage((notification) => {
+  const { title, body, type, chatRoomId } = notification.data;
+  this.setState({notifChatRoomId: chatRoomId});
+  EventRegister.emit('messageMade', {chatRoomId: chatRoomId, title: title, body: body});
 });
 }
 
@@ -218,26 +230,31 @@ Alert.alert(
         this.populateListingLocations(responseJson);
       })
       .catch((error) => {
-        console.error(error);
+        alert(error);
+        alert(error);
       });
     }
 
   render () {
     return (
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
             <View style={styles.container}>
+              <NavigationEvents
+                onWillFocus={payload => {
+                  console.log("will focus", payload);
+                  this.getListings();
+                }}
+              />
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
-              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap}/>
-              <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
+              <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap} userId={this.state.userId} getListings={this.getListings}/>
               <SearchFilterPage ref='searchFilterPopup' userId = {this.state.userId} centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
-              <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
-              <AddListingButton onAddListing={this.addListingHandler}/>
-              <RecommendedListing ref='getRecommendedPopup'/>
               <AddListingPage ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
+              <RecommendedListing ref='getRecommendedPopup' currentUserId={this.state.userId}/>
+              <View style={styles.button_container}>
+                <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
+                <RecommendedListingButton onRecommended={this.getRecommendedHandler}/>
+                <AddListingButton onAddListing={this.addListingHandler}/>
+              </View>
             </View>
-          </ScrollView>
     );
   };
 };
@@ -278,5 +295,11 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingRight: 12,
     textAlign: 'right',
+  },
+  button_container:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 140,
   }
 });

@@ -3,7 +3,7 @@ import { Button } from 'react-native';
 
 const fetchLocation = props => {
     return (
-        <Button title="Get Location" onPress={props.onGetLocation} />
+        <Button color='#BA55D3' title="Get Current Location" onPress={props.onGetLocation} />
     );
 };
 

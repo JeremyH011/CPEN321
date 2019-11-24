@@ -61,9 +61,36 @@ npm install --save @ptomasroos/react-native-multi-slider
 react-native link @ptomasroos/react-native-multi-slider
 ```
 
+for AsyncStorage
+```
+npm install @react-native-community/async-storage
+```
+
+for checkbox on signup and profile pages
+```
+npm install react-native-checkbox-form --save
+```
+
+for stack navigator
+```
+npm install react-navigation-stack
+```
+
+
 for image picker
 ```
 npm install --save image-picker
+```
+
+for some random ui elements
+```
+npm install react-native-elements --save
+npm install react-native-autogrow-input
+```
+
+for event-listener
+```
+npm install react-native-event-listeners
 ```
 
 if an error similar to below is seen when running ```react-native run-android```

@@ -1,8 +1,9 @@
 import React, {PureComponent} from 'react'
-import {View, StyleSheet, Modal } from 'react-native';
+import {View, StyleSheet, Dimensions } from 'react-native';
 import MapView from 'react-native-maps';
 import ListingMarker from '../components/ListingMarker';
 import ListingPage from '../components/ListingPage';
+const {width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
 
 export default class UserMap extends PureComponent {
 
@@ -24,6 +25,7 @@ export default class UserMap extends PureComponent {
   handleCloseModal = () => {
     this.props.centerMap(this.state.selectedListing.latitude, this.state.selectedListing.longitude);
     this.setState({selectedListingModalVisible: false});
+    this.props.getListings();
   }
 
   render() {
@@ -49,6 +51,8 @@ export default class UserMap extends PureComponent {
             {...this.state.selectedListing}
             visible={this.state.selectedListingModalVisible}
             close={this.handleCloseModal}
+            currentUserId={this.props.userId}
+            allowViewProfile={true}
             />
         </View>
     );
@@ -58,7 +62,7 @@ export default class UserMap extends PureComponent {
 const styles = StyleSheet.create({
     mapContainer: {
         width: '100%',
-        height: 600
+        height: viewportHeight
     },
     map: {
         width: '100%',

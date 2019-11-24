@@ -10,5 +10,7 @@ export default class Listing {
     this.mapsUrl = json["maps_url"];
     this.photos = json["photos"];
     this.tapped = false;
+    this.userId = json["userId"];
+    this.listingId = json["_id"];
   }
 }
