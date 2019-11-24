@@ -146,6 +146,7 @@ this.notificationListener = firebase.notifications().onNotification((notificatio
     else
     {
       this.showAlert(title, body);
+      this.getListings();
     }
 });
 
