@@ -6,6 +6,7 @@ let tempUserId = '';
 let tempUserId_2 = '';
 let tempUserId_3 = '';
 let tempListingId = '';
+let tempChatRoomID = '';
 
 it('Integration Test: GETS the test endpoint', async done => {
   const response = await request.get('/test')
@@ -441,5 +442,46 @@ it('Integration Test: Get ALL listings, should be empty now.', async done =>{
   const response = await request.get('/get_listings');
   expect(response.status).toBe(200);
   expect(response.body.length).toBe(0);
+  done();
+});
+
+it('Integration Test: Get Chat Room by User IDs', async done =>{
+  body = {userId1: tempUserId_2, userId2: tempUserId_3};
+  const response = await request.get('/get_chat_room_by_user_ids');
+  expect(response.status).toBe(401);
+  done();
+});
+
+it('Integration Test: Create Chat Room', async done =>{
+  body = {userId1: tempUserId_2, userId2: tempUserId_3};
+  const response = await request.get('/create_chat_room');
+  expect(response.status).toBe(201);
+  tempChatRoomID = response.body.chatRoomId;
+  done();
+});
+
+it('Integration Test: Get Chat Rooms by User ID', async done =>{
+  body = {userId: tempUserId_2};
+  const response = await request.get('/get_chat_rooms_by_user_id');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Integration Test: Create Message', async done =>{
+  body = {senderId: tempUserId_2,
+          receiverId = tempUserId_3,
+          chatRoomId: tempChatRoomID,
+          content: 'hi'
+        };
+  const response = await request.get('/create_message');
+  expect(response.status).toBe(201);
+  done();
+});
+
+it('Integration Test: Get messages by chat room ID.', async done =>{
+  body = {chatRoomId: tempChatRoomID};
+  const response = await request.get('/get_messages_by_chatroom_id');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(1);
   done();
 });
