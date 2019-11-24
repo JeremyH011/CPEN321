@@ -90,6 +90,7 @@ export default class Chat extends React.Component {
                           chatRoomId={item.chatRoomId}
                           chatteeName={item.chatteeName}
                           chatteeId={item.chatteeId}
+                          chatteePhoto={item.chatteePhoto}
                           handleChatSelect={this.handleChatSelect}/>
                       ))
                   }
