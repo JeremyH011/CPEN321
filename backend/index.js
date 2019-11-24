@@ -735,7 +735,8 @@ app.post('/get_chat_rooms_by_user_id', jsonParser, (req, res) => {
                       chatRoomId: room._id,
                       currentUserId: userId,
                       chatteeId: chatteeId,
-                      chatteeName: result.name
+                      chatteeName: result.name,
+                      chatteePhoto: result.photo
                   }
                   
                 cb(chatRoomObj);
