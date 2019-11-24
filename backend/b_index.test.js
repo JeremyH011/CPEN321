@@ -178,15 +178,6 @@ it('Integration Test: Get ALL listings, should be 1.', async done =>{
   done();
 });
 
-it('Integration Test: Create Review for Listing Found by ID', async done=>{
-  body = {};
-  const response = await request.post('/create_review')
-                                .send(body)
-                                .set('Accept','application/json');
-  expect(response.status).toBe(200);
-  done();
-});
-
 /*
 it('Integration Test: Create Message with ID', async done=>{
   body = {};
@@ -502,7 +493,7 @@ it('Integration Test: Get user by id.', async done =>{
                                 .send(body)
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
-  expect(response.body.length).toBe(0);
+  expect(response.body.length).toBe(1);
   done();
 });
 
@@ -538,6 +529,41 @@ it('Integration Test: Update User Photo', async done =>{
   body = {userId: tempUserId_3,
           photo: 'random_string_photo'};
   const response = await request.post('/update_user_photo')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Integration Test: Create Review for User', async done=>{
+  body = {revieweeId: tempUserId,
+          reviewerId: tempUserId_2,
+          reviewerName: 'my man',
+          revieweeName: 'nice apple',
+          relationship: 'landlord',
+          reviewRating: 5,
+          reviewText: 'good experience'};
+  const response = await request.post('/create_review')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+
+it('Integration Test: Create Review for User', async done=>{
+  body = {userId: tempUserId};
+  const response = await request.post('/get_reviews_by_reviewer_id')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+
+it('Integration Test: Create Review for User', async done=>{
+  body = {userId: tempUserId_2};
+  const response = await request.post('/get_reviews_by_reviewee_id')
                                 .send(body)
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
