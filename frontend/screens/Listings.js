@@ -75,8 +75,7 @@ export default class Listings extends React.Component {
         return (
           <ImageBackground
             source={require('../components/background_2.png')}
-            style={{width: '100%', height: '100%'}}
-          >
+            style={{width: '100%', height: '100%'}}>
             <View>
               <NavigationEvents
                 onWillFocus={payload => {
@@ -95,14 +94,14 @@ export default class Listings extends React.Component {
                     </View>
               }
               <ScrollView style={styles.scrollView}>
-              {
-                  this.state.addedListings.map((item)=>(
-                    <MyListing
-                      listing={item}
-                      handleListingSelect={this.handleListingSelect}>
-                    </MyListing>
-                  ))
-              }
+                {
+                    this.state.addedListings.map((item)=>(
+                      <MyListing
+                        listing={item}
+                        handleListingSelect={this.handleListingSelect}>
+                      </MyListing>
+                    ))
+                }
               </ScrollView>
               <ListingPage
               {...this.state.selectedListing}
@@ -136,7 +135,8 @@ const styles = StyleSheet.create({
     },
     scrollView: {
       width: '95%',
-      margin: '2.5%'
+      margin: '2.5%',
+      paddingBottom: '30%'
     },
     row: {
         flexDirection: 'row',
