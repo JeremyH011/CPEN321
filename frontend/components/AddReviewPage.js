@@ -51,7 +51,7 @@ export default class AddReviewPage extends React.Component {
             }
           })
           .catch((error) => {
-            console.error(error);
+            alert(error);
           });
     }
 
@@ -81,7 +81,7 @@ export default class AddReviewPage extends React.Component {
           }
         })
         .catch((error) => {
-          console.error(error);
+          alert(error);
         });
       }
     }

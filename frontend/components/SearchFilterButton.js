@@ -13,10 +13,10 @@ const SearchFilterButton = props => (
 
 const styles = StyleSheet.create({
   fab: {
-    position: 'absolute',
-    margin: 12,
-    left: 0,
-    bottom: 30,
+    flex:1,
+    marginLeft: 40,
+    marginRight: 40,
+    borderRadius: 150/2,
   },
 })
 

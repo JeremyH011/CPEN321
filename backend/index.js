@@ -462,7 +462,7 @@ app.get('/get_recommended_roommates', jsonParser, (req, res) => {
       .slice(0,NUM_RECOMMENDED_USERS)
       .map(user => getOIdFromUserId(user[0]));
 
-      db.collection("users").find({'_id' : {$in : score_arr_sorted}}).toArray((err, result) => {
+      db.collection("users").find({$and: [{'optIn' : true},{'_id' : {$in : score_arr_sorted}}]}).toArray((err, result) => {
         if (err) {
           return res.send(400);
         } else {
@@ -735,7 +735,8 @@ app.post('/get_chat_rooms_by_user_id', jsonParser, (req, res) => {
                       chatRoomId: room._id,
                       currentUserId: userId,
                       chatteeId: chatteeId,
-                      chatteeName: result.name
+                      chatteeName: result.name,
+                      chatteePhoto: result.photo
                   }
                   
                 cb(chatRoomObj);

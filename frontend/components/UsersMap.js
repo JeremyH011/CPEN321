@@ -62,7 +62,7 @@ export default class UserMap extends PureComponent {
 const styles = StyleSheet.create({
     mapContainer: {
         width: '100%',
-        height: viewportHeight-0.12*viewportHeight,
+        height: viewportHeight
     },
     map: {
         width: '100%',

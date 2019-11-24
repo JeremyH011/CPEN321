@@ -27,7 +27,7 @@ class SignUp extends Component {
       emailField: '',
       passwordField: "",
       passwordConfirm: "",
-      optIn: false,
+      optIn: true,
       passErrorMsg: "",
       photo: null
      }
@@ -102,7 +102,7 @@ class SignUp extends Component {
         }
       })
       .catch((error) => {
-        console.error(error);
+        alert(error);
       });
     }
   }

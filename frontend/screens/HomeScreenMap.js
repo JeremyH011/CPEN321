@@ -146,6 +146,7 @@ this.notificationListener = firebase.notifications().onNotification((notificatio
     else
     {
       this.showAlert(title, body);
+      this.getListings();
     }
 });
 
@@ -230,33 +231,30 @@ Alert.alert(
       })
       .catch((error) => {
         alert(error);
-        //console.error(error);
+        alert(error);
       });
     }
 
   render () {
     return (
-          <View
-            testID="map_screen"
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
-            <View style={styles.container}>
+            <View testID="map_screen" style={styles.container}>
               <NavigationEvents
                 onWillFocus={payload => {
                   console.log("will focus", payload);
                   this.getListings();
                 }}
-              /> 
+              />
               <FetchLocation onGetLocation={this.getUserLocationHandler} />
               <UsersMap userLocation={this.state.userLocation} listingLocations={this.state.listingLocations} centerMap={this.centerMap} userId={this.state.userId} getListings={this.getListings}/>
-              <SearchFilterButton testID="search_button" onSearchFilterClicked={this.searchFilterClickedHandler}/>
               <SearchFilterPage testID="search_page" ref='searchFilterPopup' userId = {this.state.userId} centerMapWithDelta = {this.centerMapWithDelta} populateListingLocations={this.populateListingLocations}/>
-              <RecommendedListingButton testID="recommended_roommates_button" onRecommended={this.getRecommendedHandler}/>
-              <AddListingButton testID="add_listing_button" onAddListing={this.addListingHandler}/>
-              <RecommendedListing testID="recommended_roommates_page" ref='getRecommendedPopup' currentUserId={this.state.userId}/>
               <AddListingPage testID="add_listing_page" ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
+              <RecommendedListing testID="recommended_roommates_page" ref='getRecommendedPopup' currentUserId={this.state.userId}/>
+              <View style={styles.button_container}>
+                <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
+                <RecommendedListingButton testID="recommended_roommates_button" onRecommended={this.getRecommendedHandler}/>
+                <AddListingButton testID="add_listing_button" onAddListing={this.addListingHandler}/>
+              </View>
             </View>
-          </View>
     );
   };
 };
@@ -297,5 +295,11 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingRight: 12,
     textAlign: 'right',
+  },
+  button_container:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 140,
   }
 });

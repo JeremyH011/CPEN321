@@ -95,7 +95,7 @@ export default class ChatWindow extends React.Component {
           this.getMessagesByChatRoomID({"chatRoomId":this.props.chatRoomId});
         })
         .catch((error) => {
-          console.error(error);
+          alert(error);
         });
       }
 
@@ -110,7 +110,7 @@ export default class ChatWindow extends React.Component {
             });
           })
           .catch((error) => {
-            console.error(error);
+            alert(error);
           });
     }
 

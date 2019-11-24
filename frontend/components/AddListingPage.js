@@ -78,6 +78,7 @@ export default class AddListingPage extends React.Component {
 
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
+        this.resetState();
     }
 
     handleAddressChange(address, handleTextChange) {
@@ -111,12 +112,12 @@ export default class AddListingPage extends React.Component {
         alert("Please use autocomplete dropdown to fill out form");
         return false;
       }
-      else if(this.state.title == '') 
+      else if(this.state.title == '')
       {
         alert("Title field is empty");
         return false;
       }
-      else if(this.state.price == 0) 
+      else if(this.state.price == 0)
       {
         alert("Price can't be 0");
         return false;
@@ -161,99 +162,101 @@ export default class AddListingPage extends React.Component {
 
     render() {
         const {latest_photo} = this.state;
-        const length = this.state.photos.length - 1 < 0 ? 0 : this.state.photos.length - 1;
+        const length = this.state.photos.length;
         return (
             <Modal
             animationType="slide"
             transparent={false}
             visible={this.state.modalVisible}
             onRequestClose={() => { this.setModalVisible(false); } }>
-                <View testID={this.props.testID} style={styles.modal}>
-                    <TextInput
-                        testID="title_input"
-                        style={styles.modalTextInput}
-                        placeholder="Title"
-                        onChangeText={(text) => this.setState({title: text})}/>
-                    <View style={styles.row}>
-                        <View style={styles.dropdown}>
-                            <Dropdown
-                            label='Bed'
-                            data={numberOfRooms}
-                            onChangeText={(text) => this.setState({bed: parseInt(text)})}
-                            />
-                        </View>
-                        <View style={styles.dropdown}>
-                            <Dropdown
-                            label='Bath'
-                            data={numberOfRooms}
-                            onChangeText={(text) => this.setState({bath: parseInt(text)})}
-                            />
-                        </View>
-                        <View>
-                            <TextInputMask
-                                testID="price_input"
-                                style={styles.priceTextInput}
-                                placeholder="$/month"
-                                mask={"$[99990]"}
-                                onChangeText={(text) => this.setState({price: parseInt(text.split('$')[1])})}/>
-                        </View>
-                    </View>
-                    <GoogleAutoComplete apiKey={API_KEY} debounce={500} minLength={4} components={"country:ca"}>
-                        {({ handleTextChange, locationResults, fetchDetails, isSearching, clearSearchs }) => (
-                            <React.Fragment>
-                            {this.setState()}
-                                <TextInput ref='addressTextInput'
-                                    testID="address_input"
-                                    value={this.state.addressField}
-                                    style={styles.modalTextInput}
-                                    placeholder="Address"
-                                    onChangeText={(text) => this.handleAddressChange(text, handleTextChange)}/>
-                                {isSearching && <ActivityIndicator/>}
+                <View style={styles.title}>
+                  <Text style={styles.textTitle}>ADD NEW LISTING</Text>
+                </View>
+                <ScrollView
+                  keyboardShouldPersistTaps='handled'
+                  contentContainerStyle={{flexGrow: 1}}>
+                    <View testID={this.props.testID} style={styles.modal}>
+                      <TextInput
+                          testID="title_input"
+                          style={styles.modalTextInput}
+                          placeholder="Title"
+                          onChangeText={(text) => this.setState({title: text})}/>
+                      <GoogleAutoComplete apiKey={API_KEY} debounce={500} minLength={4} components={"country:ca"}>
+                          {({ handleTextChange, locationResults, fetchDetails, isSearching, clearSearchs }) => (
+                              <React.Fragment>
+                              {this.setState()}
+                                  <TextInput ref='addressTextInput'
+                                      testID="address_input"
+                                      value={this.state.addressField}
+                                      style={styles.modalTextInput}
+                                      placeholder="Address"
+                                      onChangeText={(text) => this.handleAddressChange(text, handleTextChange)}/>
+                                  {isSearching && <ActivityIndicator/>}
 
-                                { this.state.scrollViewVisible == true &&
-                                <ScrollView
-                                    testID="address_scrollview"
-                                    style={styles.scrollView}>
-                                    {locationResults.map(element => (
-                                        <LocationItem
-                                        testID={"location_item"}
-                                        setNewListingAddress={this.setNewListingAddress}
-                                        {...element}
-                                        key={element.id}
-                                        fetchDetails={fetchDetails}
-                                        clearSearchs={clearSearchs}
-                                        />
-                                    ))}
-                                </ScrollView>
-                                }
-                            </React.Fragment>
+                                  { this.state.scrollViewVisible == true &&
+                                  <ScrollView
+                                      testID="address_scrollview"
+                                      style={styles.scrollView}>
+                                      {locationResults.map(element => (
+                                          <LocationItem
+                                          testID={"location_item"}
+                                          setNewListingAddress={this.setNewListingAddress}
+                                          {...element}
+                                          key={element.id}
+                                          fetchDetails={fetchDetails}
+                                          clearSearchs={clearSearchs}
+                                          />
+                                      ))}
+                                  </ScrollView>
+                                  }
+                              </React.Fragment>
+                          )}
+                      </GoogleAutoComplete>
+                      <View style={styles.row}>
+                          <View style={styles.dropdown}>
+                              <Dropdown
+                              label='Bed'
+                              data={numberOfRooms}
+                              onChangeText={(text) => this.setState({bed: parseInt(text)})}
+                              />
+                          </View>
+                          <View style={styles.dropdown}>
+                              <Dropdown
+                              label='Bath'
+                              data={numberOfRooms}
+                              onChangeText={(text) => this.setState({bath: parseInt(text)})}
+                              />
+                          </View>
+                          <View>
+                              <TextInputMask
+                                  testID="price_input"
+                                  keyboardType='numeric'
+                                  style={styles.priceTextInput}
+                                  placeholder="$/month"
+                                  mask={"$[99990]"}
+                                  onChangeText={(text) => this.setState({price: parseInt(text.split('$')[1])})}/>
+                          </View>
+                      </View>
+                      <View style={{alignItems: 'center', justifyContent: 'center' }}>
+                        {latest_photo && (
+                          <Image
+                            source={{ uri: latest_photo.uri }}
+                            style={{ width: 150, height: 150 , marginTop: 10}}
+                          />
                         )}
-                    </GoogleAutoComplete>
-                  <View style={styles.row}>
-                      <TouchableOpacity testID="create_listing_button" style={styles.modalButton} onPress={() => { this.handleAddingNewListing(); }}>
-                          <Text>Add Listing</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }>
-                          <Text>Cancel</Text>
-                      </TouchableOpacity>
+                      </View>
+                      <View style={styles.row}>
+                        <TouchableOpacity style={styles.photoButton} onPress={() => {this.handleChoosePhoto();}}>
+                          <Text style={styles.textTitle}> Choose Photo(s) </Text>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.row}>
+                        <Text>{length} photos chosen.</Text>
+                      </View>
                   </View>
-                  <View style={styles.row}>
-                    <TouchableOpacity style={styles.modalButton} onPress={() => {this.handleChoosePhoto();}}>
-                      <Text> Choose Photo(s) </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{alignItems: 'center', justifyContent: 'center' }}>
-                  {latest_photo && (
-                    <Image
-                      source={{ uri: latest_photo.uri }}
-                      style={{ width: 150, height: 150 }}
-                    />
-                  )}
-                </View>
-                <View style={styles.row}>
-                  <Text>and {length} more photos...</Text>
-                </View>
-                </View>
+                </ScrollView>
+                <Button title='Add Listing' testID="create_listing_button" color='#BA55D3' style={styles.modalButton} onPress={() => { this.handleAddingNewListing()}}/>
+                <Button title='Cancel' color='#8A2BE2' style={styles.modalButton} onPress={() => { this.setModalVisible(false); } }/>
             </Modal>
         );
     }
@@ -261,14 +264,31 @@ export default class AddListingPage extends React.Component {
 
 const styles = StyleSheet.create({
     modal: {
+      flex: 9,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    title: {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
+      backgroundColor: '#8A2BE2',
+      maxHeight:35
+    },
+    textTitle: {
+        fontSize:15,
+        color:'white'
     },
     modalTextInput: {
       height: 40,
       width: 300,
       borderWidth: 1,
+      margin: 10,
+      padding: 10,
+    },
+    photoButton: {
+      alignItems: 'center',
+      backgroundColor: '#8A2BE2',
       margin: 10,
       padding: 10,
     },
