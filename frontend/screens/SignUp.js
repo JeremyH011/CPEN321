@@ -27,7 +27,7 @@ class SignUp extends Component {
       emailField: '',
       passwordField: "",
       passwordConfirm: "",
-      optIn: false,
+      optIn: true,
       passErrorMsg: "",
       photo: null
      }

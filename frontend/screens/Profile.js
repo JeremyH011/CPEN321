@@ -437,7 +437,7 @@ export default class Profile extends React.Component {
                   <Text>Opt-in to Roommate Recommendation feature</Text>
                   <RadioForm
                     radio_props={radio_props}
-                    initial={0}
+                    initial={this.state.oldOptIn ? 0 : 1}
                     formHorizontal={true}
                     labelHorizontal={false}
                     buttonColor={'#8A2BE2'}
