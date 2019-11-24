@@ -492,6 +492,54 @@ it('Integration Test: Get messages by chat room ID.', async done =>{
                                 .send(body)
                                 .set('Accept','application/json');
   expect(response.status).toBe(200);
-  expect(response.body.length).toBe(1);
+  expect(response.body.length).toBe(0);
+  done();
+});
+
+it('Integration Test: Get user by id.', async done =>{
+  body = {userId: tempUserId_2};
+  const response = await request.post('/get_user_by_id')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  expect(response.body.length).toBe(0);
+  done();
+});
+
+it('Integration Test: Update User Data. expect count > 0', async done =>{
+  body = {userId: tempUserId_3,
+          name: 'test three', 
+          age: '69', 
+          job: 'random house',
+          email: 'test_email3@test.com',
+          optIn : false};
+  const response = await request.post('/update_user_data')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Integration Test: Update User Data. expect count == 0', async done =>{
+  body = {userId: tempUserId_3,
+          name: 'test three', 
+          age: '69', 
+          job: 'random house',
+          email: 'dontexist@email.com',
+          optIn : false};
+  const response = await request.post('/update_user_data')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
+  done();
+});
+
+it('Integration Test: Update User Photo', async done =>{
+  body = {userId: tempUserId_3,
+          photo: 'random_string_photo'};
+  const response = await request.post('/update_user_photo')
+                                .send(body)
+                                .set('Accept','application/json');
+  expect(response.status).toBe(200);
   done();
 });
