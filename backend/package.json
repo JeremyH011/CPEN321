@@ -6,13 +6,29 @@
     "license": "MIT",
     "author": "Microsoft",
     "scripts": {
-        "start": "node index.js"
+        "start": "node index.js",
+        "test": "jest --coverage --verbose --passWithNoTests --detectOpenHandles --forceExit"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
         "express": "^4.17.1",
+        "firebase": "^7.4.0",
+        "firebase-admin": "^8.7.0",
         "geolib": "^3.0.4",
         "mongodb": "^3.3.2",
         "multer": "^1.4.2"
+    },
+    "devDependencies": {
+        "jest": "^24.9.0",
+        "supertest": "^4.0.2"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "collectCoverage": true,
+        "coveragePathIgnorePatterns": [
+            "/node_modules/",
+            "/public/",
+            "/constants.js"
+        ]
     }
 }
