@@ -45,7 +45,7 @@ it('Integration Test: POST New Listing for null user. Delete using ID.', async d
 });
 
 it('Integration Test: POST new user1', async done =>{
-  body = {email: 'test_email@test.com', password: 'test'};
+  body = {email: 'test_email@test.com', password: 'test', optIn : true};
   const response = await request.post('/signup')
                                 .send(body)
                                 .set('Accept','application/json');
@@ -61,7 +61,7 @@ it('Integration Test: POST new user1', async done =>{
 });
 
 it('Integration Test: Cannot use already existing email for new user', async done =>{
-  body = {email: 'test_email@test.com', password: 'test'};
+  body = {email: 'test_email@test.com', password: 'test', optIn : true};
   const response = await request.post('/signup')
                                 .send(body)
                                 .set('Accept','application/json');
@@ -70,7 +70,7 @@ it('Integration Test: Cannot use already existing email for new user', async don
 });
 
 it('Integration Test: LOGIN user1', async done =>{
-  body = {email: 'test_email@test.com', password: 'test'};
+  body = {email: 'test_email@test.com', password: 'test', optIn : true};
   const response = await request.post('/login')
                                 .send(body)
                                 .set('Accept','application/json');
@@ -79,7 +79,7 @@ it('Integration Test: LOGIN user1', async done =>{
 });
 
 it('Integration Test: Fail to LOGIN user1, wrong password/user combo', async done =>{
-  body = {email: 'test_email@test.com', password: 'test2'};
+  body = {email: 'test_email@test.com', password: 'test2', optIn : true};
   const response = await request.post('/login')
                                 .send(body)
                                 .set('Accept','application/json');
@@ -88,7 +88,7 @@ it('Integration Test: Fail to LOGIN user1, wrong password/user combo', async don
 });
 
 it('Integration Test: POST new user2 and POST FCM TOKEN', async done =>{
-  body = {email: 'test_email2@test.com', password: 'test2'};
+  body = {email: 'test_email2@test.com', password: 'test2', optIn : true};
   const response = await request.post('/signup')
                                 .send(body)
                                 .set('Accept','application/json');
@@ -104,7 +104,7 @@ it('Integration Test: POST new user2 and POST FCM TOKEN', async done =>{
 });
 
 it('Integration Test: POST new user3 and no FCM TOKEN', async done =>{
-  body = {email: 'test_email3@test.com', password: 'test3'};
+  body = {email: 'test_email3@test.com', password: 'test3', optIn : true};
   const response = await request.post('/signup')
                                 .send(body)
                                 .set('Accept','application/json');
