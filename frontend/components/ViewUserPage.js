@@ -49,7 +49,7 @@ export default class ViewUserPage extends React.Component {
   _renderItem({item, index}) {
     const url ={ uri: DB_URL + item.path.replace(/\\/g, "/")};
     return (
-      <Image source = {url} style={{height: 300, resizeMode : 'center', margin: 5}}/>
+      <Image source = {url} style={{height: 300, width: 300, borderRadius: 300/2, resizeMode : 'center'}}/>
     );
   }
 
@@ -86,7 +86,7 @@ export default class ViewUserPage extends React.Component {
           });
         })
         .catch((error) => {
-          console.error(error);
+          alert(error);
         });
   }
 
@@ -108,7 +108,7 @@ export default class ViewUserPage extends React.Component {
       console.log(this.state.reviewList);
     })
     .catch((error) => {
-      console.error(error);
+      alert(error);
     });
   }
 
@@ -130,7 +130,7 @@ export default class ViewUserPage extends React.Component {
       console.log(this.state.listingList);
     })
     .catch((error) => {
-      console.error(error);
+      alert(error);
     });
   }
 
@@ -168,7 +168,7 @@ export default class ViewUserPage extends React.Component {
       }
     })
     .catch((error) => {
-      console.error(error);
+      alert(error);
     });
   }
 
@@ -193,7 +193,7 @@ export default class ViewUserPage extends React.Component {
       }
     })
     .catch((error) => {
-      console.error(error);
+      alert(error);
     });
   }
 
@@ -243,46 +243,70 @@ export default class ViewUserPage extends React.Component {
                   itemWidth={itemWidth}
                   />
                 )}
-                {item == null && (<Image
-                  source={require('../components/Portrait_Placeholder.png')}
+                {item == null && (
+                  <Image
+                    source={require('../components/Portrait_Placeholder.png')}
+                    style={{height: 300, width: 300, borderRadius: 300/2, resizeMode : 'center'}}
                   />
                 )}
               </View>
             </View>
-            <View style={styles.text_box}>
-              <Text style={styles.boxItem}>Name: {this.state.name}</Text>
+            <View style={styles.text_box_prof}>
+              <Text style={styles.boxItem_h1}>{this.state.name}</Text>
               <Text style={styles.boxItem}>Email: {this.state.email}</Text>
               <Text style={styles.boxItem}>Age: {this.state.age}</Text>
               <Text style={styles.boxItem}>Job: {this.state.job}</Text>
             </View>
-            <Text style={styles.boxItem}>Reviews</Text>
-              {
-                this.state.reviewList.map((item)=>(
-                  <Text style={styles.boxItem} key={item.reviewerId}>
-                    Written by: {item.reviewerName}{"\n"}
-                    Relationship to {item.revieweeName}: {item.relationship}{"\n"}
-                    Rating: {item.reviewRating}/5{"\n"}
-                    {item.reviewText}
-                  </Text>
-                ))
-              }
-              {
-                this.state.reviewList.length == 0 &&
-                <Text style={styles.boxItem}>This user has no reviews!</Text>
-              }
-            <Text style={styles.boxItem}>Listings</Text>
-              {
-                this.state.listingList.map((item)=>(
-                  <MyListing 
-                      listing={item}
-                      handleListingSelect={this.handleListingSelect}>
-                  </MyListing>
-                ))
-              }
-              {
-                this.state.listingList.length == 0 &&
-                <Text style={styles.boxItem}>This user has created no listings!</Text>
-              }
+            <View style={styles.text_box}>
+              <Text style={styles.boxItem_h2}>Reviews</Text>
+              <View
+                style={{
+                  borderBottomWidth: 5,
+                  borderColor:'#DDDDDD',
+                  marginTop: 10,
+                  marginLeft: 10,
+                  marginRight: 10,
+                  marginBottom: 20
+                }}
+              />
+                {
+                  this.state.reviewList.map((item)=>(
+                    <Text style={styles.boxItem} key={item.reviewerId}>
+                      {item.reviewerName}{"\n"}
+                      Relationship to {item.revieweeName}: {item.relationship}{"\n"}
+                      Rating: {item.reviewRating}/5{"\n"}
+                      {item.reviewText}
+                    </Text>
+                  ))
+                }
+                {
+                  this.state.reviewList.length == 0 &&
+                  <Text style={styles.boxItem}>This user has no reviews!</Text>
+                }
+                <Text style={styles.boxItem_h2}>Listings</Text>
+                <View
+                  style={{
+                    borderBottomWidth: 5,
+                    borderColor:'#DDDDDD',
+                    marginTop: 10,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginBottom: 20
+                  }}
+                />
+                {
+                  this.state.listingList.map((item)=>(
+                    <MyListing
+                        listing={item}
+                        handleListingSelect={this.handleListingSelect}>
+                    </MyListing>
+                  ))
+                }
+                {
+                  this.state.listingList.length == 0 &&
+                  <Text style={styles.boxItem}>This user has created no listings!</Text>
+                }
+            </View>
             <AddReviewPage ref='reviewPopup' refreshReviews={this.refreshReviews} revieweeId={this.props.userId} reviewerId={this.props.currentUserId}/>
             <ChatWindow ref='chatWindowPopup' chatteeName={this.state.name} chatRoomId={this.state.chatRoomId} currentUserId={this.props.currentUserId} otherUserId={this.props.userId}/>
             <ListingPage
@@ -293,7 +317,7 @@ export default class ViewUserPage extends React.Component {
               allowViewProfile = {false}
             />
           </ScrollView>
-            { this.props.allowChat && 
+            { this.props.allowChat &&
               <Button style={styles.buttons} color='#8B00C7' title="Chat" onPress={() => this.openChatHandler()}/>
             }
             <Button style={styles.buttons} color='#BA55D3' title="Add Review" onPress={() => this.handleAddReview()}/>
@@ -313,6 +337,15 @@ const styles = StyleSheet.create({
     flex: 2,
     padding: 10
   },
+  text_box_prof: {
+    fontSize:20,
+    flex: 2,
+    padding: 10,
+    justifyContent:'center',
+    alignItems:'center',
+    //borderWidth:1,
+    //borderColor:'black'
+  },
   column: {
     flex: 1,
     justifyContent : 'space-around',
@@ -321,8 +354,8 @@ const styles = StyleSheet.create({
     padding: 10
   },
   profilePic: {
-    width: 250,
-    height: 250,
+    width: 350,
+    height: 350,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10
@@ -334,8 +367,17 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   boxItem:{
-    fontSize:20,
+    fontSize:16,
     margin: '3%'
+  },
+  boxItem_h1:{
+    fontSize:40,
+    margin: '3%'
+  },
+  boxItem_h2:{
+    fontSize:30,
+    margin: '3%',
+    textAlign:'center'
   },
   container: {
     flex:1,
