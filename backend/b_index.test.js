@@ -445,7 +445,7 @@ it('Integration Test: Get ALL listings, should be empty now.', async done =>{
   done();
 });
 
-it('Integration Test: Get Chat Room by User IDs', async done =>{
+it('Integration Test: Get Chat Room by User IDs no room', async done =>{
   body = {userId1: tempUserId_2, userId2: tempUserId_3};
   const response = await request.post('/get_chat_room_by_user_ids')
                                 .send(body)
@@ -464,7 +464,7 @@ it('Integration Test: Create Chat Room', async done =>{
   done();
 });
 
-it('Integration Test: Get Chat Rooms by User ID', async done =>{
+it('Integration Test: Get Chat Rooms by User ID room exists', async done =>{
   body = {userId: tempUserId_2};
   const response = await request.post('/get_chat_rooms_by_user_id')
                                 .send(body)
@@ -474,8 +474,8 @@ it('Integration Test: Get Chat Rooms by User ID', async done =>{
 });
 
 it('Integration Test: Create Message', async done =>{
-  body = {senderId: tempUserId_2,
-          receiverId: tempUserId_3,
+  body = {senderId: tempUserId_3,
+          receiverId: tempUserId_2,
           chatRoomId: tempChatRoomID,
           content: 'hi'
         };
