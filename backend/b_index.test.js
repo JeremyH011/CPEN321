@@ -178,24 +178,6 @@ it('Integration Test: Get ALL listings, should be 1.', async done =>{
   done();
 });
 
-/*
-it('Integration Test: Create Message with ID', async done=>{
-  body = {};
-  const response = await request.post('/create_message')
-                                .send(body)
-                                .set('Accept','application/json');
-  expect(response.status).toBe(201);
-  done();
-});
-
-it('Integration Test: Get Messages with ID', async done=>{
-  body = {};
-  const response = await request.get('/get_messages_by_chatroom_id')
-                                .query(body)
-  expect(response.status).toBe(200);
-  done();
-});
-*/
 it('Integration Test: GET Listing by listing_id.', async done =>{
   body = {userId: tempListingId};
   const response = await request.get('/get_listing_by_id')
