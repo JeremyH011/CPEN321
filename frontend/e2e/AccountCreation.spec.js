@@ -15,14 +15,15 @@ describe('New account', () => {
   it('should sign up and see home screen map', async () => {
     await expect(element(by.id('welcome_screen'))).toBeVisible();
     await element(by.id('signup_button')).tap();
-    await expect(element(by.id('signup_screen'))).toBeVisible();
+    const signUpScrollView = element(by.id('signup_screen')); 
+    await expect(signUpScrollView).toBeVisible();
 
     const emailInput = element(by.id('email_input'));
-    const passwordInput = element(by.id('password_input_really_long'));
+    const passwordInput = element(by.id('password_input'));
     const confirmPasswordInput = element(by.id('confirm_password_input'));
-    const nameInput = element(by.id('name_input_really_long'));
+    const nameInput = element(by.id('name_input'));
     const ageInput = element(by.id('age_input'));
-    const jobInput = element(by.id('job_input_really_long'));
+    const jobInput = element(by.id('job_input'));
     
     await expect(confirmPasswordInput).toBeVisible();
     await expect(emailInput).toBeVisible();
@@ -33,10 +34,11 @@ describe('New account', () => {
 
     nameInput.typeText(randomName+"\n");
     ageInput.typeText(69+"\n");
-    jobInput.typeText("ho"+"\n");
+    jobInput.typeText("teacher"+"\n");
     emailInput.typeText(randomEmail+"\n");
-    passwordInput.typeText(password+"\n");
-    confirmPasswordInput.typeText(password+"\n");
+    passwordInput.replaceText(password);
+    confirmPasswordInput.replaceText(password);
+    signUpScrollView.scrollTo('bottom');
 
     await element(by.id('signup_button')).tap();
     await expect(element(by.id('map_screen'))).toBeVisible();
@@ -58,6 +60,7 @@ describe('New account', () => {
   // Logging into a new account
   it('should log in with newly created account and see home screen map', async () => {
     await expect(element(by.id('welcome_screen'))).toBeVisible();
+    await expect(element(by.id('login_button'))).toBeVisible();
     await element(by.id('login_button')).tap();
     await expect(element(by.id('login_screen'))).toBeVisible();
 
@@ -68,8 +71,9 @@ describe('New account', () => {
     await expect(passwordInput).toBeVisible();
 
     emailInput.typeText(randomEmail);
-    passwordInput.typeText(password);
+    passwordInput.replaceText(password);
 
+    await expect(element(by.id('login_button'))).toBeVisible();
     await element(by.id('login_button')).tap();
     await expect(element(by.id('map_screen'))).toBeVisible();
   });
@@ -140,7 +144,7 @@ describe('New account', () => {
 
     await expect(element(by.id('recommended_roommates_page'))).toBeVisible();
 
-    await expect(element(by.id('recommended_roomate')).atIndex(0)).toExist();
+    await expect(element(by.id('recommended_roommate')).atIndex(0)).toExist();
 
     const recommendedRoomatesBackButton = element(by.id("recommended_roomates_back_button"));
     await expect(recommendedRoomatesBackButton).toBeVisible();

@@ -69,7 +69,7 @@ export default class Recommended extends React.Component {
                   {
                     this.state.recommended.map((item)=>(
                       <MyRoommates
-                        testID="recommended_roomate"
+                        testID="recommended_roommate"
                         user={item}
                         handleUserSelect={this.handleUserSelect}>
                       </MyRoommates>

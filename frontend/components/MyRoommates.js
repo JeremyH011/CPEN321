@@ -19,7 +19,7 @@ class MyRoommates extends PureComponent {
           photo = { uri: DB_URL + item[0].path.replace(/\\/g, "/")};
         }
         return (
-            <TouchableOpacity style={styles.user_card} onPress={() => this._handlePress(this.props.user.userId, true)}>
+            <TouchableOpacity testID={this.props.testID} style={styles.user_card} onPress={() => this._handlePress(this.props.user.userId, true)}>
               {photo &&
                 <Image
                   source = {photo}

@@ -80,7 +80,7 @@ class Login extends Component {
               />
             </View>
             <View style={styles.buttoncontainer}>
-              <Button color='#BA55D3' title="Login" style={styles.buttons} onPress={() => this.try_login()}/>
+              <Button color='#BA55D3' testID="login_button" title="Login" style={styles.buttons} onPress={() => this.try_login()}/>
               <Button color='#8A2BE2' title="Go Back" style={styles.buttons} onPress={() => this.props.navigation.navigate('Welcome')}/>
             </View>
           </ScrollView>

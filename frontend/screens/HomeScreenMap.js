@@ -250,7 +250,7 @@ Alert.alert(
               <AddListingPage testID="add_listing_page" ref='addListingPopup' addLocalMarker = {this.addLocalMarker} userId = {this.state.userId} getListings={this.getListings} centerMap={this.centerMap} refresh={this.getListings}/>
               <RecommendedListing testID="recommended_roommates_page" ref='getRecommendedPopup' currentUserId={this.state.userId}/>
               <View style={styles.button_container}>
-                <SearchFilterButton onSearchFilterClicked={this.searchFilterClickedHandler}/>
+                <SearchFilterButton testID="search_button" onSearchFilterClicked={this.searchFilterClickedHandler}/>
                 <RecommendedListingButton testID="recommended_roommates_button" onRecommended={this.getRecommendedHandler}/>
                 <AddListingButton testID="add_listing_button" onAddListing={this.addListingHandler}/>
               </View>

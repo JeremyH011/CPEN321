@@ -46,12 +46,15 @@ class SignUp extends Component {
   createFormData(body) {
     let data = new FormData();
 
-    data.append("photo", {
-      name: this.state.photo.fileName,
-      type: this.state.photo.type,
-      uri:
-        Platform.OS === "android" ? this.state.photo.uri : this.state.photo.uri.replace("file://", "")
-    });
+    if(this.state.photo != null)
+    {
+        data.append("photo", {
+          name: this.state.photo.fileName,
+          type: this.state.photo.type,
+          uri:
+            Platform.OS === "android" ? this.state.photo.uri : this.state.photo.uri.replace("file://", "")
+        });
+    }
 
     Object.keys(body).forEach(key => {
       data.append(key, body[key])
@@ -63,25 +66,16 @@ class SignUp extends Component {
     if (this.state.nameField == "") {
       alert("Must include a name!");
       return false;
-    } else {
-      if (this.state.emailField == "") {
-        alert("Must include an email!");
+    } else if (this.state.emailField == "") {
+      alert("Must include an email!");
+      return false;
+    } else if (this.state.passwordField == "" || this.state.passwordConfirm == "") {
+        alert("Must enter matching password in both boxes!");
         return false;
-      } else {
-        if (this.state.passwordField == "" || this.state.passwordConfirm == "") {
-          alert("Must enter matching password in both boxes!");
-          return false;
-        } else {
-          if (this.state.photo == null) {
-            alert("Must include a profile photo!");
-            return false;
-          } else {
-            return true;
-          }
-        }
+    } else {
+        return true;
       }
     }
-  }
 
   handleSignUp() {
     if (this.ensureFormComplete()) {
@@ -152,7 +146,7 @@ class SignUp extends Component {
         <View style={styles.container}>
           <Text>Name</Text>
           <TextInput
-            testId="name_input_really_long"
+            testID="name_input"
             style={styles.textInput}
             placeholder="Enter your first and last name"
             editable={true}
@@ -171,7 +165,7 @@ class SignUp extends Component {
             onChangeText={(age) => this.setState({ageField: parseInt(age)})}/>
           <Text>Job</Text>
           <TextInput
-            testId="job_input_really_long"
+            testID="job_input"
             style={styles.textInput}
             placeholder="Enter your current occupation..."
             returnKeyType={'done'}
@@ -191,7 +185,7 @@ class SignUp extends Component {
           />
           <Text>Password</Text>
           <TextInput secureTextEntry
-            testID="password_input_really_long"
+            testID="password_input"
             style={styles.textInput}
             placeholder="Enter a password"
             returnKeyType={'done'}
