@@ -469,7 +469,7 @@ it('Integration Test: Get Chat Rooms by User ID', async done =>{
 
 it('Integration Test: Create Message', async done =>{
   body = {senderId: tempUserId_2,
-          receiverId = tempUserId_3,
+          receiverId: tempUserId_3,
           chatRoomId: tempChatRoomID,
           content: 'hi'
         };
