@@ -37,6 +37,7 @@ class FilterSliderOneVal extends PureComponent {
                         }}
                         sliderLength={this.props.length}
                         onValuesChange={this.sliderChange}
+                        min={this.props.minRangeVal}
                         max={this.props.maxRangeVal} //
                         step={this.props.step} //
                         allowOverlap
