@@ -23,7 +23,7 @@ export default class Recommended extends React.Component {
         selectedUserModalVisible: false
     }
 
-    setModalVisible(visible) {
+    setModalVisible = (visible) => {
       this.setState({modalVisible: visible});
     }
 
@@ -32,6 +32,7 @@ export default class Recommended extends React.Component {
     }
 
     handleCloseModal = () => {
+      this.refs.viewUserPopup.setState({loaded: false});
       this.setState({selectedUserModalVisible: false});
     }
 
@@ -82,7 +83,7 @@ export default class Recommended extends React.Component {
                   </TouchableOpacity>
               </View>
               <ViewUserPage
-                ref="viewUserPopup"
+                ref= 'viewUserPopup'
                 visible={this.state.selectedUserModalVisible}
                 close={this.handleCloseModal}
                 userId = {this.state.selectedUser}
